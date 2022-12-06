@@ -7,6 +7,7 @@
 
 #include "ufs.h"
 
+// MKFS: Make file system (Linux)
 void usage() {
     fprintf(stderr, "usage: mkfs -f <image_file> [-d <num_data_blocks] [-i <num_inodes>]\n");
     exit(1);

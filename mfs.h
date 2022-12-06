@@ -6,6 +6,8 @@
 
 #define MFS_BLOCK_SIZE   (4096)
 
+//MFS: MultiFile System, Macintosh File System, Mutable File System, 
+
 typedef struct __MFS_Stat_t {
     int type;   // MFS_DIRECTORY or MFS_REGULAR
     int size;   // bytes

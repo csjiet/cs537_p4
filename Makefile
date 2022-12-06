@@ -18,3 +18,4 @@ clean:
 
 %.o: %.c Makefile
 	${CC} ${CFLAGS} -c $<
+
