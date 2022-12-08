@@ -20,8 +20,7 @@ ${PROGS} : % : %.o Makefile.net
 	${CC} ${CFLAGS} -c $<
 
 
-compile: libmfs.so
-	gcc -o mkfs mkfs.c -Wall 
+compile: libmfs.so main.c server
 	gcc -o main main.c -Wall -L. -lmfs 
 	ldd main
 
@@ -40,6 +39,11 @@ clean:
 	rm -f ${PROGS} ${OBJS}
 	killall server
 	
+
+server: mkfs.c
+	gcc -o mkfs mkfs.c -Wall 
+	./mkfs -f real_disk_image.img -d 1000 -i 100
+
 
 visualize: compile
 	./mkfs -f test.img -v
