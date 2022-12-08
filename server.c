@@ -5,7 +5,7 @@
 
 // server code
 int main(int argc, char *argv[]) {
-    int sd = UDP_Open(10000);
+    int sd = UDP_Open(10000); // Opens server socket with port 10000
     assert(sd > -1);
     while (1) {
 	struct sockaddr_in addr;
