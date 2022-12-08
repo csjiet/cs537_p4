@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
     message_t m;
 
-    m.mtype = MFS_INIT;
+    m.mtype = MFS_READ;
     printf("client:: send message %d\n", m.mtype);
     rc = UDP_Write(sd, &addrSnd, (char *) &m, sizeof(message_t));
     if (rc < 0) {

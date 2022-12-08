@@ -4,15 +4,14 @@
 
 
 struct sockaddr_in addrSnd, addrRcv;
+int sd, rc;
 
 int MFS_Init(char *hostname, int port) {
-    printf("MFS Init2 %s %d\n", hostname, port);
-    int rc = UDP_FillSockAddr(&addrSnd, hostname, port);
-    if (rc < 0) {
-        return -1;
-    }
     // do some net setup
-    return 0;
+    printf("MFS Init2 %s %d\n", hostname, port);
+    sd = UDP_Open(20000);
+    rc = UDP_FillSockAddr(&addrSnd, hostname, port);
+    return rc;
 }
 
 int MFS_Lookup(int pinum, char *name) {

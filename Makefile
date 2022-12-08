@@ -7,7 +7,7 @@ OBJS   := ${SRCS:c=o}
 PROGS  := ${SRCS:.c=}
 
 .PHONY: all
-all: ${PROGS} run
+all: ${PROGS} compile
 
 ${PROGS} : % : %.o Makefile.net
 	${CC} $< -o $@ udp.c
@@ -15,14 +15,12 @@ ${PROGS} : % : %.o Makefile.net
 %.o: %.c Makefile
 	${CC} ${CFLAGS} -c $<
 
-run: compile
-	
-	export LD_LIBRARY_PATH=.
-	ldd main
 
-compile: libmfs.so libmfs.o
+compile: libmfs.so
 	gcc -o mkfs mkfs.c -Wall 
 	gcc -o main main.c -Wall -L. -lmfs 
+	ldd main
+	export LD_LIBRARY_PATH=.
 	ldd main
 
 libmfs.so: libmfs.o udp.c
@@ -37,8 +35,9 @@ clean:
 	rm ./main
 	rm ./libmfs.so
 	rm ./mkfs
-	killall server
 	rm -f ${PROGS} ${OBJS}
+	killall server
+	
 
-visualize: run
+visualize: compile
 	./mkfs -f test.img -v
