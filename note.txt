@@ -1,0 +1,34 @@
+The only files to implement:
+- libmfs.c
+- server.c
+
+Running & Testing
+
+Server startup:
+#1. Create a file system image: 
+
+    Command: 
+        gcc -o mkfs mkfs.c -Wall
+        ./mkfs -f <image_file> [-d <num_data_blocks] [-i <num_inodes>]
+
+    Description: 
+        This runs mkfs.c to generate a on-disk file system image
+
+#2. Run server:  
+   
+    Command: 
+        server [portnum] [file-system-image]
+
+    Description: 
+        This creates a server using the file system image which acts as our disk
+
+Client startup:
+#3. Run client: 
+
+    How:
+        Call functions declared in libmfs.c in a main.c
+
+    Description:
+        Runs the client that communicates with the server.
+
+
