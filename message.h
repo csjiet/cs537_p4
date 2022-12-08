@@ -12,9 +12,15 @@
 
 
 typedef struct {
-    int mtype; // message type from above
-    int rc;    // return code
+    // Fields to be updated BEFORE sending to the SERVER
+    int c_sent_mtype; // message type from above
+    int c_sent_inum; // inode number
+
+    // Fields to be updated BEFORE sending back to the CLIENT
+    int c_received_rc; // return code
+    char* c_received_data; // real data chunk from malloc
     // put more here ...
+
 } message_t;
 
 #endif // __message_h__

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "mfs.h"
 #include "udp.h"
+#include "message.h"
 
 
 struct sockaddr_in addrSnd, addrRcv; // Create client socket for sending, and receiving
@@ -9,10 +10,9 @@ int sd, rc;
 /*This function takes a host name and port number and uses those to find the server exporting the 
 file system.*/ 
 int MFS_Init(char *hostname, int port) {
-    // do some net setup
-    printf("MFS Init2 %s %d\n", hostname, port);
+    //printf("MFS Init2 %s %d\n", hostname, port);
     sd = UDP_Open(20000); // Opens client socket with port 20000
-    rc = UDP_FillSockAddr(&addrSnd, hostname, port); // Connect client socket to server socket
+    rc = UDP_FillSockAddr(&addrSnd, hostname, port); // Connects client socket to server socket
     return rc;
 }
 
@@ -20,7 +20,31 @@ int MFS_Init(char *hostname, int port) {
 looks up the entry name in it. The inode number of name is returned. Success: return inode number of 
 name; failure: return -1. Failure modes: invalid pinum, name does not exist in pinum.*/ 
 int MFS_Lookup(int pinum, char *name) {
-    // network communication to do the lookup to server
+    
+    // Create message struct to be sent and received
+    message_t m;
+    m.c_sent_mtype = MFS_LOOKUP;
+    m.c_sent_inum = pinum;
+
+    // Write a request to server to retrieve data
+    rc = UDP_Write(sd, &addrSnd, (char*) &m, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Lookup WRITE failed; libmfs.c\n");
+        exit(1);
+    }
+
+    // Reads data sent back from server in message_t and returns a return code to check if server 
+    // processsing was successful
+    rc = UDP_Read(sd, &addrRcv, (char*) &m, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Lookup READ failed; libmfs.c\n");
+        exit(1);
+    }
+
+    // Assign the name with the inode number's name retrieved from server if successful
+    name = m.c_received_data;
+    printf("client: Received data from server: %s\n", name);
+
     return 0;
 }
 

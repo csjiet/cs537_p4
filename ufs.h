@@ -8,12 +8,14 @@
 
 #define DIRECT_PTRS (30)
 
+// Each directory or regular file is stored as an inode in the inode table
 typedef struct {
     int type;   // MFS_DIRECTORY or MFS_REGULAR
     int size;   // bytes
     unsigned int direct[DIRECT_PTRS];
 } inode_t;
 
+// Each directory or regular file is stored as a directory entry in the data region
 typedef struct {
     char name[28];  // up to 28 bytes of name in directory (including \0)
     int  inum;      // inode number of entry (-1 means entry not used)
