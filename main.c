@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 #include "mfs.h"
 
 int main(int argc, char *argv[]) {
@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
     // Testing MFS_Lookup
     int pinum = 1; // random parent inode number
     char *name;
+    name = (char*) malloc(sizeof(char) * 28);
     rc = MFS_Lookup(pinum, name); // Should expect rc to be > 1 and name to hold some data
 
     rc = MFS_Shutdown();

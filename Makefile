@@ -6,12 +6,8 @@ SRCS   := client.c server.c
 OBJS   := ${SRCS:c=o}
 PROGS  := ${SRCS:.c=}
 
-LINK	:= export LD_LIBRARY_PATH=.
-
 .PHONY: all
 all: ${PROGS} compile
-	${LINK}
-	ldd main
 
 ${PROGS} : % : %.o Makefile.net
 	${CC} $< -o $@ udp.c
@@ -20,8 +16,12 @@ ${PROGS} : % : %.o Makefile.net
 	${CC} ${CFLAGS} -c $<
 
 
-compile: libmfs.so main.c server
+compile: libmfs.so
+	gcc -o mkfs mkfs.c -Wall
+	./mkfs -f real_disk_image.img -d 1000 -i 100
 	gcc -o main main.c -Wall -L. -lmfs 
+	ldd main
+	export LD_LIBRARY_PATH=.
 	ldd main
 
 libmfs.so: libmfs.o udp.c
@@ -39,11 +39,6 @@ clean:
 	rm -f ${PROGS} ${OBJS}
 	killall server
 	
-
-server: mkfs.c
-	gcc -o mkfs mkfs.c -Wall 
-	./mkfs -f real_disk_image.img -d 1000 -i 100
-
 
 visualize: compile
 	./mkfs -f test.img -v
