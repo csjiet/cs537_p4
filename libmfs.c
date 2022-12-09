@@ -12,6 +12,11 @@ file system.*/
 int MFS_Init(char *hostname, int port) {
 
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(hostname == NULL)
+        return -1;
+
+    if(port < 0)
+        return -1;
 
     //printf("MFS Init2 %s %d\n", hostname, port);
     sd = UDP_Open(20000); // Opens client socket with port 20000
@@ -25,6 +30,11 @@ name; failure: return -1. Failure modes: invalid pinum, name does not exist in p
 int MFS_Lookup(int pinum, char *name) {
 
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(pinum < 0)
+        return -1;
+
+    if(name == NULL)
+        return -1;
     
     // Create message struct to be sent and received
     message_t msg;
@@ -65,10 +75,15 @@ Information format:
 int MFS_Stat(int inum, MFS_Stat_t *m) {
 
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(inum < 0)
+        return -1;
+    
+    if(m == NULL)
+        return -1;
 
     message_t msg;
     msg.c_sent_inum = inum;
-
+    msg.c_sent_mtype = MFS_STAT;
     // Write a request to server to retrieve data
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
     if(rc < 0){
@@ -100,14 +115,24 @@ Information format:
 int MFS_Write(int inum, char *buffer, int offset, int nbytes) {
 
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(inum < 0)
+        return -1;
+
+    if(buffer == NULL)
+        return -1;
     
+    if(offset < -1)
+        return -1;
+
+    if(nbytes < -1)
+        return -1;
 
     message_t msg;
     msg.c_sent_inum = inum;
     strcpy(msg.c_sent_buffer, buffer);
     msg.c_sent_offset = offset;
     msg.c_sent_nbytes = nbytes;
-
+    msg.c_sent_mtype = MFS_WRITE;
 
     // Write a request to server to retrieve data
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
@@ -123,7 +148,7 @@ int MFS_Write(int inum, char *buffer, int offset, int nbytes) {
         printf("client:: MFS_Stat READ failed; libmfs.c\n");
         return -1;
     }
-
+    return 0;
 }
 
 /*This function reads nbytes of data (max size 4096 bytes) specified by the byte offset offset into the 
@@ -136,12 +161,24 @@ Information format:
 int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
 
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(inum < 0)
+        return -1;
+    
+    if(buffer == NULL)
+        return -1;
+
+    if(offset < -1)
+        return -1;
+    
+    if(nbytes < -1)
+        return -1;
 
     message_t msg;
     msg.c_sent_inum = inum;
     strcpy(msg.c_sent_buffer, buffer);
     msg.c_sent_offset = offset;
     msg.c_sent_nbytes = nbytes;
+    msg.c_sent_mtype = MFS_READ;
 
     // Write a request to server to retrieve data
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
@@ -157,7 +194,7 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
         printf("client:: MFS_Stat READ failed; libmfs.c\n");
         return -1;
     }
-    msg.c_received_mfs_dirent;
+    //msg.c_received_mfs_dirent;
 
     return 0;
 }
@@ -170,8 +207,37 @@ Information format:
 */
 int MFS_Creat(int pinum, int type, char *name) {
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(pinum < 0)
+        return -1;
 
-    return 0;
+    if(type < 0)
+        return -1;
+
+    if(name == NULL)
+        return -1;
+
+    message_t msg;
+    msg.c_sent_inum = pinum;
+    msg.c_sent_ftype = type;
+    strcpy(msg.c_sent_name, name);
+    msg.c_sent_mtype = MFS_CRET;
+
+    // Write a request to server to retrieve data
+    rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat WRITE failed; libmfs.c\n");
+        return -1;
+    }
+
+    // Reads data sent back from server in message_t and returns a return code to check if server 
+    // processsing was successful
+    rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat READ failed; libmfs.c\n");
+        return -1;
+    }
+    
+    return msg.c_received_rc;
 }
 
 /* This function removes the file or directory name from the directory specified by pinum. 0 on success, -1 on failure. Failure modes: 
@@ -182,8 +248,32 @@ Information format:
 */
 int MFS_Unlink(int pinum, char *name) {
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    if(pinum < 0)
+        return -1;
+    
+    if(name == NULL)
+        return -1;
 
-    return 0;
+    message_t msg;
+    msg.c_sent_inum = pinum;
+    strcpy(msg.c_sent_name, name);
+    msg.c_sent_mtype = MFS_UNLINK;
+
+    // Write a request to server to retrieve data
+    rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat WRITE failed; libmfs.c\n");
+        return -1;
+    }
+
+    // Reads data sent back from server in message_t and returns a return code to check if server 
+    // processsing was successful
+    rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat READ failed; libmfs.c\n");
+        return -1;
+    }
+    return msg.c_received_rc;
 }
 
 /*This function  just tells the server to force all of its data structures to disk and shutdown by calling exit(0). This interface 
@@ -193,5 +283,23 @@ Information format:
 */
 int MFS_Shutdown() {
     printf("MFS Shutdown\n");
-    return 0;
+
+    message_t msg;
+    msg.c_sent_mtype = MFS_SHUTDOWN;
+    // Write a request to server to retrieve data
+    rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat WRITE failed; libmfs.c\n");
+        return -1;
+    }
+
+    // Reads data sent back from server in message_t and returns a return code to check if server 
+    // processsing was successful
+    rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
+    if(rc < 0){
+        printf("client:: MFS_Stat READ failed; libmfs.c\n");
+        return -1;
+    }
+    
+    return msg.c_received_rc;
 }

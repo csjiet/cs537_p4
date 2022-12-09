@@ -9,12 +9,12 @@
 #define MFS_CRET (6)
 #define MFS_UNLINK (7)
 #define MFS_SHUTDOWN (8)
-
+#include "mfs.h"
 
 typedef struct {
     // Fields to be updated BEFORE sending to the SERVER
     int c_sent_mtype; // ALWAYS ASSIGNED BY CLIENT
-    int c_sent_inum; // ALWAYS ASSIGNED BY CLIENT
+    int c_sent_inum;
     char c_sent_name[100]; 
     char c_sent_buffer[4096];
     int c_sent_offset;
