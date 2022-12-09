@@ -18,8 +18,8 @@ int run_lookup(message_t* m){
 
 
 	// This is a test. It is not done properly here!
-	m->c_received_data = (char*)malloc(sizeof(char) * 28);
-	strcpy(m->c_received_data, "Wow data here!\n");
+	//m->c_received_data = (char*)malloc(sizeof(char) * 28);
+	strcpy(m->c_received_inum, "12345");
 
 	return 0;
 }

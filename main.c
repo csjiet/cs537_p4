@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
     char *name;
     name = (char*) malloc(sizeof(char) * 28);
     rc = MFS_Lookup(pinum, name); // Should expect rc to be > 1 and name to hold some data
-
+    printf("lookup %d\n", rc);
+    
     rc = MFS_Shutdown();
     printf("shut %d\n", rc);
     return 0;
