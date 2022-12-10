@@ -6,9 +6,12 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <math.h>
 #include "ufs.h"
 #include "udp.h"
 #include "message.h"
+
+#define BLOCKSIZE (4096)
 
 static int PORTNUM;
 static char* IMGFILENAME;
@@ -115,8 +118,6 @@ int readImage(){
     assert(image != MAP_FAILED);
 
 	SUPERBLOCKPTR = (super_t *) image;
-
-	
 
 	// For testing purposes: Delete once we are confident disk is allocated properly/////////////////////////////////////
 	printf("-------Describes IMG + super block-----------\n");
