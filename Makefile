@@ -1,7 +1,7 @@
 CC     := gcc
 CFLAGS := -Wall -Werror 
 
-SRCS   := client.c server.c 
+SRCS   := client.c server.c server-fs.c 
 
 OBJS   := ${SRCS:c=o}
 PROGS  := ${SRCS:.c=}
@@ -38,6 +38,7 @@ clean:
 	rm ./mkfs
 	rm -f ${PROGS} ${OBJS}
 	killall server	
+	killall server-fs
 
 visualize: compile
 	./mkfs -f test.img -v

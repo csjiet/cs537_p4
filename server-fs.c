@@ -12,7 +12,7 @@
 #include "ufs.h"
 
 int main(int argc, char *argv[]) {
-    int fd = open("test.img", O_RDWR);
+    int fd = open("real_disk_image.img", O_RDWR);
     assert(fd > -1);
 
     struct stat sbuf;
