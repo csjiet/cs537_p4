@@ -3,14 +3,10 @@
 
 #include "message.h"
 
-int run_init(message_t* m){
-	return -1;
-}
-
 int run_lookup(message_t* m){
 
 	// Search in superblock
-
+	
 
     // Search in data bitmap
 
