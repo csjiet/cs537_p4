@@ -60,58 +60,6 @@ int run_init(message_t* m) {
 }
 int run_lookup(message_t* m){
 
-	// Get the searched inode number
-	int pinum = m->c_sent_inum;
-
-	// INODE BITMAP
-	// Gets inode bitmap's location
-	char bufBlock[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-
-	// Read inode bitmap AND get bit of inode
-	unsigned int bitVal = get_bit((unsigned int*) bufBlock, pinum);
-
-	// Check if inode is not found
-	if(bitVal == 0)
-		return -1;
-
-	// INODE TABLE
-	// Gets inode table's location
-	lseek(fd, SUPERBLOCKPTR-> inode_region_addr, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-
-	// Read inode table block
-	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
-	
-	// Read inode table and obtain inode
-	inode_t inode = inodeBlockPtr->inodes[pinum];
-	
-
-	// DATA REGION
-	// Iterate all potential 30 blocks where data is located
-	for(int i = 0; i< DIRECT_PTRS; i++){
-	
-		// Gets data region direct data block index
-		int directBlockNumber = inode.direct[i];
-
-		// Gets directory entry block's location
-		lseek(fd, directBlockNumber, SEEK_SET); // Does direct block number mean: directBlockNumber + SUPERBLOCKPTR->data_region_addr ??
-		read(fd, bufBlock, BLOCKSIZE);
-		
-		// Read directory entry block
-		dir_block_t* dirEntryBlockPtr = (dir_block_t*) bufBlock;
-		
-		// Read directory entry
-		// Iterates all 128 directory entries in a directory entry block
-		for(int j = 0; j< 128; j++){
-			dir_ent_t dirEntry = dirEntryBlockPtr-> entries[j];
-			if(strcmp(dirEntry.name, m->c_sent_name) == 0){
-				m->c_received_inum = dirEntry.inum;
-				return 0;
-			}
-		}
-	}
 	
 	return 0;
 }
@@ -139,7 +87,7 @@ int run_read(message_t* m){
 	// INODE BITMAP
 	// Gets inode bitmap's location
 	char bufBlock[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr, SEEK_SET);
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
 	// Read inode bitmap AND get bit of inode
@@ -149,20 +97,20 @@ int run_read(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
-	// INODE TABLE
-	// Gets inode table's location
-	lseek(fd, SUPERBLOCKPTR-> inode_region_addr, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
+	// // INODE TABLE
+	// // Gets inode table's location
+	// lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	// read(fd, bufBlock, BLOCKSIZE);
 
-	// Read inode table block
-	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
+	// // Read inode table block
+	// inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
 	
-	// Read inode table and obtain inode
-	inode_t inode = inodeBlockPtr->inodes[inum];
+	// // Read inode table and obtain inode
+	// inode_t inode = inodeBlockPtr->inodes[inum];
 
-	// DATA REGION
+	// DATA BITMAP
 	// Check whether the data region exists a data allocation for inode
-	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr, SEEK_SET);
+	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
 	bitVal = get_bit((unsigned int*) bufBlock, inum);
@@ -171,10 +119,25 @@ int run_read(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
-	// Calculate the offset within a block given block number and inum
-	// How to offset into the correct data region given inum?
-	// no_of_inode_t_remaining = inum - (((dirBlockNumber - data_region_addr_number)) * 4096)/ 32 per inode_t)
-	// 
+	// DATA REGION
+	m->c_received_buffer_size = nbytes;
+	lseek(fd, offset, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	strcpy(m->c_received_buffer, bufBlock);
+
+	dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
+
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		dir_ent_t dirEntry = dirEntryBlock->entries[i];
+		if(dirEntry.inum == inum){
+			m->c_received_mfs_dirent.inum = dirEntry.inum;
+			strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
+
+			m->c_received_rc = 0;
+		}
+
+	}
+
 	
 	return 0;
 }
