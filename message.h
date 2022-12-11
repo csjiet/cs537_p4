@@ -16,7 +16,7 @@ typedef struct {
     int c_sent_mtype; // ALWAYS ASSIGNED BY CLIENT
     int c_sent_inum;
     char c_sent_name[100]; 
-    char c_sent_buffer[4096];
+    //char c_sent_buffer[4096];
     int c_sent_offset;
     int c_sent_nbytes;
     int c_sent_ftype;
@@ -24,6 +24,8 @@ typedef struct {
     // Fields to be updated BEFORE sending back to the CLIENT
     int c_received_rc; // ALWAYS ASSIGNED BY SERVER
     int c_received_inum; 
+    char c_received_buffer[4096];
+    int c_received_buffer_size;
     MFS_Stat_t c_received_mfs_stat;
     MFS_DirEnt_t c_received_mfs_dirent;
     

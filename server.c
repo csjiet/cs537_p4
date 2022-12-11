@@ -121,7 +121,6 @@ int run_stat(message_t* m){
 	//MFS_Stat_t stat;
 
 	// Search for the file/ directory of the inode number
-	//int inum = m->c_sent_inum;
 
 
 	return -1;
@@ -132,7 +131,52 @@ int run_write(message_t* m){
 }
 
 int run_read(message_t* m){
-	return -1;
+	// Get the searched inode number
+	int inum = m->c_sent_inum;
+	int offset = m->c_sent_offset;
+	int nbytes = m->c_sent_nbytes; // size: 1 - 4096
+
+	// INODE BITMAP
+	// Gets inode bitmap's location
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	// Read inode bitmap AND get bit of inode
+	unsigned int bitVal = get_bit((unsigned int*) bufBlock, inum);
+
+	// Check if inode is not found
+	if(bitVal == 0)
+		return -1;
+
+	// INODE TABLE
+	// Gets inode table's location
+	lseek(fd, SUPERBLOCKPTR-> inode_region_addr, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	// Read inode table block
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
+	
+	// Read inode table and obtain inode
+	inode_t inode = inodeBlockPtr->inodes[inum];
+
+	// DATA REGION
+	// Check whether the data region exists a data allocation for inode
+	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	bitVal = get_bit((unsigned int*) bufBlock, inum);
+
+	// Check if inode data is allocated 
+	if(bitVal == 0)
+		return -1;
+
+	// Calculate the offset within a block given block number and inum
+	// How to offset into the correct data region given inum?
+	// no_of_inode_t_remaining = inum - (((dirBlockNumber - data_region_addr_number)) * 4096)/ 32 per inode_t)
+	// 
+	
+	return 0;
 }
 
 int run_cret(message_t* m){
