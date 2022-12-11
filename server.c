@@ -61,6 +61,7 @@ int run_lookup(message_t* m){
 	unsigned int bit = get_bit((void*)SUPERBLOCKPTR + offsetBytes, m->c_sent_inum);
 	// Check if inode is not allocated/ inode not found in the disk
 	if((int)bit == 0){
+		m->c_received_inum = -1;
 		return -1;
 	}
 	
