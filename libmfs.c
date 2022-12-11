@@ -57,9 +57,10 @@ int MFS_Lookup(int pinum, char *name) {
         return -1;
     }
 
-    // Assign the name with the inode number's name retrieved from server if successful
+    // For testing purposes
     //strcpy(name, m.c_received_data);
     //printf("client: Received data from server: %s\n", name);
+
     return msg.c_received_inum;
     
 }

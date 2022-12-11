@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <math.h>
+#include <inttypes.h>
 #include "ufs.h"
 #include "udp.h"
 #include "message.h"
@@ -18,8 +19,32 @@ static char* IMGFILENAME;
 
 static super_t* SUPERBLOCKPTR;
 
+typedef struct {
+	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
+} inode_block_t;
+
+typedef struct {
+	dir_ent_t entries[128];
+} dir_block_t;
+
+typedef struct {
+	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
+} bitmap_t;
+
+unsigned int get_bit(unsigned int *bitmap, int position) {
+   int index = position / 32;
+   int offset = 31 - (position % 32);
+   return (bitmap[index] >> offset) & 0x1;
+}
+
+void set_bit(unsigned int *bitmap, int position) {
+   int index = position / 32;
+   int offset = 31 - (position % 32);
+   bitmap[index] |= 0x1 << offset;
+}
+
 int run_init(message_t* m) {
-	return -1;
+	return 0;
 
 }
 int run_lookup(message_t* m){
@@ -28,16 +53,40 @@ int run_lookup(message_t* m){
 
 	// Search in inode bitmap
 	
+	
+	//uintptr_t intAddrOfInodeBitMap = (uintptr_t)(SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE); // integer pointer
+	//unsigned int bit = get_bit((void*)SUPERBLOCKPTR + intAddrOfInodeBitMap, m->c_sent_inum);
 
-    // Search in data bitmap
+	int offsetBytes = (SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE);
+	unsigned int bit = get_bit((void*)SUPERBLOCKPTR + offsetBytes, m->c_sent_inum);
+	// Check if inode is not allocated/ inode not found in the disk
+	if((int)bit == 0){
+		return -1;
+	}
+	
+	// Search in inode table if inode is found
+	offsetBytes = (SUPERBLOCKPTR-> data_bitmap_addr * BLOCKSIZE);
+	void* inodeTableAddr = (void*)SUPERBLOCKPTR + offsetBytes;
+	
 
-    // Look into data region pointed by the data bitmap
+	inode_block_t* inodeBlockStruct = (inode_block_t*) inodeTableAddr;
+	inode_t inode = inodeBlockStruct->inodes[SUPERBLOCKPTR-> num_inodes];
+	unsigned int blockNumber;
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		blockNumber = inode.direct[i]; // block number in the data region
 
+		void* addressToDataRegion = SUPERBLOCKPTR + (blockNumber * BLOCKSIZE);
+		dir_block_t* directoryEntryBlock = (dir_block_t*) addressToDataRegion;
+		dir_ent_t directoryEntry = directoryEntryBlock-> entries[SUPERBLOCKPTR-> num_inodes];
+		if(strcmp(directoryEntry.name, m->c_sent_name) == 0){
+			m->c_received_inum = directoryEntry.inum;
+			return 0;
+		}
 
-	// This is a test. It is not done properly here!
-	//m->c_received_data = (char*)malloc(sizeof(char) * 28);
-	m->c_received_inum = 12345;
+	}
 
+	// Assign inum as -1 if failed to locate inode
+	m->c_received_inum = -1;
 	return 0;
 }
 

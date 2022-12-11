@@ -32,6 +32,19 @@ Client startup:
         Runs the client that communicates with the server.
 
 
-test
+Structs: 
+typedef struct {
+	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
+} inode_block;
+
+typedef struct {
+	dir_ent_t entries[128];
+} dir_block_t;
+
+typedef struct {
+	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
+} bitmap_t;
+
+
 
 

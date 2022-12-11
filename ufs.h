@@ -11,7 +11,7 @@
 typedef struct {
     int type;   // MFS_DIRECTORY or MFS_REGULAR
     int size;   // bytes
-    unsigned int direct[DIRECT_PTRS];
+    unsigned int direct[DIRECT_PTRS]; // direct pointer to the block number
 } inode_t;
 
 typedef struct {
