@@ -33,14 +33,20 @@ Client startup:
 
 
 Structs:
- 
+
 typedef struct {
 	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
 } inode_block;
 
 typedef struct {
-	dir_ent_t entries[128];
+	dir_ent_t entries[128]; // 4096/ 128 = 32 bytes per directory entry
 } dir_block_t;
+
+    // Which is true, each directory entry is indeed 32 bytes
+    typedef struct {
+        char name[28];  // up to 28 bytes of name in directory (including \0)
+        int  inum;      // inode number of entry (-1 means entry not used)
+    } dir_ent_t;
 
 typedef struct {
 	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];

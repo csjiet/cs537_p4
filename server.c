@@ -12,13 +12,17 @@
 #include "udp.h"
 #include "message.h"
 
+
 #define BLOCKSIZE (4096)
 
 static int PORTNUM;
 static char* IMGFILENAME;
 
 static super_t* SUPERBLOCKPTR;
+int sd; // Server file descriptor
+int fd; // mmap file descriptor
 
+// Struct definitions
 typedef struct {
 	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
 } inode_block_t;
@@ -30,6 +34,12 @@ typedef struct {
 typedef struct {
 	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
 } bitmap_t;
+
+
+void intHandler(int dummy) {
+    UDP_Close(sd);
+    exit(130);
+}
 
 unsigned int get_bit(unsigned int *bitmap, int position) {
    int index = position / 32;
@@ -49,49 +59,76 @@ int run_init(message_t* m) {
 }
 int run_lookup(message_t* m){
 
-	// Search in superblock
+	// Get the searched inode number
+	int pinum = m->c_sent_inum;
 
-	// Search in inode bitmap
-	
-	
-	//uintptr_t intAddrOfInodeBitMap = (uintptr_t)(SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE); // integer pointer
-	//unsigned int bit = get_bit((void*)SUPERBLOCKPTR + intAddrOfInodeBitMap, m->c_sent_inum);
-
-	int offsetBytes = (SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE);
-	unsigned int bit = get_bit((void*)SUPERBLOCKPTR + offsetBytes, m->c_sent_inum);
-	// Check if inode is not allocated/ inode not found in the disk
-	if((int)bit == 0){
-		m->c_received_inum = -1;
+	// INODE BITMAP
+	// Gets inode bitmap's location
+	off_t intPosToInodeBitMap = (off_t) lseek(fd, SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE, SEEK_CUR); // The file offset is set to its current location plus offset bytes.
+	if(intPosToInodeBitMap == -1)
 		return -1;
-	}
-	
-	// Search in inode table if inode is found
-	offsetBytes = (SUPERBLOCKPTR-> data_bitmap_addr * BLOCKSIZE);
-	void* inodeTableAddr = (void*)SUPERBLOCKPTR + offsetBytes;
-	
+	uintptr_t posToInodeBitMap = (uintptr_t) intPosToInodeBitMap;
 
-	inode_block_t* inodeBlockStruct = (inode_block_t*) inodeTableAddr;
-	inode_t inode = inodeBlockStruct->inodes[SUPERBLOCKPTR-> num_inodes];
-	unsigned int blockNumber;
+	// Read inode bitmap AND get bit of inode
+	unsigned int bit = get_bit((unsigned int*) posToInodeBitMap, m->c_sent_inum);
+
+	// Check if inode is not found
+	if(bit == 0)
+		return -1;
+
+	// INODE TABLE
+	// Gets inode table's location
+	off_t intPosToinodeTable = (off_t) lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_CUR);
+	if(intPosToinodeTable == -1)
+		return -1;
+	uintptr_t posToinodeTable = (uintptr_t) intPosToinodeTable;
+
+	// Read inode table block
+	inode_block_t* inodeTableBlock = (inode_block_t*) posToinodeTable;
+
+	// Read inode table and obtain inode
+	inode_t inode = inodeTableBlock->inodes[pinum];
+
+	
+	// DATA REGION
+	// Iterate all potential 30 blocks where data is located
 	for(int i = 0; i< DIRECT_PTRS; i++){
-		blockNumber = inode.direct[i]; // block number in the data region
 
-		void* addressToDataRegion = SUPERBLOCKPTR + (blockNumber * BLOCKSIZE);
-		dir_block_t* directoryEntryBlock = (dir_block_t*) addressToDataRegion;
-		dir_ent_t directoryEntry = directoryEntryBlock-> entries[SUPERBLOCKPTR-> num_inodes];
-		if(strcmp(directoryEntry.name, m->c_sent_name) == 0){
-			m->c_received_inum = directoryEntry.inum;
-			return 0;
+		// Gets data region direct data block index
+		int dataBlockIndex = inode.direct[i];
+
+		// Gets directory entry block's location
+		off_t intPostoDirEntryBlock = (off_t) lseek(fd, dataBlockIndex* BLOCKSIZE, SEEK_CUR);
+		if(intPostoDirEntryBlock == -1)
+			return -1;
+		uintptr_t postoDirEntryBlock = (uintptr_t) intPostoDirEntryBlock;
+
+		// Read directory entry block
+		dir_block_t* directoryEntryBlock = (dir_block_t*) postoDirEntryBlock;
+
+		// Read directory entry
+		// Iterates all 128 directory entries in a directory entry block
+		for(int j = 0; j< 128; j++){
+			dir_ent_t directoryEntry = directoryEntryBlock->entries[j];
+			if(strcmp(directoryEntry.name, m->c_sent_name) == 0){
+				m->c_received_inum = directoryEntry.inum;
+				return 0;
+			}
 		}
 
 	}
-
-	// Assign inum as -1 if failed to locate inode
-	m->c_received_inum = -1;
+	
 	return 0;
 }
 
 int run_stat(message_t* m){
+
+	//MFS_Stat_t stat;
+
+	// Search for the file/ directory of the inode number
+	//int inum = m->c_sent_inum;
+
+
 	return -1;
 }
 
@@ -155,7 +192,7 @@ int message_parser(message_t* m){
 // Read image file to local memory
 int readImage(){
 
-	int fd = open(IMGFILENAME, O_RDWR);
+	fd = open(IMGFILENAME, O_RDWR);
 	assert(fd > -1);
 
 	struct stat sbuf;
@@ -190,6 +227,8 @@ int readImage(){
 
 // Edited server main function:
 int main(int argc, char *argv[]) {
+
+	signal(SIGINT, intHandler); // Safely exit server when using ctrl + c by closing the socket during an interrupt
 	
 	PORTNUM = atoi(argv[1]);
 	IMGFILENAME = (char*) malloc(100 * sizeof(char));
@@ -199,7 +238,7 @@ int main(int argc, char *argv[]) {
 	int rc = readImage();
 	assert(rc > -1);
 
-    int sd = UDP_Open(PORTNUM); // Opens server socket with port 10000
+    sd = UDP_Open(PORTNUM); // Opens server socket with port 10000
     assert(sd > -1);
     while (1) {
 	struct sockaddr_in addr;
