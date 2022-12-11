@@ -21,6 +21,7 @@ static char* IMGFILENAME;
 static super_t* SUPERBLOCKPTR;
 int sd; // Server file descriptor
 int fd; // mmap file descriptor
+void *image;
 
 // Struct definitions
 typedef struct {
@@ -64,58 +65,52 @@ int run_lookup(message_t* m){
 
 	// INODE BITMAP
 	// Gets inode bitmap's location
-	off_t intPosToInodeBitMap = (off_t) lseek(fd, SUPERBLOCKPTR-> inode_bitmap_addr * BLOCKSIZE, SEEK_CUR); // The file offset is set to its current location plus offset bytes.
-	if(intPosToInodeBitMap == -1)
-		return -1;
-	uintptr_t posToInodeBitMap = (uintptr_t) intPosToInodeBitMap;
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
 
 	// Read inode bitmap AND get bit of inode
-	unsigned int bit = get_bit((unsigned int*) posToInodeBitMap, m->c_sent_inum);
+	unsigned int bitVal = get_bit((unsigned int*) bufBlock, pinum);
 
 	// Check if inode is not found
-	if(bit == 0)
+	if(bitVal == 0)
 		return -1;
 
 	// INODE TABLE
 	// Gets inode table's location
-	off_t intPosToinodeTable = (off_t) lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_CUR);
-	if(intPosToinodeTable == -1)
-		return -1;
-	uintptr_t posToinodeTable = (uintptr_t) intPosToinodeTable;
+	lseek(fd, SUPERBLOCKPTR-> inode_region_addr, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
 
 	// Read inode table block
-	inode_block_t* inodeTableBlock = (inode_block_t*) posToinodeTable;
-
-	// Read inode table and obtain inode
-	inode_t inode = inodeTableBlock->inodes[pinum];
-
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
 	
+	// Read inode table and obtain inode
+	inode_t inode = inodeBlockPtr->inodes[pinum];
+	
+
 	// DATA REGION
 	// Iterate all potential 30 blocks where data is located
 	for(int i = 0; i< DIRECT_PTRS; i++){
-
+	
 		// Gets data region direct data block index
-		int dataBlockIndex = inode.direct[i];
+		int directBlockNumber = inode.direct[i];
 
 		// Gets directory entry block's location
-		off_t intPostoDirEntryBlock = (off_t) lseek(fd, dataBlockIndex* BLOCKSIZE, SEEK_CUR);
-		if(intPostoDirEntryBlock == -1)
-			return -1;
-		uintptr_t postoDirEntryBlock = (uintptr_t) intPostoDirEntryBlock;
-
+		lseek(fd, directBlockNumber, SEEK_SET); // Does direct block number mean: directBlockNumber + SUPERBLOCKPTR->data_region_addr ??
+		read(fd, bufBlock, BLOCKSIZE);
+		
 		// Read directory entry block
-		dir_block_t* directoryEntryBlock = (dir_block_t*) postoDirEntryBlock;
-
+		dir_block_t* dirEntryBlockPtr = (dir_block_t*) bufBlock;
+		
 		// Read directory entry
 		// Iterates all 128 directory entries in a directory entry block
 		for(int j = 0; j< 128; j++){
-			dir_ent_t directoryEntry = directoryEntryBlock->entries[j];
-			if(strcmp(directoryEntry.name, m->c_sent_name) == 0){
-				m->c_received_inum = directoryEntry.inum;
+			dir_ent_t dirEntry = dirEntryBlockPtr-> entries[j];
+			if(strcmp(dirEntry.name, m->c_sent_name) == 0){
+				m->c_received_inum = dirEntry.inum;
 				return 0;
 			}
 		}
-
 	}
 	
 	return 0;
@@ -195,21 +190,25 @@ int readImage(){
 	fd = open(IMGFILENAME, O_RDWR);
 	assert(fd > -1);
 
-	struct stat sbuf;
-	int rc = fstat(fd, &sbuf);
-	assert(rc > -1);
+	char* bufBlockPtr = (char*)malloc(sizeof(char) * BLOCKSIZE);
+	read(fd, bufBlockPtr, BLOCKSIZE); //reads the first block in the image to the buffer block
+	SUPERBLOCKPTR = (super_t*) bufBlockPtr;
+
+	// struct stat sbuf;
+	// int rc = fstat(fd, &sbuf);
+	// assert(rc > -1);
 	
-	int image_size = (int) sbuf.st_size;
+	// int image_size = (int) sbuf.st_size;
 
-	void *image = mmap(NULL, image_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    assert(image != MAP_FAILED);
+	// image = mmap(NULL, image_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    // assert(image != MAP_FAILED);
 
-	SUPERBLOCKPTR = (super_t *) image;
+	// SUPERBLOCKPTR = (super_t *) image;
 
 	// For testing purposes: Delete once we are confident disk is allocated properly/////////////////////////////////////
 	printf("-------Describes IMG + super block-----------\n");
-	printf("IMAGE: \n");
-	printf(" IMG size created and mapped to mmap: %d\n", image_size);
+	//printf("IMAGE: \n");
+	//printf(" IMG size created and mapped to mmap: %d\n", image_size);
 
 	printf("SUPERBLOCK\n");
 	printf(" inode bitmap address %d [len %d]\n", SUPERBLOCKPTR->inode_bitmap_addr, SUPERBLOCKPTR->inode_bitmap_len);

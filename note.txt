@@ -38,6 +38,12 @@ typedef struct {
 	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
 } inode_block;
 
+    typedef struct {
+        int type;   // MFS_DIRECTORY or MFS_REGULAR
+        int size;   // bytes
+        unsigned int direct[DIRECT_PTRS]; // direct pointer to the block number, 30 different blocks locations to point to per file/ directory
+    } inode_t;
+
 typedef struct {
 	dir_ent_t entries[128]; // 4096/ 128 = 32 bytes per directory entry
 } dir_block_t;
@@ -51,6 +57,16 @@ typedef struct {
 typedef struct {
 	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
 } bitmap_t;
+
+
+
+lseek
+char buf[SIZE]
+fd = open("filename", O_RDWR)
+read(fd, buf, SIZE); // it will read first SIZE char bytes into the buffer
+lseek(fd, n, SEEK_CUR); // it will skip n items (including the last read item till SIZE)
+
+- read is like a sliding window scan that moves to the next window of item
 
 
 
