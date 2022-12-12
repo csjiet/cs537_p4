@@ -140,7 +140,7 @@ int run_read(message_t* m){
 		if(dirEntry.inum == inum){
 			m->c_received_mfs_dirent.inum = dirEntry.inum;
 			strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
-			//m->c_received_mfs_dirent.name = dirEntry.name;
+			
 		}
 	}
 	
