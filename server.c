@@ -108,7 +108,7 @@ int run_read(message_t* m){
 	
 	// Read inode table and obtain inode
 	inode_t inode = inodeBlockPtr->inodes[inum];
-
+	
 	//int fileOrDirSize = inode.size;
 	// if(offset > fileOrDirSize)
 	// 	return -1;
@@ -125,51 +125,7 @@ int run_read(message_t* m){
 		return -1;
 
 	// DATA REGION
-	int blockOffset = offset / BLOCKSIZE;
-	int offsetWithinABlock = offset - (blockOffset * BLOCKSIZE);
-
-	int blockNumber = inode.direct[blockOffset];
-	
-	// Reads the dir_block_t struct from the offset
-	lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-	dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
-	// Find the file after locating the directory entry block
-	for(int i = 0; i< 128; i++){
-		dir_ent_t dirEntry = dirEntryBlock->entries[i];
-		if(dirEntry.inum == inum){
-			m->c_received_mfs_dirent.inum = dirEntry.inum;
-			strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
-			
-		}
-	}
-	
-	// Reads the requested bytes from the offset
-	lseek(fd, (blockNumber* BLOCKSIZE)+ offsetWithinABlock, SEEK_SET);
-
-	m->c_received_buffer_size = nbytes; // Defines nbytes to decode in client
-	read(fd, bufBlock, BLOCKSIZE);
-	strcpy(m->c_received_buffer, bufBlock);
-	
-
-	
-
-	// lseek(fd, offset, SEEK_SET);
-	// read(fd, bufBlock, BLOCKSIZE); // Takes BLOCKSIZE of data, but actually only needs nbytes.
-	// strcpy(m->c_received_buffer, bufBlock);
-
-	// dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
-
-	// for(int i = 0; i< DIRECT_PTRS; i++){
-	// 	dir_ent_t dirEntry = dirEntryBlock->entries[i];
-	// 	if(dirEntry.inum == inum){
-	// 		m->c_received_mfs_dirent.inum = dirEntry.inum;
-	// 		strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
-
-	// 		m->c_received_rc = 0;
-	// 	}
-
-	// }
+	printf("%d %d %d %p\n", inum, offset, nbytes, &inode);
 
 	
 	return 0;
