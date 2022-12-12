@@ -109,9 +109,9 @@ int run_read(message_t* m){
 	// Read inode table and obtain inode
 	inode_t inode = inodeBlockPtr->inodes[inum];
 
-	int fileOrDirSize = inode.size;
-	if(offset > fileOrDirSize)
-		return -1;
+	//int fileOrDirSize = inode.size;
+	// if(offset > fileOrDirSize)
+	// 	return -1;
 
 	// DATA BITMAP
 	// Check whether the data region exists a data allocation for inode
@@ -129,6 +129,22 @@ int run_read(message_t* m){
 	int offsetWithinABlock = offset - (blockOffset * BLOCKSIZE);
 
 	int blockNumber = inode.direct[blockOffset];
+	
+	// Reads the dir_block_t struct from the offset
+	lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
+	// Find the file after locating the directory entry block
+	for(int i = 0; i< 128; i++){
+		dir_ent_t dirEntry = dirEntryBlock->entries[i];
+		if(dirEntry.inum == inum){
+			m->c_received_mfs_dirent.inum = dirEntry.inum;
+			strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
+			//m->c_received_mfs_dirent.name = dirEntry.name;
+		}
+	}
+	
+	// Reads the requested bytes from the offset
 	lseek(fd, (blockNumber* BLOCKSIZE)+ offsetWithinABlock, SEEK_SET);
 
 	m->c_received_buffer_size = nbytes; // Defines nbytes to decode in client
@@ -163,6 +179,7 @@ int run_lookup(message_t* m){
 
 	// Run read to get MFS_DirEnt_t
 	int rcRead = run_read(m);
+	
 	assert(rcRead >= 0);
 	MFS_DirEnt_t dirEntry = m->c_received_mfs_dirent;
 	m->c_received_inum = dirEntry.inum;
@@ -173,7 +190,9 @@ int run_lookup(message_t* m){
 
 int run_cret(message_t* m){
 	// IF NAME ALREADY EXISTS (LOOKUP) RETURN SUCCESS (0)
-
+	//rcLookup will check that the name already exists or not. If it returns -1, then we can proceed?
+	int rcLookup = run_lookup(m); 
+	assert(rcLookup == 0);
 	int pinum = m->c_sent_inum;
 	int ftype = m->c_sent_ftype;
 	char name[28];

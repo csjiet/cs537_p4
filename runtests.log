@@ -18,16 +18,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffc8d51e000)
-	libmfs.so => ./libmfs.so (0x00007f3c2bcdb000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3c2ba96000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f3c2bce7000)
+	linux-vdso.so.1 (0x00007fff0251b000)
+	libmfs.so => ./libmfs.so (0x00007f71decd2000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f71dea8d000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f71decde000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffdc49dc000)
-	libmfs.so => ./libmfs.so (0x00007f5235548000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f5235303000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f5235554000)
+	linux-vdso.so.1 (0x00007fff6d5fc000)
+	libmfs.so => ./libmfs.so (0x00007f5c2eda5000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f5c2eb60000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f5c2edb1000)
 
 
 test build PASSED
@@ -47,10 +47,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 6043
-/tmp/tmpqlC18O/p/server 6043 ./test.img
+Starting server on port 9764
+/tmp/tmpWyUFJa/p/server 9764 ./test.img
 
 
 test shutdown PASSED
@@ -70,10 +68,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8659
-/tmp/tmpqlC18O/p/server 8659 ./test.img
+Starting server on port 7278
+/tmp/tmpWyUFJa/p/server 7278 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -95,10 +91,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 9872
-/tmp/tmpqlC18O/p/server 9872 ./test.img
+Starting server on port 9773
+/tmp/tmpWyUFJa/p/server 9773 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -120,10 +114,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 5961
-/tmp/tmpqlC18O/p/server 5961 ./test.img
+Starting server on port 6662
+/tmp/tmpWyUFJa/p/server 6662 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -145,10 +137,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8292
-/tmp/tmpqlC18O/p/server 8292 ./test.img
+Starting server on port 7414
+/tmp/tmpWyUFJa/p/server 7414 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -170,10 +160,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 9894
-/tmp/tmpqlC18O/p/server 9894 ./test.img
+Starting server on port 5306
+/tmp/tmpWyUFJa/p/server 5306 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -195,10 +183,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7595
-/tmp/tmpqlC18O/p/server 7595 ./test.img
+Starting server on port 9373
+/tmp/tmpWyUFJa/p/server 9373 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -220,10 +206,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8556
-/tmp/tmpqlC18O/p/server 8556 ./test.img
+Starting server on port 8627
+/tmp/tmpWyUFJa/p/server 8627 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -245,10 +229,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7812
-/tmp/tmpqlC18O/p/server 7812 ./test.img
+Starting server on port 7274
+/tmp/tmpWyUFJa/p/server 7274 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -270,16 +252,12 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8334
-/tmp/tmpqlC18O/p/server 8334 ./test.img
-server: server.c:166: run_lookup: Assertion `rcRead >= 0' failed.
+Starting server on port 6147
+/tmp/tmpWyUFJa/p/server 6147 ./test.img
 
 
-test dir1 FAILED
+test dir1 PASSED
  (check root for dot entries)
- Timelimit (10.0s) exceeded
 
 ('starting', 'dir2')
 
@@ -289,17 +267,14 @@ Test dir2
 create a new directory and check it
 
 **********************************************************************
-client:: MFS_Lookup READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8166
-/tmp/tmpqlC18O/p/server 8166 ./test.img
+Starting server on port 8035
+/tmp/tmpWyUFJa/p/server 8035 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -321,10 +296,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 9263
-/tmp/tmpqlC18O/p/server 9263 ./test.img
+Starting server on port 8986
+/tmp/tmpWyUFJa/p/server 8986 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -346,10 +319,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 5651
-/tmp/tmpqlC18O/p/server 5651 ./test.img
+Starting server on port 6412
+/tmp/tmpWyUFJa/p/server 6412 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -371,10 +342,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 5307
-/tmp/tmpqlC18O/p/server 5307 ./test.img
+Starting server on port 7404
+/tmp/tmpWyUFJa/p/server 7404 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -396,10 +365,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 5957
-/tmp/tmpqlC18O/p/server 5957 ./test.img
+Starting server on port 5205
+/tmp/tmpWyUFJa/p/server 5205 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='test'
 
 
@@ -421,10 +388,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8845
-/tmp/tmpqlC18O/p/server 8845 ./test.img
+Starting server on port 6543
+/tmp/tmpWyUFJa/p/server 6543 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -446,10 +411,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8627
-/tmp/tmpqlC18O/p/server 8627 ./test.img
+Starting server on port 6209
+/tmp/tmpWyUFJa/p/server 6209 ./test.img
 
 
 test name PASSED
@@ -469,10 +432,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 6314
-/tmp/tmpqlC18O/p/server 6314 ./test.img
+Starting server on port 6689
+/tmp/tmpWyUFJa/p/server 6689 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -497,7 +458,6 @@ rm ./mkfs
 rm -f client server server-fs client.o server.o server-fs.o
 killall server	
 server(85028): Operation not permitted
-server(199335): Operation not permitted
 server: no process found
 make: *** [Makefile:40: clean] Error 1
 Trying to build project using make
@@ -521,26 +481,24 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffce3def000)
-	libmfs.so => ./libmfs.so (0x00007f36a67cc000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f36a6587000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f36a67d8000)
+	linux-vdso.so.1 (0x00007ffde81fd000)
+	libmfs.so => ./libmfs.so (0x00007f3727c5d000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3727a18000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f3727c69000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffffdb4d000)
-	libmfs.so => ./libmfs.so (0x00007f5fe5054000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f5fe4e0f000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f5fe5060000)
+	linux-vdso.so.1 (0x00007fff88d78000)
+	libmfs.so => ./libmfs.so (0x00007f4212004000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f4211dbf000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f4212010000)
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 5877
-/tmp/tmpqlC18O/p/server 5877 ./test.img
+Starting server on port 8884
+/tmp/tmpWyUFJa/p/server 8884 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 Trying to clean project using make clean
 make clean
@@ -551,7 +509,6 @@ rm ./mkfs
 rm -f client server server-fs client.o server.o server-fs.o
 killall server	
 server(85028): Operation not permitted
-server(199335): Operation not permitted
 server: no process found
 make: *** [Makefile:40: clean] Error 1
 Trying to build project using make
@@ -575,16 +532,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffc893a6000)
-	libmfs.so => ./libmfs.so (0x00007f6ab0054000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f6aafe0f000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f6ab0060000)
+	linux-vdso.so.1 (0x00007ffc43b1e000)
+	libmfs.so => ./libmfs.so (0x00007fce31a0a000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fce317c5000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fce31a16000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007fff1efa8000)
-	libmfs.so => ./libmfs.so (0x00007fc5774d0000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fc57728b000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007fc5774dc000)
+	linux-vdso.so.1 (0x00007fffc8df5000)
+	libmfs.so => ./libmfs.so (0x00007fedf3570000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fedf332b000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fedf357c000)
 
 
 test drop FAILED
@@ -605,10 +562,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 8189
-/tmp/tmpqlC18O/p/server 8189 ./test.img
+Starting server on port 6566
+/tmp/tmpWyUFJa/p/server 6566 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -630,10 +585,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 9393
-/tmp/tmpqlC18O/p/server 9393 ./test.img
+Starting server on port 8018
+/tmp/tmpWyUFJa/p/server 8018 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -655,10 +608,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7324
-/tmp/tmpqlC18O/p/server 7324 ./test.img
+Starting server on port 7276
+/tmp/tmpWyUFJa/p/server 7276 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -680,10 +631,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7712
-/tmp/tmpqlC18O/p/server 7712 ./test.img
+Starting server on port 9870
+/tmp/tmpWyUFJa/p/server 9870 ./test.img
 Filesyste to be written:
 
 
@@ -745,10 +694,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 9301
-/tmp/tmpqlC18O/p/server 9301 ./test.img
+Starting server on port 9394
+/tmp/tmpWyUFJa/p/server 9394 ./test.img
 Filesyste to be written:
 
 
@@ -894,10 +841,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7482
-/tmp/tmpqlC18O/p/server 7482 ./test.img
+Starting server on port 6931
+/tmp/tmpWyUFJa/p/server 6931 ./test.img
 Filesyste to be written:
 
 
@@ -1043,10 +988,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-start server
-0
-Starting server on port 7386
-/tmp/tmpqlC18O/p/server 7386 ./test.img
+Starting server on port 6114
+/tmp/tmpWyUFJa/p/server 6114 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='0'
 
 
@@ -1094,9 +1037,8 @@ test stat2 FAILED
  (stat a sparse file)
  MFS_Creat returned failure inum=0 type=1 name='test'
 
-test dir1 FAILED
+test dir1 PASSED
  (check root for dot entries)
- Timelimit (10.0s) exceeded
 
 test dir2 FAILED
  (create a new directory and check it)
@@ -1161,5 +1103,5 @@ test free FAILED
  (check that inodes and direcrtory entries are freed)
  MFS_Creat returned failure inum=0 type=1 name='0'
 
-Passed 3 of 27 tests.
-Overall 3 of 27
+Passed 4 of 27 tests.
+Overall 4 of 27
