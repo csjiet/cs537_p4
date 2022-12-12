@@ -61,6 +61,11 @@ int run_init(message_t* m) {
 }
 int run_lookup(message_t* m){
 
+	// Run read to get MFS_DirEnt_t
+	run_read(m);
+	MFS_DirEnt_t dirEntry = m->c_received_mfs_dirent;
+	m->c_received_inum = dirEntry.inum;
+	m->c_received_rc = 0;
 	
 	return 0;
 }
