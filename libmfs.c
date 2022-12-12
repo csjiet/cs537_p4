@@ -224,9 +224,9 @@ int MFS_Creat(int pinum, int type, char *name) {
         return -1;
 
     //TYPE IS EITHER 0(DIRECTORY) or 1(REGULAR FILE)
-    if ((type != 0) || (type != 1)) {
-        return -1;
-    }
+    // if ((type != 0) || (type != 1)) {
+    //     return -1;
+    // }
 
     if(name == NULL)
         return -1;

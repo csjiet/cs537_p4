@@ -57,11 +57,6 @@ void set_bit(unsigned int *bitmap, int position) {
    bitmap[index] |= 0x1 << offset;
 }
 
-int run_init(message_t* m) {
-	return 0;
-
-}
-
 
 int run_stat(message_t* m){
 
@@ -84,7 +79,7 @@ int run_read(message_t* m){
 	int inum = m->c_sent_inum;
 	int offset = m->c_sent_offset;
 	int nbytes = m->c_sent_nbytes; // size: 1 - 4096
-
+	printf("%d, %d\n", offset, nbytes);
 	// INODE BITMAP
 	// Gets inode bitmap's location
 	char bufBlock[BLOCKSIZE];
@@ -108,7 +103,6 @@ int run_read(message_t* m){
 	
 	// Read inode table and obtain inode
 	inode_t inode = inodeBlockPtr->inodes[inum];
-	
 	//int fileOrDirSize = inode.size;
 	// if(offset > fileOrDirSize)
 	// 	return -1;
@@ -124,31 +118,41 @@ int run_read(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
+	// Check if file is regular file or directory
+	int fileType = inode.type;
+	printf("%d\n", fileType);
 	// DATA REGION
-	printf("%d %d %d %p\n", inum, offset, nbytes, &inode);
+	
 
 	
 	return 0;
 }
 
-int run_lookup(message_t* m){
+int offsetToFile(){
+	return 0;
+}
 
-	// Run read to get MFS_DirEnt_t
-	int rcRead = run_read(m);
-	
-	assert(rcRead >= 0);
-	MFS_DirEnt_t dirEntry = m->c_received_mfs_dirent;
-	m->c_received_inum = dirEntry.inum;
-	m->c_received_rc = 0;
+int offsetToDirectory(){
+	return 0;
+}
+
+int run_lookup(message_t* m){
+	// Get the searched inode number
+	int pinum = m->c_sent_inum;
+	printf("%d\n", pinum);
+	char name[28];
+	strcpy(name, m->c_sent_name);
 	
 	return 0;
+	
 }
 
 int run_cret(message_t* m){
 	// IF NAME ALREADY EXISTS (LOOKUP) RETURN SUCCESS (0)
 	//rcLookup will check that the name already exists or not. If it returns -1, then we can proceed?
 	int rcLookup = run_lookup(m); 
-	assert(rcLookup == 0);
+	//assert(rcLookup == 0);
+	printf("%d\n", rcLookup);
 	int pinum = m->c_sent_inum;
 	int ftype = m->c_sent_ftype;
 	char name[28];
@@ -162,12 +166,15 @@ int run_cret(message_t* m){
 	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
-	return -1;
+	return 0;
 }
 
 int run_unlink(message_t* m){
-
-	return -1;
+	//Run the lookup function to check if the name exists within the pinum
+	//If the name exists, remove it. If it doesn't exist, return 0;
+	int rcLookup = run_lookup(m);
+	assert(rcLookup == 0);
+	return 0;
 }
 
 int run_shutdown(message_t* m){
@@ -188,7 +195,8 @@ int message_parser(message_t* m){
 	int rc;
 
 	if(message_func == MFS_INIT){
-		rc = run_init(m);
+		return 0;
+		//rc = run_init(m);
 
 	}else if(message_func == MFS_LOOKUP){
 		rc = run_lookup(m);
