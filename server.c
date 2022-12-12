@@ -9,6 +9,7 @@
 #include <math.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <stdbool.h>
 #include "ufs.h"
 #include "udp.h"
 #include "message.h"
@@ -18,6 +19,7 @@
 
 static int PORTNUM;
 static char* IMGFILENAME;
+bool isShutdown = false;
 
 static super_t* SUPERBLOCKPTR;
 int sd; // Server file descriptor
@@ -59,16 +61,7 @@ int run_init(message_t* m) {
 	return 0;
 
 }
-int run_lookup(message_t* m){
 
-	// Run read to get MFS_DirEnt_t
-	run_read(m);
-	MFS_DirEnt_t dirEntry = m->c_received_mfs_dirent;
-	m->c_received_inum = dirEntry.inum;
-	m->c_received_rc = 0;
-	
-	return 0;
-}
 
 int run_stat(message_t* m){
 
@@ -81,6 +74,8 @@ int run_stat(message_t* m){
 }
 
 int run_write(message_t* m){
+	//ADD CHECK FOR REGULAR FILE TYPE. FOUND IN THE Structs
+	
 	return -1;
 }
 
@@ -103,16 +98,20 @@ int run_read(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
-	// // INODE TABLE
-	// // Gets inode table's location
-	// lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
-	// read(fd, bufBlock, BLOCKSIZE);
+	// INODE TABLE
+	// Gets inode table's location
+	lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
 
-	// // Read inode table block
-	// inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
+	// Read inode table block
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
 	
-	// // Read inode table and obtain inode
-	// inode_t inode = inodeBlockPtr->inodes[inum];
+	// Read inode table and obtain inode
+	inode_t inode = inodeBlockPtr->inodes[inum];
+
+	int fileOrDirSize = inode.size;
+	if(offset > fileOrDirSize)
+		return -1;
 
 	// DATA BITMAP
 	// Check whether the data region exists a data allocation for inode
@@ -126,29 +125,68 @@ int run_read(message_t* m){
 		return -1;
 
 	// DATA REGION
+	int blockOffset = offset / BLOCKSIZE;
+	int offsetWithinABlock = offset - (blockOffset * BLOCKSIZE);
+
+	int blockNumber = inode.direct[blockOffset];
+	lseek(fd, (blockNumber* BLOCKSIZE)+ offsetWithinABlock, SEEK_SET);
+
 	m->c_received_buffer_size = nbytes; // Defines nbytes to decode in client
-	lseek(fd, offset, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE); // Takes BLOCKSIZE of data, but actually only needs nbytes.
+	read(fd, bufBlock, BLOCKSIZE);
 	strcpy(m->c_received_buffer, bufBlock);
+	
 
-	dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
+	
 
-	for(int i = 0; i< DIRECT_PTRS; i++){
-		dir_ent_t dirEntry = dirEntryBlock->entries[i];
-		if(dirEntry.inum == inum){
-			m->c_received_mfs_dirent.inum = dirEntry.inum;
-			strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
+	// lseek(fd, offset, SEEK_SET);
+	// read(fd, bufBlock, BLOCKSIZE); // Takes BLOCKSIZE of data, but actually only needs nbytes.
+	// strcpy(m->c_received_buffer, bufBlock);
 
-			m->c_received_rc = 0;
-		}
+	// dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
 
-	}
+	// for(int i = 0; i< DIRECT_PTRS; i++){
+	// 	dir_ent_t dirEntry = dirEntryBlock->entries[i];
+	// 	if(dirEntry.inum == inum){
+	// 		m->c_received_mfs_dirent.inum = dirEntry.inum;
+	// 		strcpy(m->c_received_mfs_dirent.name, dirEntry.name);
+
+	// 		m->c_received_rc = 0;
+	// 	}
+
+	// }
 
 	
 	return 0;
 }
 
+int run_lookup(message_t* m){
+
+	// Run read to get MFS_DirEnt_t
+	int rcRead = run_read(m);
+	assert(rcRead >= 0);
+	MFS_DirEnt_t dirEntry = m->c_received_mfs_dirent;
+	m->c_received_inum = dirEntry.inum;
+	m->c_received_rc = 0;
+	
+	return 0;
+}
+
 int run_cret(message_t* m){
+	// IF NAME ALREADY EXISTS (LOOKUP) RETURN SUCCESS (0)
+
+	int pinum = m->c_sent_inum;
+	int ftype = m->c_sent_ftype;
+	char name[28];
+	strcpy(name, m->c_sent_name);
+
+	printf("%d, %d, %s\n", pinum, ftype, name);
+
+	// INODE BITMAP
+	// Gets inode bitmap's location
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
 	return -1;
 }
 
@@ -160,9 +198,11 @@ int run_unlink(message_t* m){
 int run_shutdown(message_t* m){
 	fsync(fd);
 	close(fd);
-	m->c_received_rc = 0;
+	// m->c_received_rc = 0;
+	//isShutdown = true;
+	UDP_Close(PORTNUM);
 	exit(0);
-	return -0;;
+	return 0;
 }
 
 
@@ -222,18 +262,18 @@ int readImage(){
 
 	// SUPERBLOCKPTR = (super_t *) image;
 
-	// For testing purposes: Delete once we are confident disk is allocated properly/////////////////////////////////////
-	printf("-------Describes IMG + super block-----------\n");
-	//printf("IMAGE: \n");
-	//printf(" IMG size created and mapped to mmap: %d\n", image_size);
+	// // For testing purposes: Delete once we are confident disk is allocated properly/////////////////////////////////////
+	// printf("-------Describes IMG + super block-----------\n");
+	// //printf("IMAGE: \n");
+	// //printf(" IMG size created and mapped to mmap: %d\n", image_size);
 
-	printf("SUPERBLOCK\n");
-	printf(" inode bitmap address %d [len %d]\n", SUPERBLOCKPTR->inode_bitmap_addr, SUPERBLOCKPTR->inode_bitmap_len);
-    printf(" data bitmap address %d [len %d]\n", SUPERBLOCKPTR->data_bitmap_addr, SUPERBLOCKPTR->data_bitmap_len);
-	printf(" inode region address %d [len %d]\n", SUPERBLOCKPTR->inode_region_addr, SUPERBLOCKPTR->inode_region_len);
-	printf(" data region address %d [len %d]\n", SUPERBLOCKPTR->data_region_addr, SUPERBLOCKPTR->data_region_len);
-	printf(" num inodes: %d ;num data: [len %d]\n", SUPERBLOCKPTR->num_inodes, SUPERBLOCKPTR->num_data);
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// printf("SUPERBLOCK\n");
+	// printf(" inode bitmap address %d [len %d]\n", SUPERBLOCKPTR->inode_bitmap_addr, SUPERBLOCKPTR->inode_bitmap_len);
+    // printf(" data bitmap address %d [len %d]\n", SUPERBLOCKPTR->data_bitmap_addr, SUPERBLOCKPTR->data_bitmap_len);
+	// printf(" inode region address %d [len %d]\n", SUPERBLOCKPTR->inode_region_addr, SUPERBLOCKPTR->inode_region_len);
+	// printf(" data region address %d [len %d]\n", SUPERBLOCKPTR->data_region_addr, SUPERBLOCKPTR->data_region_len);
+	// printf(" num inodes: %d ;num data: [len %d]\n", SUPERBLOCKPTR->num_inodes, SUPERBLOCKPTR->num_data);
+	// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 	return 0;
@@ -256,7 +296,7 @@ int main(int argc, char *argv[]) {
 
     sd = UDP_Open(PORTNUM); // Opens server socket with port 10000
     assert(sd > -1);
-    while (1) {
+    while (!isShutdown) {
 	struct sockaddr_in addr;
 
 	// Create a message_t struct to store data received from client

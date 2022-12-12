@@ -2,7 +2,13 @@
 #include "mfs.h"
 #include "udp.h"
 #include "message.h"
-
+#include <sys/time.h>
+#include <sys/select.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct sockaddr_in addrSnd, addrRcv; // Create client socket for sending, and receiving
 int sd, rc;
@@ -122,10 +128,13 @@ int MFS_Write(int inum, char *buffer, int offset, int nbytes) {
     if(buffer == NULL)
         return -1;
     
-    if(offset < -1)
+    if(offset < 0)
         return -1;
 
-    if(nbytes < -1)
+    if(nbytes > 4096)
+        return -1;
+    
+    if(nbytes < 0)
         return -1;
 
     message_t msg;
@@ -171,7 +180,10 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
     if(offset < -1)
         return -1;
     
-    if(nbytes < -1)
+    if(nbytes > 4096)
+        return -1;
+    
+    if (nbytes < 0)
         return -1;
 
     message_t msg;
@@ -211,11 +223,17 @@ int MFS_Creat(int pinum, int type, char *name) {
     if(pinum < 0)
         return -1;
 
-    if(type < 0)
+    //TYPE IS EITHER 0(DIRECTORY) or 1(REGULAR FILE)
+    if ((type != 0) || (type != 1)) {
         return -1;
+    }
 
     if(name == NULL)
         return -1;
+
+    if(strlen(name) > 27) {
+        return -1;
+    }
 
     message_t msg;
     msg.c_sent_inum = pinum;
@@ -248,13 +266,12 @@ about why this might be).
 Information format:
 */
 int MFS_Unlink(int pinum, char *name) {
-    // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
     if(pinum < 0)
         return -1;
-    
-    if(name == NULL)
-        return -1;
 
+    // NAME BEING NULL ISN'T BAD???
+    if (name == NULL)
+        return -1;
     message_t msg;
     msg.c_sent_inum = pinum;
     strcpy(msg.c_sent_name, name);
@@ -283,24 +300,35 @@ will mostly be used for testing purposes.
 Information format:
 */
 int MFS_Shutdown() {
-    printf("MFS Shutdown\n");
-
+    //printf("MFS Shutdown\n");
+    // struct timeval tv;
+    // tv.tv_sec = 10;
     message_t msg;
     msg.c_sent_mtype = MFS_SHUTDOWN;
-    // Write a request to server to retrieve data
+    // Write a request to server to retrieve data 
+    // fd_set set;
+    // FD_ZERO(&set);
+    // FD_SET(rc, &set);
+
+    // rc = select(rc, &set, NULL, NULL, &tv);
+    //assert(rc == 0);
+
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
     if(rc < 0){
         printf("client:: MFS_Stat WRITE failed; libmfs.c\n");
         return -1;
     }
 
-    // Reads data sent back from server in message_t and returns a return code to check if server 
-    // processsing was successful
-    rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
-    if(rc < 0){
-        printf("client:: MFS_Stat READ failed; libmfs.c\n");
-        return -1;
-    }
+    // // Reads data sent back from server in message_t and returns a return code to check if server 
+    // // processsing was successful
+    // rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
+    // if(rc < 0){
+    //     printf("client:: MFS_Stat READ failed; libmfs.c\n");
+    //     return -1;
+    // }
     
-    return msg.c_received_rc;
+   
+    // exit(0);
+    // UDP_Close(20000);
+    return 0;
 }

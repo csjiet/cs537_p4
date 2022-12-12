@@ -15,7 +15,7 @@ typedef struct {
     // Fields to be updated BEFORE sending to the SERVER
     int c_sent_mtype; // ALWAYS ASSIGNED BY CLIENT
     int c_sent_inum;
-    char c_sent_name[100]; 
+    char c_sent_name[28]; 
     char c_sent_buffer[4096];
     int c_sent_offset;
     int c_sent_nbytes;
