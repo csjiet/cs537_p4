@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <math.h>
 #include <inttypes.h>
+#include <signal.h>
 #include "ufs.h"
 #include "udp.h"
 #include "message.h"
@@ -152,7 +153,11 @@ int run_unlink(message_t* m){
 }
 
 int run_shutdown(message_t* m){
-	return -1;
+	fsync(fd);
+	close(fd);
+	m->c_received_rc = 0;
+	exit(0);
+	return -0;;
 }
 
 
