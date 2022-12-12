@@ -59,6 +59,12 @@ typedef struct {
 } bitmap_t;
 
 
+// Dec 12 - notes for me 5.12pm
+Once we found inode_t, check if its a file or directory
+If its a file - just traverse throught he direct pointer, and get the data literally according to offset and nbytes
+If it is a directory - just traverse through the direct pointer, and get the directory block, cast it to directory entry block,
+and access it accordingly.
+
 
 lseek
 char buf[SIZE]
