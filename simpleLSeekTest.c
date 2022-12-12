@@ -60,7 +60,14 @@ int main(){
 }
 
 
+// int *a = malloc()
+// *(a+2)
 
+// (4 bytes) * 2 = 8 bytes
+
+
+// char* a = malloc()
+// *(a + 2) 
 
 // Testing on structs
 

@@ -120,9 +120,9 @@ int run_read(message_t* m){
 		return -1;
 
 	// DATA REGION
-	m->c_received_buffer_size = nbytes;
+	m->c_received_buffer_size = nbytes; // Defines nbytes to decode in client
 	lseek(fd, offset, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
+	read(fd, bufBlock, BLOCKSIZE); // Takes BLOCKSIZE of data, but actually only needs nbytes.
 	strcpy(m->c_received_buffer, bufBlock);
 
 	dir_block_t* dirEntryBlock = (dir_block_t*) bufBlock;
