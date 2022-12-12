@@ -154,8 +154,10 @@ int run_unlink(message_t* m){
 
 int run_shutdown(message_t* m){
 	fsync(fd);
+	close(fd);
+	m->c_received_rc = 0;
 	exit(0);
-	return -1;
+	return -0;;
 }
 
 

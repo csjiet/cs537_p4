@@ -8,6 +8,15 @@ build project using make
 **********************************************************************
 Trying to build project using make
 make
+gcc -Wall -Werror  -c client.c
+gcc client.o -o client udp.c
+gcc -Wall -Werror  -c server.c
+gcc server.o -o server udp.c
+gcc -Wall -Werror  -c server-fs.c
+gcc server-fs.o -o server-fs udp.c
+gcc -fPIC -g -c -Wall libmfs.c
+gcc -Wall -Werror  -fpic -c udp.c
+gcc -shared -Wl,-soname,libmfs.so -o libmfs.so libmfs.o udp.o -lc	
 gcc -o mkfs mkfs.c -Wall
 ./mkfs -f real_disk_image.img -d 1000 -i 100
 total blocks        1007
@@ -18,16 +27,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffea6569000)
-	libmfs.so => ./libmfs.so (0x00007f290e4e1000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f290e29c000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f290e4ed000)
+	linux-vdso.so.1 (0x00007ffc6a1ba000)
+	libmfs.so => not found
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f51aeccc000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f51aef18000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffc4d7ea000)
-	libmfs.so => ./libmfs.so (0x00007f55c501e000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f55c4dd9000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f55c502a000)
+	linux-vdso.so.1 (0x00007ffed0528000)
+	libmfs.so => not found
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f0fe4e5b000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f0fe50a7000)
 
 
 test build PASSED
@@ -41,8 +50,8 @@ Test shutdown
 init server and client then call shutdown
 
 **********************************************************************
-Starting server on port 6926
-/tmp/tmpoyhDvs/p/server 6926 ./test.img
+Starting server on port 9866
+/tmp/tmpL2U7jB/p/server 9866 ./test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -66,8 +75,8 @@ creat a file and check with lookup
 **********************************************************************
 MFS Shutdown
 client:: MFS_Stat READ failed; libmfs.c
-Starting server on port 5832
-/tmp/tmpoyhDvs/p/server 5832 ./test.img
+Starting server on port 9975
+/tmp/tmpL2U7jB/p/server 9975 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -83,8 +92,8 @@ Test write
 write then read one block
 
 **********************************************************************
-Starting server on port 9947
-/tmp/tmpoyhDvs/p/server 9947 ./test.img
+Starting server on port 9076
+/tmp/tmpL2U7jB/p/server 9076 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -100,8 +109,8 @@ Test stat
 stat a regular file
 
 **********************************************************************
-Starting server on port 5177
-/tmp/tmpoyhDvs/p/server 5177 ./test.img
+Starting server on port 5245
+/tmp/tmpL2U7jB/p/server 5245 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -117,8 +126,8 @@ Test overwrite
 overwrite a block
 
 **********************************************************************
-Starting server on port 8736
-/tmp/tmpoyhDvs/p/server 8736 ./test.img
+Starting server on port 9779
+/tmp/tmpL2U7jB/p/server 9779 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -134,8 +143,8 @@ Test maxfile
 write largest possible file
 
 **********************************************************************
-Starting server on port 6404
-/tmp/tmpoyhDvs/p/server 6404 ./test.img
+Starting server on port 9457
+/tmp/tmpL2U7jB/p/server 9457 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -151,8 +160,8 @@ Test maxfile2
 write more blocks than possible
 
 **********************************************************************
-Starting server on port 7411
-/tmp/tmpoyhDvs/p/server 7411 ./test.img
+Starting server on port 7136
+/tmp/tmpL2U7jB/p/server 7136 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -168,8 +177,8 @@ Test sparse
 write first and last block
 
 **********************************************************************
-Starting server on port 7041
-/tmp/tmpoyhDvs/p/server 7041 ./test.img
+Starting server on port 9354
+/tmp/tmpL2U7jB/p/server 9354 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -185,8 +194,8 @@ Test stat2
 stat a sparse file
 
 **********************************************************************
-Starting server on port 6187
-/tmp/tmpoyhDvs/p/server 6187 ./test.img
+Starting server on port 5778
+/tmp/tmpL2U7jB/p/server 5778 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -202,8 +211,8 @@ Test dir1
 check root for dot entries
 
 **********************************************************************
-Starting server on port 6012
-/tmp/tmpoyhDvs/p/server 6012 ./test.img
+Starting server on port 7888
+/tmp/tmpL2U7jB/p/server 7888 ./test.img
 Failure: '.' in root should point to root inode
 
 
@@ -219,8 +228,8 @@ Test dir2
 create a new directory and check it
 
 **********************************************************************
-Starting server on port 9132
-/tmp/tmpoyhDvs/p/server 9132 ./test.img
+Starting server on port 8186
+/tmp/tmpL2U7jB/p/server 8186 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -236,8 +245,8 @@ Test baddir
 try to create a file with a file parent inode
 
 **********************************************************************
-Starting server on port 6072
-/tmp/tmpoyhDvs/p/server 6072 ./test.img
+Starting server on port 7436
+/tmp/tmpL2U7jB/p/server 7436 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -253,8 +262,8 @@ Test baddir2
 try to lookup a file with a file parent inode
 
 **********************************************************************
-Starting server on port 7371
-/tmp/tmpoyhDvs/p/server 7371 ./test.img
+Starting server on port 9271
+/tmp/tmpL2U7jB/p/server 9271 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -270,8 +279,8 @@ Test unlink
 unlink a file
 
 **********************************************************************
-Starting server on port 7607
-/tmp/tmpoyhDvs/p/server 7607 ./test.img
+Starting server on port 5038
+/tmp/tmpL2U7jB/p/server 5038 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -287,8 +296,8 @@ Test unlink2
 unlink a directory
 
 **********************************************************************
-Starting server on port 8509
-/tmp/tmpoyhDvs/p/server 8509 ./test.img
+Starting server on port 5198
+/tmp/tmpL2U7jB/p/server 5198 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='test'
 
 
@@ -304,8 +313,8 @@ Test empty
 unlink a non-empty directory
 
 **********************************************************************
-Starting server on port 9417
-/tmp/tmpoyhDvs/p/server 9417 ./test.img
+Starting server on port 5559
+/tmp/tmpL2U7jB/p/server 5559 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -321,8 +330,8 @@ Test name
 name too long
 
 **********************************************************************
-Starting server on port 9177
-/tmp/tmpoyhDvs/p/server 9177 ./test.img
+Starting server on port 8539
+/tmp/tmpL2U7jB/p/server 8539 ./test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -346,8 +355,8 @@ restart server after creating a file
 **********************************************************************
 MFS Shutdown
 client:: MFS_Stat READ failed; libmfs.c
-Starting server on port 5159
-/tmp/tmpoyhDvs/p/server 5159 ./test.img
+Starting server on port 8294
+/tmp/tmpL2U7jB/p/server 8294 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -378,8 +387,8 @@ Test bigdir
 create a directory with max number of files
 
 **********************************************************************
-Starting server on port 8956
-/tmp/tmpoyhDvs/p/server 8956 ./test.img
+Starting server on port 6135
+/tmp/tmpL2U7jB/p/server 6135 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -395,8 +404,8 @@ Test bigdir2
 create a directory with more files than possible
 
 **********************************************************************
-Starting server on port 9804
-/tmp/tmpoyhDvs/p/server 9804 ./test.img
+Starting server on port 7136
+/tmp/tmpL2U7jB/p/server 7136 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -412,8 +421,8 @@ Test deep
 create many deeply nested directories
 
 **********************************************************************
-Starting server on port 8740
-/tmp/tmpoyhDvs/p/server 8740 ./test.img
+Starting server on port 6208
+/tmp/tmpL2U7jB/p/server 6208 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -429,8 +438,8 @@ Test complex
 a long sequence of creats and writes followed by a check
 
 **********************************************************************
-Starting server on port 5712
-/tmp/tmpoyhDvs/p/server 5712 ./test.img
+Starting server on port 7830
+/tmp/tmpL2U7jB/p/server 7830 ./test.img
 Filesyste to be written:
 
 
@@ -486,8 +495,8 @@ Test complex2
 a long sequence of creats and writes followed by a check
 
 **********************************************************************
-Starting server on port 7919
-/tmp/tmpoyhDvs/p/server 7919 ./test.img
+Starting server on port 6167
+/tmp/tmpL2U7jB/p/server 6167 ./test.img
 Filesyste to be written:
 
 
@@ -627,8 +636,8 @@ Test persist2
 restart server after creating many dirs and files
 
 **********************************************************************
-Starting server on port 8749
-/tmp/tmpoyhDvs/p/server 8749 ./test.img
+Starting server on port 6887
+/tmp/tmpL2U7jB/p/server 6887 ./test.img
 Filesyste to be written:
 
 
@@ -768,8 +777,8 @@ Test free
 check that inodes and direcrtory entries are freed
 
 **********************************************************************
-Starting server on port 7729
-/tmp/tmpoyhDvs/p/server 7729 ./test.img
+Starting server on port 6437
+/tmp/tmpL2U7jB/p/server 6437 ./test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='0'
 
 
