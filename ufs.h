@@ -19,6 +19,18 @@ typedef struct {
     int  inum;      // inode number of entry (-1 means entry not used)
 } dir_ent_t;
 
+// typedef struct {
+// 	inode_t inodes[UFS_BLOCK_SIZE / sizeof(inode_t)];
+// } inode_block_t;
+
+// typedef struct {
+// 	dir_ent_t entries[128];
+// } dir_block_t;
+
+// typedef struct {
+// 	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
+// } bitmap_t;
+
 // presumed: block 0 is the super block
 typedef struct __super {
     int inode_bitmap_addr; // block address (in blocks)

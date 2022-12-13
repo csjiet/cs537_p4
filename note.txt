@@ -4,6 +4,13 @@ The only files to implement:
 
 Running & Testing
 
+Running Tests:
+make clean
+make (make sure libmfs.so is filled (export LD_LIBRARY_PATH=.))
+sh /home/cs537-1/tests/p4/p4-test/runtests.sh
+To run all tests add -c at the end of the command
+
+---------------------------------------------------------------------------------------
 Server startup:
 #1. Create a file system image: 
 
@@ -31,7 +38,7 @@ Client startup:
     Description:
         Runs the client that communicates with the server.
 
-
+---------------------------------------------------------------------------------------
 Structs:
 
 typedef struct {
@@ -58,7 +65,7 @@ typedef struct {
 	unsigned int bits[UFS_BLOCK_SIZE / sizeof(unsigned int)];
 } bitmap_t;
 
-
+---------------------------------------------------------------------------------------
 // Dec 12 - notes for me 5.12pm
 Once we found inode_t, check if its a file or directory
 If its a file - just traverse throught he direct pointer, and get the data literally according to offset and nbytes
