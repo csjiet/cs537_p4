@@ -59,13 +59,28 @@ void set_bit(unsigned int *bitmap, int position) {
 
 
 int run_stat(message_t* m){
-
 	//MFS_Stat_t stat;
-
 	// Search for the file/ directory of the inode number
+	int inum = m->c_sent_inum;
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	unsigned int bitVal = get_bit((unsigned int*) bufBlock, inum);
+	if(bitVal == 0)
+		return -1;
 
+	// Get Inode address in table
+	lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	
+	// if(inode.type == 0) {
+	// 	m->c_received_mfs_stat.type = 0;
+	// } else {
+	// 	m->c_received_mfs_stat.type = 1;
+	// }
+	//m->c_received_mfs_stat.size = Inodesize;
 
-	return -1;
+	return 0;
 }
 
 int run_write(message_t* m){

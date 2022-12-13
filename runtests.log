@@ -18,16 +18,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffde67e8000)
-	libmfs.so => ./libmfs.so (0x00007fc8d1b87000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fc8d1942000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007fc8d1b93000)
+	linux-vdso.so.1 (0x00007fff1136a000)
+	libmfs.so => ./libmfs.so (0x00007f98675a4000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f986735f000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f98675b0000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffc0afb3000)
-	libmfs.so => ./libmfs.so (0x00007ffb6f118000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ffb6eed3000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007ffb6f124000)
+	linux-vdso.so.1 (0x00007ffe9b5f8000)
+	libmfs.so => ./libmfs.so (0x00007f726fe35000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f726fbf0000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f726fe41000)
 
 
 test build PASSED
@@ -47,8 +47,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6219
-/tmp/tmpHEbMBg/p/server 6219 ./test.img
+Starting server on port 8748
+/tmp/tmpAPWNl9/p/server 8748 ./test.img
 
 
 test shutdown PASSED
@@ -68,8 +68,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5088
-/tmp/tmpHEbMBg/p/server 5088 ./test.img
+Starting server on port 8029
+/tmp/tmpAPWNl9/p/server 8029 ./test.img
 0
 0
 0, 1, test
@@ -93,8 +93,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5489
-/tmp/tmpHEbMBg/p/server 5489 ./test.img
+Starting server on port 8419
+/tmp/tmpAPWNl9/p/server 8419 ./test.img
 ('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00END BLOCK 1')
 ('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
 Failure: Corrupt data returned by read
@@ -118,8 +118,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5303
-/tmp/tmpHEbMBg/p/server 5303 ./test.img
+Starting server on port 5204
+/tmp/tmpAPWNl9/p/server 5204 ./test.img
 Failure: Stat gave wrong type
 
 
@@ -141,8 +141,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5026
-/tmp/tmpHEbMBg/p/server 5026 ./test.img
+Starting server on port 8383
+/tmp/tmpAPWNl9/p/server 8383 ./test.img
 Failure: Corrupt data returned by read
 
 
@@ -164,8 +164,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9076
-/tmp/tmpHEbMBg/p/server 9076 ./test.img
+Starting server on port 7423
+/tmp/tmpAPWNl9/p/server 7423 ./test.img
 Failure: Corrupt data returned by read
 
 
@@ -187,8 +187,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8218
-/tmp/tmpHEbMBg/p/server 8218 ./test.img
+Starting server on port 9093
+/tmp/tmpAPWNl9/p/server 9093 ./test.img
 Failure: MFS_Write should fail on inalid block number
 
 
@@ -210,8 +210,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9887
-/tmp/tmpHEbMBg/p/server 9887 ./test.img
+Starting server on port 9098
+/tmp/tmpAPWNl9/p/server 9098 ./test.img
 Failure: Corrupt data returned by read
 
 
@@ -233,8 +233,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7242
-/tmp/tmpHEbMBg/p/server 7242 ./test.img
+Starting server on port 9175
+/tmp/tmpAPWNl9/p/server 9175 ./test.img
 Failure: Stat gave wrong type
 
 
@@ -256,8 +256,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7252
-/tmp/tmpHEbMBg/p/server 7252 ./test.img
+Starting server on port 9000
+/tmp/tmpAPWNl9/p/server 9000 ./test.img
 0
 0
 
@@ -279,8 +279,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9293
-/tmp/tmpHEbMBg/p/server 9293 ./test.img
+Starting server on port 7706
+/tmp/tmpAPWNl9/p/server 7706 ./test.img
 0
 0
 0, 0, testdir
@@ -306,8 +306,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7440
-/tmp/tmpHEbMBg/p/server 7440 ./test.img
+Starting server on port 9831
+/tmp/tmpAPWNl9/p/server 9831 ./test.img
 Failure: MFS_Creat should fail if pinum is not a directory
 
 
@@ -329,8 +329,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5733
-/tmp/tmpHEbMBg/p/server 5733 ./test.img
+Starting server on port 9700
+/tmp/tmpAPWNl9/p/server 9700 ./test.img
 Failure: MFS_Lookup should fail if pinum is not a directory
 
 
@@ -352,8 +352,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6772
-/tmp/tmpHEbMBg/p/server 6772 ./test.img
+Starting server on port 9875
+/tmp/tmpAPWNl9/p/server 9875 ./test.img
 Failure: MFS_Lookup should fail on an unlinked file
 
 
@@ -375,8 +375,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5791
-/tmp/tmpHEbMBg/p/server 5791 ./test.img
+Starting server on port 6362
+/tmp/tmpAPWNl9/p/server 6362 ./test.img
 Failure: MFS_Lookup should fail on an unlinked file
 
 
@@ -398,8 +398,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7772
-/tmp/tmpHEbMBg/p/server 7772 ./test.img
+Starting server on port 9723
+/tmp/tmpAPWNl9/p/server 9723 ./test.img
 Failure: MFS_Unlink should fail on non-empty dir
 
 
@@ -421,8 +421,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5495
-/tmp/tmpHEbMBg/p/server 5495 ./test.img
+Starting server on port 6355
+/tmp/tmpAPWNl9/p/server 6355 ./test.img
 
 
 test name PASSED
@@ -442,8 +442,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8809
-/tmp/tmpHEbMBg/p/server 8809 test.img
+Starting server on port 8406
+/tmp/tmpAPWNl9/p/server 8406 test.img
 Failure: Corrupt data returned by read
 
 
@@ -467,8 +467,6 @@ rm ./libmfs.so
 rm ./mkfs
 rm -f client server server-fs client.o server.o server-fs.o
 killall server	
-server(85028): Operation not permitted
-server(264821): Operation not permitted
 server: no process found
 make: *** [Makefile:40: clean] Error 1
 Trying to build project using make
@@ -492,24 +490,24 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffed8f8e000)
-	libmfs.so => ./libmfs.so (0x00007f1730e2e000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f1730be9000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f1730e3a000)
+	linux-vdso.so.1 (0x00007ffd59ea9000)
+	libmfs.so => ./libmfs.so (0x00007fded889a000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fded8655000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fded88a6000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffc21dab000)
-	libmfs.so => ./libmfs.so (0x00007f93fcfc7000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f93fcd82000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f93fcfd3000)
+	linux-vdso.so.1 (0x00007ffd0b377000)
+	libmfs.so => ./libmfs.so (0x00007fd430688000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd430443000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fd430694000)
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9492
-/tmp/tmpHEbMBg/p/server 9492 ./test.img
+Starting server on port 9469
+/tmp/tmpAPWNl9/p/server 9469 ./test.img
 tester: packet dropped
 client:: MFS_Stat READ failed; libmfs.c
 Trying to clean project using make clean
@@ -520,8 +518,6 @@ rm ./libmfs.so
 rm ./mkfs
 rm -f client server server-fs client.o server.o server-fs.o
 killall server	
-server(85028): Operation not permitted
-server(264821): Operation not permitted
 server: no process found
 make: *** [Makefile:40: clean] Error 1
 Trying to build project using make
@@ -545,16 +541,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffc9d518000)
-	libmfs.so => ./libmfs.so (0x00007ff64de7d000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ff64dc38000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007ff64de89000)
+	linux-vdso.so.1 (0x00007ffeeafd8000)
+	libmfs.so => ./libmfs.so (0x00007fd098699000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd098454000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fd0986a5000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffccef21000)
-	libmfs.so => ./libmfs.so (0x00007f8dcb969000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8dcb724000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f8dcb975000)
+	linux-vdso.so.1 (0x00007ffea3142000)
+	libmfs.so => ./libmfs.so (0x00007f48d2087000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f48d1e42000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f48d2093000)
 
 
 test drop FAILED
@@ -575,8 +571,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8398
-/tmp/tmpHEbMBg/p/server 8398 ./test.img
+Starting server on port 5304
+/tmp/tmpAPWNl9/p/server 5304 ./test.img
 0
 0
 0, 0, testdir
@@ -15952,8 +15948,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6385
-/tmp/tmpHEbMBg/p/server 6385 ./test.img
+Starting server on port 6400
+/tmp/tmpAPWNl9/p/server 6400 ./test.img
 0
 0
 0, 0, testdir
@@ -26847,8 +26843,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6148
-/tmp/tmpHEbMBg/p/server 6148 ./test.img
+Starting server on port 9217
+/tmp/tmpAPWNl9/p/server 9217 ./test.img
 0
 0
 0, 0, testdir
@@ -27873,8 +27869,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9537
-/tmp/tmpHEbMBg/p/server 9537 ./test.img
+Starting server on port 8264
+/tmp/tmpAPWNl9/p/server 8264 ./test.img
 Filesyste to be written:
 
 
@@ -27936,8 +27932,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7573
-/tmp/tmpHEbMBg/p/server 7573 ./test.img
+Starting server on port 7749
+/tmp/tmpAPWNl9/p/server 7749 ./test.img
 Filesyste to be written:
 
 
@@ -28083,8 +28079,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7390
-/tmp/tmpHEbMBg/p/server 7390 test.img
+Starting server on port 6329
+/tmp/tmpAPWNl9/p/server 6329 test.img
 Filesyste to be written:
 
 
@@ -28230,8 +28226,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6989
-/tmp/tmpHEbMBg/p/server 6989 ./test.img
+Starting server on port 7235
+/tmp/tmpAPWNl9/p/server 7235 ./test.img
 0
 0
 0, 1, 0
