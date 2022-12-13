@@ -265,8 +265,6 @@ If name already exists, return success.
 Information format:
 */
 int run_cret(message_t* m){
-
-	
 	
 	int pinum = m->c_sent_inum;
 	int type = m->c_sent_ftype;
@@ -297,8 +295,9 @@ int run_cret(message_t* m){
 
 	// INODE TABLE
 	int blockNumberInInodeTable = (pinum * sizeof(inode_t))/ BLOCKSIZE;
+	int offsetWithinABlock = (pinum * sizeof(inode_t)) % BLOCKSIZE;
 	char bufBlock2[BLOCKSIZE];
-	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberInInodeTable) * BLOCKSIZE, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberInInodeTable) * BLOCKSIZE + offsetWithinABlock, SEEK_SET);
 	read(fd, bufBlock2, BLOCKSIZE);
 
 	//printf("%d\n", blockNumberInInodeTable);
