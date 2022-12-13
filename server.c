@@ -75,14 +75,25 @@ int run_stat(message_t* m){
 		return -1;
 
 	// INODE TABLE
+	int blockNumberOffsetInInodeTable = (inum * sizeof(inode_t))/ BLOCKSIZE;
 	char bufBlock1[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock1, BLOCKSIZE);
+
 	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
-	inode_t inode = inodeBlockPtr->inodes[inum];
+
+	int remainingInodeOffset = inum - (blockNumberOffsetInInodeTable * 128);// ethan: CHANGE TO MODULUS
+
+	inode_t inode = inodeBlockPtr->inodes[remainingInodeOffset];
+
+
 
 	m->c_received_mfs_stat.size = inode.size;
 	m->c_received_mfs_stat.type = inode.type;
+	if (m->c_received_mfs_stat.type != 0) {
+		if (m->c_received_mfs_stat.type != 1)
+			return -1;
+	}
 
 	return 0;
 }
@@ -95,8 +106,35 @@ Information format:
 */
 int run_write(message_t* m){
 	//ADD CHECK FOR REGULAR FILE TYPE. FOUND IN THE Structs
+	int inum = m->c_sent_inum;
+	int offset = m->c_sent_offset;
+	int nbytes = m->c_sent_nbytes;
+	// char* buffer = strdup(m->c_sent_buffer);
+	// printf("%s\n", &buffer);
+	if (inum < 0) 
+		return -1;
+	if (offset < 0)
+		return -1;
+	if (nbytes > 4096)
+		return -1;
+
+	// INODE BITMAP
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	unsigned int bitVal = get_bit((unsigned int*) bufBlock, inum);
+	if(bitVal == 0)
+		return -1;
+
+	// INODE TABLE
+	// char bufBlock1[BLOCKSIZE];
+	// lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	// read(fd, bufBlock1, BLOCKSIZE);
+	// inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
+	// inode_t inode = inodeBlockPtr->inodes[inum];
 	
-	return -1;
+	
+	return 0;
 }
 
 int offsetToFile(inode_t inode, int offset, int nbytes, message_t* m){
@@ -110,13 +148,16 @@ int offsetToFile(inode_t inode, int offset, int nbytes, message_t* m){
 	char bufBlock[BLOCKSIZE];
 	read(fd, bufBlock, BLOCKSIZE);
 
+	// ETHAN: HANDLE THE CASE WHERE YOUR OFFSET IS CROSSING A BLOCK INTO ANOTHER BLOCK.
+	// THEN YOUR BUFFER WHICH IS 4KB, STILL NEEDS TO SAVE PARTIAL DATA FROM 1 BLOCK, AND ANOTHER PARTIAL FROM ANOTHER BLOCK
+
 	m->c_received_buffer_size = nbytes;
 	strcpy(m->c_received_buffer, bufBlock);
 
 	// Not sure if this is correct
-	MFS_DirEnt_t* dirEntryPtr = (MFS_DirEnt_t*) bufBlock;
-	m->c_received_mfs_dirent.inum = dirEntryPtr->inum;
-	strcpy(m->c_received_mfs_dirent.name, dirEntryPtr->name);
+	// MFS_DirEnt_t* dirEntryPtr = (MFS_DirEnt_t*) bufBlock;
+	// m->c_received_mfs_dirent.inum = dirEntryPtr->inum;
+	// strcpy(m->c_received_mfs_dirent.name, dirEntryPtr->name);
 	
 	return 0;
 }
@@ -132,13 +173,16 @@ int offsetToDirectory(inode_t inode, int offset, int nbytes, message_t* m){
 	char bufBlock[BLOCKSIZE];
 	read(fd, bufBlock, BLOCKSIZE);
 
+	// ETHAN: HANDLE THE CASE WHERE YOUR OFFSET IS CROSSING A BLOCK INTO ANOTHER BLOCK.
+	// THEN YOUR BUFFER WHICH IS 4KB, STILL NEEDS TO SAVE PARTIAL DATA FROM 1 BLOCK, AND ANOTHER PARTIAL FROM ANOTHER BLOCK
+
 	m->c_received_buffer_size = nbytes;
 	strcpy(m->c_received_buffer, bufBlock);
 
 	// Not sure if this is correct
-	MFS_DirEnt_t* dirEntryPtr = (MFS_DirEnt_t*) bufBlock;
-	m->c_received_mfs_dirent.inum = dirEntryPtr->inum;
-	strcpy(m->c_received_mfs_dirent.name, dirEntryPtr->name);
+	// MFS_DirEnt_t* dirEntryPtr = (MFS_DirEnt_t*) bufBlock;
+	// m->c_received_mfs_dirent.inum = dirEntryPtr->inum;
+	// strcpy(m->c_received_mfs_dirent.name, dirEntryPtr->name);
 
 
 	return 0;
@@ -156,7 +200,7 @@ int run_read(message_t* m){
 	int inum = m->c_sent_inum;
 	int offset = m->c_sent_offset;
 	int nbytes = m->c_sent_nbytes; // size: 1 - 4096
-	printf("%d, %d\n", offset, nbytes);
+	
 	// INODE BITMAP
 	// Gets inode bitmap's location
 	char bufBlock[BLOCKSIZE];
@@ -170,20 +214,21 @@ int run_read(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
+
 	// INODE TABLE
 	// Gets inode table's location
+	int blockNumberOffsetInInodeTable = (inum * sizeof(inode_t))/ BLOCKSIZE;
 	char bufBlock1[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock1, BLOCKSIZE);
 
-	// Read inode table block
-	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock; 
-	
-	// Read inode table and obtain inode
-	inode_t inode = inodeBlockPtr->inodes[inum];
-	//int fileOrDirSize = inode.size;
-	// if(offset > fileOrDirSize)
-	// 	return -1;
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
+
+	int remainingInodeOffset = inum - (blockNumberOffsetInInodeTable * 128); // CHANGE THIS TO MODULUS
+
+	inode_t inode = inodeBlockPtr->inodes[remainingInodeOffset];
+
+
 
 	// DATA BITMAP
 	// Check whether the data region exists a data allocation for inode
@@ -233,16 +278,29 @@ int run_lookup(message_t* m){
 
 	// INODE TABLE
 	// Get Inode address in table
-	char bufBlock1[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock1, BLOCKSIZE);
-	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
-	inode_t inode = inodeBlockPtr->inodes[pinum];
+	int blockNumberOffsetInInodeTable = (pinum * sizeof(inode_t))/ BLOCKSIZE;
+	char bufBlock2[BLOCKSIZE];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock2, BLOCKSIZE);
+
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock2;
+
+	int remainingInodeOffset = pinum - (blockNumberOffsetInInodeTable * 128); //DO MODULUS
+
+	inode_t pinode = inodeBlockPtr->inodes[remainingInodeOffset];
+
 	
-	if(inode.type == MFS_REGULAR_FILE)
+	// DATA BITMAP
+	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	bitVal = get_bit((unsigned int*) bufBlock, pinum);
+	if(bitVal == 0)
 		return -1;
 
-	offsetToDirectory(inode, 0, BLOCKSIZE, m);
+	if(pinode.type != MFS_DIRECTORY)
+		return -1;
+
+	offsetToDirectory(pinode, 0, BLOCKSIZE, m);
 	dir_block_t* directoryBlockPtr = (dir_block_t*) m->c_received_buffer;
 
 	for (int i = 0; i < 128; i++) {
@@ -283,6 +341,29 @@ int run_cret(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
+	// ETHAN: CHECK IF NAME IS TOO LONG, AND OTHER ERROR CONDS
+
+
+
+	// ETHAN: CHECK IF NAME IS ACTUALLY ALREAD IN THE PARENT DIRECTORY
+
+
+	// Checks for free inode number to allocate to the child
+	// Get the free inode to be used later
+	int newlyCreatedInodeNum = 0;
+	for(int i = 0; i< SUPERBLOCKPTR->num_inodes; i++){
+		unsigned int bitVal = get_bit((unsigned int*) bufBlock, i);
+		if(bitVal == 0){
+			newlyCreatedInodeNum = i;
+			bitVal = 1;
+			break;
+		}
+			
+	}
+
+	// ETHAN: CHECKS IF THERE IS ANY UNASSIGNED INODE. IF NON, RETURN HERE.
+
+
 	// DATA BITMAP
 	char bufBlock1[BLOCKSIZE];
 	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
@@ -294,17 +375,59 @@ int run_cret(message_t* m){
 		return -1;
 
 	// INODE TABLE
-	int blockNumberInInodeTable = (pinum * sizeof(inode_t))/ BLOCKSIZE;
-	int offsetWithinABlock = (pinum * sizeof(inode_t)) % BLOCKSIZE;
+	// Find parent inode
+	int blockNumberOffsetInInodeTable = (pinum * sizeof(inode_t))/ BLOCKSIZE;
 	char bufBlock2[BLOCKSIZE];
-	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberInInodeTable) * BLOCKSIZE + offsetWithinABlock, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock2, BLOCKSIZE);
 
-	strcpy(m->c_received_buffer, bufBlock2);
-	m->c_received_buffer_size = BLOCKSIZE;
-	// STOPPED HERE!! DEALING WITH PROBLEM WHERE INODE TABLE MAY BE LARGER THAN 1 BLOCK SIZE. OFFSET MIGHT NOT BE CORRECT
+	inode_block_t* pinodeBlockPtr = (inode_block_t*) bufBlock2;
 
-	
+	int remainingInodeOffset = (pinum * sizeof(inode_t)) % BLOCKSIZE;;
+
+	inode_t pinode = pinodeBlockPtr->inodes[remainingInodeOffset];
+
+
+	// Find newly created inode
+	blockNumberOffsetInInodeTable = (newlyCreatedInodeNum * sizeof(inode_t))/ BLOCKSIZE;
+	char bufBlock3[BLOCKSIZE];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock3, BLOCKSIZE);
+
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock3;
+
+	remainingInodeOffset = (newlyCreatedInodeNum * sizeof(inode_t))% BLOCKSIZE;
+
+	inode_t newInode = inodeBlockPtr->inodes[remainingInodeOffset];
+
+	// ETHAN: IF TYPE IS DIRECTORY, THIS "NEWINODE" SHOULD HAVE DIRECT POINTERS TO ONE DATA BLOCK 4KB, WITH . ..
+
+	// ETHAN: IF TYPE IS FILE, THIS "NEWINODE". DONT ALLOCATE BLOCK, BUT CHECK WHEN YOU ARE WRITING IF THERE IS A BLOCK THAT IS ALLOCATED.!!
+
+	// Propogate the newly created inode with data
+	newInode.type = type;
+	newInode.size = 0;
+	printf("%d\n", newInode.size);
+
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		int blockNumber = pinode.direct[i]; //ETHAN: CHECK IF DIRECT ARRAY IS STORING BLOCK OFFSET OR ADDRESS
+		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
+		read(fd, bufBlock, BLOCKSIZE);
+		dir_block_t* dataRegionBlockPtr = (dir_block_t*) bufBlock;
+		
+		for(int j = 0; j< 128; j++){
+			dir_ent_t dirEntry = dataRegionBlockPtr->entries[j];
+			// If entry is empty, it is safe for allocation
+			if(dirEntry.inum == -1){
+				strcpy(dirEntry.name, name);
+				dirEntry.inum = newlyCreatedInodeNum;
+				// ETHAN: EXIT LOOP
+				
+			}
+		}
+		// ETHAN: EXIT LOOP
+
+	}
 	// Check if it is a directory
 
 	// DATA REGION

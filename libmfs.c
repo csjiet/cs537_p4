@@ -177,7 +177,7 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
     if(buffer == NULL)
         return -1;
 
-    if(offset < -1)
+    if(offset < 0)
         return -1;
     
     if(nbytes > 4096)

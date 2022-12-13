@@ -142,3 +142,83 @@ lseek(fd, n, SEEK_CUR); // it will skip n items (including the last read item ti
 			}
 		}
 	}
+
+
+
+	// INODE TABLE
+	// Find parent inode
+	int blockNumberOffsetInInodeTable = (pinum * sizeof(inode_t))/ BLOCKSIZE;
+	char bufBlock2[BLOCKSIZE];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock2, BLOCKSIZE);
+
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock2;
+
+	int remainingInodeOffset = pinum - (blockNumberOffsetInInodeTable * 128);
+
+	inode_t pinode = inodeBlockPtr->inodes[remainingInodeOffset];
+
+
+	--------------------------------------
+int _Lookup(int pinum, char *name);
+	1) Check the inode bitmap for the pinum passed in
+	2) Check the inode table for the specified inode and retrieve the address
+	3) Check that the inode type is a directory, if not return -1
+	4) Call out to the offsetDirectory function to get access to the directory block ptr.
+	5) Run through each directory block entry and compare the names, if name is found set message inum to the inum of that name
+	6) If no name is found when searching the directory, return -1
+int _Stat(int inum, MFS_Stat_t *m);
+	1) Check the inode bitmap for the specified inode.
+	2) Use that addr to find the inode within the inode table.
+	3) Then use the size and type implications from MFS_STAT_T to set the messages received values correctly.
+	4) Return 0 upon success and -1 on failure.
+
+int _Write(int inum, char *buffer, int offset, int nbytes);
+	1) Run checks for parameters to function (inum, offset, nbytes)
+	2) Check inode bitmap 
+	3) Check Inode Table for the actual inode
+	4) Go to data region and add the offset to that address.
+	5) Attempt to write the buffer to that address, if fail return -1
+
+=========================================================
+int _Read(int inum, char *buffer, int offset, int nbytes);
+	// INODE BITMAP
+		1) Check the inode bitmap if inum which is "read" exists by getting the bit at inum
+	// INODE TABLE
+		2) Go to inode_block_t
+		3) Search for inode_t using inum as index
+			Retrieve inode_t from inode table
+	// DATA BITMAP
+		4) Check if inum if is exists in bitmap. Proceed if it does exist, thus it is a valid read.
+		
+		5) Check file type:
+		If it is a file, SHOW TA THE FUNCTION
+			- CHECK THAT THE START OF YOUR OFFSET IS CORRECT
+		If it is a directory, SHOW TA THE FUNCTION
+			- CHECK THAT THE START OF YOUR OFFSET IS CORRECT
+------------------
+
+int _Creat(int pinum, int type, char *name);
+	1) Check if inode bitmap for pinum is allocated
+	2) Run a loop through inode bitmap block, and access each bit, and check if there are any bit = 0. 
+		If there is, that will be our new inode number for creat.
+		Assign the new bit found to 1, to signify that is will be used to create the new file/ dir
+	3) Check if data bitmap for pinum is allocated. This concludes that parent inum exist in inode table, and data region.
+	4) Retrieve the parent inode from inode table as inode_t
+	5) Retrieve the new unallocated inode from inode table as inode_t
+	6) Use the parent inode's direct pointer to blocks and retrieve the dir_block_t.
+	7) Run a loop for 128 entries in dir_ent_block and check each dir_ent_t. 
+	8) If there exists a dir_ent_t with inum == -1, allocate the newly found, unallocated inum to the dir_ent_t.
+	9) And then assign the name for the file/ dir that is creat to the new dir_ent_t.
+=========================================================
+
+int _Unlink(int pinum, char *name);
+	1) Check if inode bitmap for the pinum is allocated
+	2) Check that the Inode table contains that specified inode.
+	3) Go to the inode if found in the table and search for the name that is passed through the message struct.
+	4) If we find the name, check the type of the inode.
+	5) If it is a DIRECTORY, check if it is empty. If NOT EMPTY, return -1.
+	6) If the directory is empty or if the name is a Regular file, we can Proceed
+	7) Remove the specified file/directory from the inode table and set the inuse struct to -1
+	
+int _Shutdown();
