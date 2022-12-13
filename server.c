@@ -300,7 +300,8 @@ int run_cret(message_t* m){
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberInInodeTable) * BLOCKSIZE + offsetWithinABlock, SEEK_SET);
 	read(fd, bufBlock2, BLOCKSIZE);
 
-	//printf("%d\n", blockNumberInInodeTable);
+	strcpy(m->c_received_buffer, bufBlock2);
+	m->c_received_buffer_size = BLOCKSIZE;
 	// STOPPED HERE!! DEALING WITH PROBLEM WHERE INODE TABLE MAY BE LARGER THAN 1 BLOCK SIZE. OFFSET MIGHT NOT BE CORRECT
 
 	
