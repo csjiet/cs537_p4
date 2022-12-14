@@ -231,7 +231,7 @@ int MFS_Creat(int pinum, int type, char *name) {
     if(name == NULL)
         return -1;
 
-    if(strlen(name) > 27) {
+    if(strlen(name) > 28) {
         return -1;
     }
 
