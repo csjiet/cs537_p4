@@ -186,6 +186,9 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
     if (nbytes < 0)
         return -1;
 
+
+    // LOOKUP SHOULD BE CALLED SOMEWHERE HERE!
+
     message_t msg;
     msg.c_sent_inum = inum;
     strcpy(msg.c_sent_buffer, buffer);
