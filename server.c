@@ -360,9 +360,6 @@ int run_cret(message_t* m){
 
 	// ETHAN: CHECK IF NAME IS ACTUALLY ALREAD IN THE PARENT DIRECTORY
 
-
-	
-
 	// ETHAN: CHECKS IF THERE IS ANY UNASSIGNED INODE. IF NON, RETURN HERE.
 
 
@@ -390,10 +387,12 @@ int run_cret(message_t* m){
 	inode_t pinode = pinodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
 
 
-
+	// DATA REGION
 	// Checks if name is already taken and get a free directory entry 
 	bool emptyDirEntryFound = false;
 	dir_ent_t emptyDirEnt;
+	dir_ent_t parentDirEnt;
+
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		int blockNumber = pinode.direct[i]; //ETHAN: CHECK IF DIRECT ARRAY IS STORING BLOCK OFFSET OR ADDRESS
 		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
@@ -402,6 +401,11 @@ int run_cret(message_t* m){
 		
 		for(int j = 0; j< 128; j++){
 			dir_ent_t dirEntry = dataRegionBlockPtr->entries[j];
+			// check if directory entry belongs to parent
+			if(pinum == dirEntry.inum){
+				parentDirEnt.inum = pinum;
+				strcpy(parentDirEnt.name, dirEntry.name);
+			}
 
 			// Checks if name is already taken
 			if(strcmp(dirEntry.name, name) == 0){
@@ -429,6 +433,8 @@ int run_cret(message_t* m){
 		unsigned int bitVal = get_bit((unsigned int*) bufBlock, i);
 		if(bitVal == 0){
 			newlyCreatedInodeNum = i;
+
+			// INODE BITMAP for child
 			bitVal = 1;
 			break;
 		}
@@ -456,17 +462,20 @@ int run_cret(message_t* m){
 
 	// If it is a directory file which we create, we have to create direct pointers to . and .. blocks in 1 data.
 	if(type == MFS_DIRECTORY){
-		// Find an empty block in data region
+		// Find an empty block in data region // HOW DO YOU FIND EMPTY DATA REGION? DO YOU ITERATE THROUGH DATA BITMAP FIRST?
 		int blockNumberOfEmptyDataRegion = 0;
 		for(int z = 0; z< SUPERBLOCKPTR->num_data; z++){
+
+			// DATA BITMAP for child
 			unsigned int bitVal = get_bit((unsigned int*)bufBlockDataBitMap, z);
 			if(bitVal == 0){
-				blockNumberOfEmptyDataRegion = z;
+				blockNumberOfEmptyDataRegion = z; // THIS MIGHT BE WRONG IF EACH BIT REPRESENTS 32 BYTES OF each dir_ent_t
 				bitVal = 1;
 				break;
 			}
 		}
 
+		// DATA BLOCK with directory ENTRY for child
 		char bufBlockEmptyDataRegion[BLOCKSIZE];
 		lseek(fd, blockNumberOfEmptyDataRegion * BLOCKSIZE, SEEK_SET);
 		read(fd, bufBlockEmptyDataRegion, BLOCKSIZE);
@@ -475,17 +484,23 @@ int run_cret(message_t* m){
 
 		
 		printf("%p\n", dirBlockEmptyDataRegionPtr);
-		// Find parent name, given pinum
 
-		// Find parent's parent/ . (which is the first entry in the direct pointer)
+		// Propogate data block for child with parent direcotry ptr and grandparent directory ptr
+		// Find current name, given current inum
+		dirBlockEmptyDataRegionPtr->entries[0].inum = newlyCreatedInodeNum;	
+		strcpy(dirBlockEmptyDataRegionPtr->entries[0].name, name);
+
+		// Find parent name, and parent inum
+		dirBlockEmptyDataRegionPtr->entries[1].inum = pinum;
+		strcpy(dirBlockEmptyDataRegionPtr->entries[1].name, parentDirEnt.name);
 
 
 		// First directory entry should be a .
-		// dirBlockEmptyDataRegionPtr->entries[0].inum = pinum;
-		// dirBlockEmptyDataRegionPtr->entries[0].name = pinum;
 		
 		//dirBlockEmptyDataRegionPtr->entries[1] = 
 
+
+		// INODE IN INODE TABLE
 		newInode.direct[0] = blockNumberOfEmptyDataRegion;
 
 	// If it is a regular file
