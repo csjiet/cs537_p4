@@ -18,16 +18,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffdc0b96000)
-	libmfs.so => ./libmfs.so (0x00007f35bfc42000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f35bf9fd000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f35bfc4e000)
+	linux-vdso.so.1 (0x00007ffe177fe000)
+	libmfs.so => ./libmfs.so (0x00007f43b929d000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f43b9059000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f43b92a9000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffc840fa000)
-	libmfs.so => ./libmfs.so (0x00007f77f2948000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f77f2703000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f77f2954000)
+	linux-vdso.so.1 (0x00007ffff03cc000)
+	libmfs.so => ./libmfs.so (0x00007fe420ea7000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe420c63000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fe420eb3000)
 
 
 test build PASSED
@@ -47,8 +47,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7807
-/tmp/tmpZ58Izl/p/server 7807 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6531
+/tmp/tmpYOUVqm/p/server 6531 /home/lull/private/CS537/p4/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -75,8 +75,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9443
-/tmp/tmpZ58Izl/p/server 9443 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6992
+/tmp/tmpYOUVqm/p/server 6992 /home/lull/private/CS537/p4/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -84,8 +84,8 @@ SUPERBLOCK
  inode region address 3 [len 1]
  data region address 4 [len 32]
  num inodes: 32 ;num data: [len 32]
-1
-0x7ffea407da40
+TYPE line 375: 1
+0x7fff10f01a90
 
 
 test creat PASSED
@@ -105,8 +105,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9047
-/tmp/tmpZ58Izl/p/server 9047 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6405
+/tmp/tmpYOUVqm/p/server 6405 /home/lull/private/CS537/p4/cs537_p4/test.img
 ('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00END BLOCK 1')
 ('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
 Failure: Corrupt data returned by read
@@ -130,8 +130,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9758
-/tmp/tmpZ58Izl/p/server 9758 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8344
+/tmp/tmpYOUVqm/p/server 8344 /home/lull/private/CS537/p4/cs537_p4/test.img
 Failure: Stat gave wrong size
 
 
@@ -153,8 +153,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8370
-/tmp/tmpZ58Izl/p/server 8370 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8948
+/tmp/tmpYOUVqm/p/server 8948 /home/lull/private/CS537/p4/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -170,14 +170,14 @@ Test maxfile
 write largest possible file
 
 **********************************************************************
-total blocks        36
-  inodes            32 [size of each: 128]
-  data blocks       32
+total blocks        148
+  inodes            140 [size of each: 128]
+  data blocks       140
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7087
-/tmp/tmpZ58Izl/p/server 7087 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 5966
+/tmp/tmpYOUVqm/p/server 5966 /home/lull/private/CS537/p4/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -193,20 +193,22 @@ Test maxfile2
 write more blocks than possible
 
 **********************************************************************
-total blocks        36
-  inodes            32 [size of each: 128]
-  data blocks       32
+total blocks        148
+  inodes            140 [size of each: 128]
+  data blocks       140
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5922
-/tmp/tmpZ58Izl/p/server 5922 /home/lull/private/CS537/p4/cs537_p4/test.img
-IndexError: list index out of range
+Starting server on port 5120
+/tmp/tmpYOUVqm/p/server 5120 /home/lull/private/CS537/p4/cs537_p4/test.img
+31
+write more than need
+Failure: MFS_Write should fail on inalid block number
 
 
 test maxfile2 FAILED
  (write more blocks than possible)
- Unexpected exception list index out of range
+ MFS_Write should fail on inalid block number
 
 ('starting', 'dir1')
 
@@ -222,14 +224,19 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5594
-/tmp/tmpZ58Izl/p/server 5594 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: '.' in root should point to root inode
+Starting server on port 6676
+/tmp/tmpYOUVqm/p/server 6676 /home/lull/private/CS537/p4/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
 
 
-test dir1 FAILED
+test dir1 PASSED
  (check root for dot entries)
- '.' in root should point to root inode
 
 ('starting', 'dir2')
 
@@ -245,14 +252,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8335
-/tmp/tmpZ58Izl/p/server 8335 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: '.' in directory should point to directory itself
+Starting server on port 8175
+/tmp/tmpYOUVqm/p/server 8175 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: '..' in directory should point to parent
 
 
 test dir2 FAILED
  (create a new directory and check it)
- '.' in directory should point to directory itself
+ '..' in directory should point to parent
 
 ('starting', 'baddir')
 
@@ -268,14 +275,22 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9902
-/tmp/tmpZ58Izl/p/server 9902 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: MFS_Creat should fail if pinum is not a directory
+Starting server on port 5182
+/tmp/tmpYOUVqm/p/server 5182 /home/lull/private/CS537/p4/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+TYPE line 375: 1
+0x7ffe0b9c4660
+TYPE line 375: 1
 
 
-test baddir FAILED
+test baddir PASSED
  (try to create a file with a file parent inode)
- MFS_Creat should fail if pinum is not a directory
 
 ('starting', 'baddir2')
 
@@ -291,8 +306,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9042
-/tmp/tmpZ58Izl/p/server 9042 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 5907
+/tmp/tmpYOUVqm/p/server 5907 /home/lull/private/CS537/p4/cs537_p4/test.img
 Failure: MFS_Lookup should fail if pinum is not a directory
 
 
@@ -314,14 +329,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8814
-/tmp/tmpZ58Izl/p/server 8814 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: MFS_Lookup should fail on an unlinked file
+Starting server on port 6041
+/tmp/tmpYOUVqm/p/server 6041 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: MFS_Unlink returned failure pinum=0 name='test'
 
 
 test unlink FAILED
  (unlink a file)
- MFS_Lookup should fail on an unlinked file
+ MFS_Unlink returned failure pinum=0 name='test'
 
 ('starting', 'unlink2')
 
@@ -337,14 +352,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6931
-/tmp/tmpZ58Izl/p/server 6931 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: MFS_Lookup should fail on an unlinked file
+Starting server on port 7790
+/tmp/tmpYOUVqm/p/server 7790 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: MFS_Unlink returned failure pinum=0 name='test'
 
 
 test unlink2 FAILED
  (unlink a directory)
- MFS_Lookup should fail on an unlinked file
+ MFS_Unlink returned failure pinum=0 name='test'
 
 ('starting', 'empty')
 
@@ -360,14 +375,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5209
-/tmp/tmpZ58Izl/p/server 5209 /home/lull/private/CS537/p4/cs537_p4/test.img
-Failure: MFS_Unlink should fail on non-empty dir
+Starting server on port 9610
+/tmp/tmpYOUVqm/p/server 9610 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: MFS_Creat returned failure inum=1 type=1 name='testfile'
 
 
 test empty FAILED
  (unlink a non-empty directory)
- MFS_Unlink should fail on non-empty dir
+ MFS_Creat returned failure inum=1 type=1 name='testfile'
 
 ('starting', 'name')
 
@@ -383,8 +398,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5056
-/tmp/tmpZ58Izl/p/server 5056 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 9450
+/tmp/tmpYOUVqm/p/server 9450 /home/lull/private/CS537/p4/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -411,8 +426,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6913
-/tmp/tmpZ58Izl/p/server 6913 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8114
+/tmp/tmpYOUVqm/p/server 8114 /home/lull/private/CS537/p4/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -428,280 +443,20 @@ Test bigdir
 create a directory with 126 files
 
 **********************************************************************
-total blocks        36
-  inodes            32 [size of each: 128]
-  data blocks       32
+total blocks        148
+  inodes            140 [size of each: 128]
+  data blocks       140
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9160
-/tmp/tmpZ58Izl/p/server 9160 /home/lull/private/CS537/p4/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
-0
-0x7fff91b58090
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
-1
-0x7fff91b53ff0
+Starting server on port 8783
+/tmp/tmpYOUVqm/p/server 8783 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: MFS_Creat returned failure inum=1 type=1 name='0'
 
 
-test bigdir PASSED
+test bigdir FAILED
  (create a directory with 126 files)
+ MFS_Creat returned failure inum=1 type=1 name='0'
 
 ('starting', 'deep')
 
@@ -717,34 +472,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6084
-/tmp/tmpZ58Izl/p/server 6084 /home/lull/private/CS537/p4/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
-0
-0x7ffd765169a0
-0x7ffd76512900
-0
-0x7ffd765169a0
-0x7ffd76512900
-0
-0x7ffd765169a0
-0x7ffd76512900
-0
-0x7ffd765169a0
-0x7ffd76512900
-0
-0x7ffd765169a0
-0x7ffd76512900
+Starting server on port 9735
+/tmp/tmpYOUVqm/p/server 9735 /home/lull/private/CS537/p4/cs537_p4/test.img
+Failure: MFS_Creat returned failure inum=1 type=0 name='0'
 
 
-test deep PASSED
+test deep FAILED
  (create many deeply nested directories)
+ MFS_Creat returned failure inum=1 type=0 name='0'
 
 **********************************************************************
 Summary:
@@ -775,19 +510,17 @@ test maxfile FAILED
 
 test maxfile2 FAILED
  (write more blocks than possible)
- Unexpected exception list index out of range
+ MFS_Write should fail on inalid block number
 
-test dir1 FAILED
+test dir1 PASSED
  (check root for dot entries)
- '.' in root should point to root inode
 
 test dir2 FAILED
  (create a new directory and check it)
- '.' in directory should point to directory itself
+ '..' in directory should point to parent
 
-test baddir FAILED
+test baddir PASSED
  (try to create a file with a file parent inode)
- MFS_Creat should fail if pinum is not a directory
 
 test baddir2 FAILED
  (try to lookup a file with a file parent inode)
@@ -795,15 +528,15 @@ test baddir2 FAILED
 
 test unlink FAILED
  (unlink a file)
- MFS_Lookup should fail on an unlinked file
+ MFS_Unlink returned failure pinum=0 name='test'
 
 test unlink2 FAILED
  (unlink a directory)
- MFS_Lookup should fail on an unlinked file
+ MFS_Unlink returned failure pinum=0 name='test'
 
 test empty FAILED
  (unlink a non-empty directory)
- MFS_Unlink should fail on non-empty dir
+ MFS_Creat returned failure inum=1 type=1 name='testfile'
 
 test name PASSED
  (name too long)
@@ -812,11 +545,13 @@ test persist FAILED
  (restart server after creating a file)
  Corrupt data returned by read
 
-test bigdir PASSED
+test bigdir FAILED
  (create a directory with 126 files)
+ MFS_Creat returned failure inum=1 type=1 name='0'
 
-test deep PASSED
+test deep FAILED
  (create many deeply nested directories)
+ MFS_Creat returned failure inum=1 type=0 name='0'
 
 Passed 6 of 19 tests.
 Overall 6 of 19

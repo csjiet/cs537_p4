@@ -223,13 +223,9 @@ Information format:
 */
 int MFS_Creat(int pinum, int type, char *name) {
     // Param checks: Failure modes: invalid inum, invalid offset, invalid nbytes.
+    
     if(pinum < 0)
         return -1;
-
-    //TYPE IS EITHER 0(DIRECTORY) or 1(REGULAR FILE)
-    // if ((type != 0) || (type != 1)) {
-    //     return -1;
-    // }
 
     if(name == NULL)
         return -1;
@@ -238,12 +234,21 @@ int MFS_Creat(int pinum, int type, char *name) {
         return -1;
     }
 
+    // // MFS_Lookup: Check if pinum exists and check if entry to be propagated exists in the parent dir exists
+    // int rcForLookup = 0;
+    // // Loops till lookup for parent inode is done
+    // while(rcForLookup >= 0){
+    //     rcForLookup = MFS_Lookup(pinum, name);
+    // }
+
+    
+
     message_t msg;
     msg.c_sent_inum = pinum;
     msg.c_sent_ftype = type;
     strcpy(msg.c_sent_name, name);
     msg.c_sent_mtype = MFS_CRET;
-
+    
     // Write a request to server to retrieve data
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
     if(rc < 0){
@@ -318,7 +323,7 @@ int MFS_Shutdown() {
 
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
     if(rc < 0){
-        printf("client:: MFS_Stat WRITE failed; libmfs.c\n");
+        printf("client:: MFS_Shutdown failed; libmfs.c\n");
         return -1;
     }
 

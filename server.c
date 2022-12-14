@@ -79,9 +79,11 @@ int run_stat(message_t* m){
 	if(bitVal == 0) {
 		return -1;
 	}
+	// Find which block we are in before doing the below code.
+	// 32 inums per block.
 
 	// INODE TABLE
-	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t)) / BLOCKSIZE);
 	printf("blockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
 	
 	char bufBlock1[BLOCKSIZE];
@@ -90,14 +92,16 @@ int run_stat(message_t* m){
 	printf("Inoderegionaddr: %d\n", (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable));
 
 	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
-	
+	// Same method for offset here
+
+
 	int remainingInodeOffset = ceil((inum * sizeof(inode_t)) % BLOCKSIZE);
 	//int remainingInodeOffset = inum - (blockNumberOffsetInInodeTable * 128);
 	// ethan: CHANGE TO MODULUS	
 	printf("Remaininginodeoffset: %d\n", remainingInodeOffset);
 	
 	inode_t inode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
-	printf("inode[remainingInodeOffset/ sizeof(inode_t)]: %ld", remainingInodeOffset/ sizeof(inode_t));
+	printf("inode[remainingInodeOffset/ sizeof(inode_t)]: %ld\n", remainingInodeOffset/ sizeof(inode_t));
 
 	printf("inode type: %d\n", inode.type);
 	printf("inode size: %d\n", inode.size);
@@ -115,7 +119,9 @@ int run_stat(message_t* m){
 
 /* This function writes a buffer of size nbytes (max size: 4096 bytes) at the byte offset specified by offset. Returns 
 0 on success, -1 on failure. Failure modes: invalid inum, invalid nbytes, invalid offset, not a regular 
-file (because you can't write to directories).
+file (because you can't write to directories).   typedef struct {
+	dir_ent_t entries[128];
+    } dir_block_t;
 
 Information format:
 */
@@ -142,13 +148,33 @@ int run_write(message_t* m){
 		return -1;
 
 	// INODE TABLE
-	// char bufBlock1[BLOCKSIZE];
-	// lseek(fd, SUPERBLOCKPTR-> inode_region_addr * BLOCKSIZE, SEEK_SET);
-	// read(fd, bufBlock1, BLOCKSIZE);
-	// inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
-	// inode_t inode = inodeBlockPtr->inodes[inum];
-	
-	
+	// Get Inode address in table
+	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	char bufBlock2[BLOCKSIZE];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock2, BLOCKSIZE);
+
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock2;
+	int remainingInodeOffset = (inum * sizeof(inode_t)) % BLOCKSIZE;
+
+	inode_t inode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
+	// IF inum type is Directory return -1. Can only write to regular files.
+	if (inode.type == 0) {
+		return -1;
+	} else {
+		// Find if we need 1 or two blocks to write. Minimum 1, max 2. 
+		if ((SUPERBLOCKPTR->inode_region_addr + offset + nbytes) > 4096) {
+			//Write to two blocks
+			
+		}
+		else {
+			//Write to a single block
+			
+		}
+	}
+
+
+	fsync(fd); // Idempotency from writeup
 	return 0;
 }
 
@@ -306,28 +332,38 @@ int run_lookup(message_t* m){
 	inode_t pinode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
 
 	
-	// DATA BITMAP
+	// DATA BITMAP - check PARENT
 	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 	bitVal = get_bit((unsigned int*) bufBlock, pinum);
 	if(bitVal == 0)
 		return -1;
 
-	if(pinode.type != 0)
+	// Check if inode is a parent
+	if(pinode.type != MFS_DIRECTORY)
 		return -1;
 
-	offsetToDirectory(pinode, 0, BLOCKSIZE, m);
-	dir_block_t* directoryBlockPtr = (dir_block_t*) m->c_received_buffer;
+	// DATA REGION to parent directory
+	// Iterate through all direct pointers in parent inode
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		int blockNumber = pinode.direct[i];
 
-	for (int i = 0; i < 128; i++) {
-		// if (directoryBlockPtr->entries[i].inum == -1){ // Entry is not in use
-		// 	continue;
-		// }
-		if (strcmp(directoryBlockPtr->entries[i].name, name) == 0){
-			m->c_received_inum = directoryBlockPtr->entries[i].inum;
-			return 0;
+		char bufBlockForDirBlock[BLOCKSIZE];
+		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
+		read(fd, bufBlock, BLOCKSIZE);
+		dir_block_t* dirEntBlock = (dir_block_t*) bufBlockForDirBlock;
+
+		// Iterate within the directory entry block pointed by direct pointer
+		for(int j = 0; j< 128; j++){
+			dir_ent_t dirEntry = dirEntBlock->entries[j];
+			if(strcmp(dirEntry.name, name) == 0){
+				m->c_received_inum = dirEntry.inum;
+				return 0;
+			}
 		}
+
 	}
+	
 	return -1;
 	
 }
@@ -342,13 +378,13 @@ int run_cret(message_t* m){
 	
 	int pinum = m->c_sent_inum;
 	int type = m->c_sent_ftype;
-	printf("%d\n", type);
+	printf("TYPE line 375: %d\n", type);
 	char name[28];
 	strcpy(name, m->c_sent_name);
 
 	// PARENT CHECKS
 	// INODE BITMAP
-	// Gets inode bitmap's location
+	// Checks if parent inode exists
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
@@ -364,6 +400,7 @@ int run_cret(message_t* m){
 
 
 	// DATA BITMAP
+	// Checks if parent data block exists
 	char bufBlockDataBitMap[BLOCKSIZE];
 	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlockDataBitMap, BLOCKSIZE);
@@ -374,7 +411,7 @@ int run_cret(message_t* m){
 		return -1;
 
 	// INODE TABLE
-	// Find parent inode
+	// Retrieves parent inode from inode table using inode number indexing, since it exists
 	int blockNumberOffsetInInodeTable = ceil((pinum * sizeof(inode_t))/ BLOCKSIZE);
 	char bufBlock2[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
@@ -384,50 +421,14 @@ int run_cret(message_t* m){
 
 	int remainingInodeOffset = (pinum * sizeof(inode_t)) % BLOCKSIZE;
 
+	// parent inode retrieved
 	inode_t pinode = pinodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
 
 
-	// DATA REGION
-	// Checks if name is already taken and get a free directory entry 
-	bool emptyDirEntryFound = false;
-	dir_ent_t emptyDirEnt;
-	dir_ent_t parentDirEnt;
-
-	for(int i = 0; i< DIRECT_PTRS; i++){
-		int blockNumber = pinode.direct[i]; //ETHAN: CHECK IF DIRECT ARRAY IS STORING BLOCK OFFSET OR ADDRESS
-		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
-		read(fd, bufBlock, BLOCKSIZE);
-		dir_block_t* dataRegionBlockPtr = (dir_block_t*) bufBlock;
-		
-		for(int j = 0; j< 128; j++){
-			dir_ent_t dirEntry = dataRegionBlockPtr->entries[j];
-			// check if directory entry belongs to parent
-			if(pinum == dirEntry.inum){
-				parentDirEnt.inum = pinum;
-				strcpy(parentDirEnt.name, dirEntry.name);
-			}
-
-			// Checks if name is already taken
-			if(strcmp(dirEntry.name, name) == 0){
-				return -1;
-			}
-
-			// Check if empty directory entry exists
-			if(dirEntry.inum == -1 && !emptyDirEntryFound){
-				emptyDirEntryFound = true;
-				emptyDirEnt = dirEntry;
-			}
-			// ETHAN: EXIT LOOP
-		}
-		// ETHAN: EXIT LOOP
-
-	}
-
 	// CHILD
-	// If program reaches this point: new file with name can be created.
+	//// If program reaches this point: new file with name can be created.
 
-	// Checks for free inode number to allocate to the child
-	// Get the free inode to be used later
+	// Retrieves an unallocated inode number, to be allocated to the NEW directory entry
 	int newlyCreatedInodeNum = 0;
 	for(int i = 0; i< SUPERBLOCKPTR->num_inodes; i++){
 		unsigned int bitVal = get_bit((unsigned int*) bufBlock, i);
@@ -435,14 +436,14 @@ int run_cret(message_t* m){
 			newlyCreatedInodeNum = i;
 
 			// INODE BITMAP for child
-			bitVal = 1;
+			set_bit((unsigned int*) bufBlock, i);
 			break;
 		}
 			
 	}
 
 
-	// Find newly created inode
+	// Find newly created inode using indexing of inode 
 	blockNumberOffsetInInodeTable = ceil((newlyCreatedInodeNum * sizeof(inode_t))/ BLOCKSIZE);
 	char bufBlock3[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
@@ -460,49 +461,68 @@ int run_cret(message_t* m){
 	newInode.size = 0;
 
 
-	// If it is a directory file which we create, we have to create direct pointers to . and .. blocks in 1 data.
-	if(type == MFS_DIRECTORY){
-		// Find an empty block in data region // HOW DO YOU FIND EMPTY DATA REGION? DO YOU ITERATE THROUGH DATA BITMAP FIRST?
-		int blockNumberOfEmptyDataRegion = 0;
-		for(int z = 0; z< SUPERBLOCKPTR->num_data; z++){
+	// DATA REGION
+	// Checks if parent directory entries has space for new directory entry
 
-			// DATA BITMAP for child
-			unsigned int bitVal = get_bit((unsigned int*)bufBlockDataBitMap, z);
-			if(bitVal == 0){
-				blockNumberOfEmptyDataRegion = z; // THIS MIGHT BE WRONG IF EACH BIT REPRESENTS 32 BYTES OF each dir_ent_t
-				bitVal = 1;
+	bool isThereEmptyDirEnt = false;
+	for(int i = 0; (i< DIRECT_PTRS )&& (!isThereEmptyDirEnt); i++){
+		int blockNumberToParentBlocks = pinode.direct[i];
+
+		char bufBlockParentDirectoryEntry[BLOCKSIZE];
+		lseek(fd, blockNumberToParentBlocks * BLOCKSIZE, SEEK_SET);
+		read(fd, bufBlockParentDirectoryEntry, BLOCKSIZE);
+
+		dir_block_t* dirEntBlock = (dir_block_t*) bufBlockParentDirectoryEntry;
+		for(int j = 0; j< 128; j++){
+			dir_ent_t* dirEntry = &dirEntBlock->entries[j];
+			// There is an empty directory entry
+			if(dirEntry->inum == -1){
+				isThereEmptyDirEnt = true;
+				dirEntry->inum = newlyCreatedInodeNum;
+				strcpy(dirEntry->name, name);
 				break;
+			}
+			
+		}
+	}
+
+	// If there is no space, find a new block to be allocated to direct[]
+	int newBlockDirNum = 0;
+	bool isFoundNewBlock = false;
+	if(!isThereEmptyDirEnt){
+		
+		// Search for empty data blocks in data bitmap
+		for(int i = 0; i< SUPERBLOCKPTR->num_data; i++){
+			
+			unsigned int bitVal = get_bit((unsigned int*) bufBlockDataBitMap, i);
+			if(bitVal == 0){
+				newBlockDirNum = i;
+				isFoundNewBlock = true;
+				set_bit((unsigned int*) bufBlockDataBitMap, i);
 			}
 		}
 
-		// DATA BLOCK with directory ENTRY for child
-		char bufBlockEmptyDataRegion[BLOCKSIZE];
-		lseek(fd, blockNumberOfEmptyDataRegion * BLOCKSIZE, SEEK_SET);
-		read(fd, bufBlockEmptyDataRegion, BLOCKSIZE);
+		// Allocate new entry into new block number
+		dir_block_t newBufBlockForDirPtrArr;
 
-		dir_block_t* dirBlockEmptyDataRegionPtr = (dir_block_t*) bufBlockEmptyDataRegion;
-
+		newBufBlockForDirPtrArr.entries[0].inum = newlyCreatedInodeNum;
+		strcpy(newBufBlockForDirPtrArr.entries[0].name, name);
+		// newBufBlockForDirPtrArr.entries[0].name = name;
 		
-		printf("%p\n", dirBlockEmptyDataRegionPtr);
 
-		// Propogate data block for child with parent direcotry ptr and grandparent directory ptr
-		// Find current name, given current inum
-		dirBlockEmptyDataRegionPtr->entries[0].inum = newlyCreatedInodeNum;	
-		strcpy(dirBlockEmptyDataRegionPtr->entries[0].name, name);
+		lseek(fd, newBlockDirNum * BLOCKSIZE, SEEK_SET);
+		write(fd, (void*)&newBufBlockForDirPtrArr, BLOCKSIZE);
+	}
+	if (isFoundNewBlock) {
+		printf("??");
+	}
 
-		// Find parent name, and parent inum
-		dirBlockEmptyDataRegionPtr->entries[1].inum = pinum;
-		strcpy(dirBlockEmptyDataRegionPtr->entries[1].name, parentDirEnt.name);
+	
 
 
-		// First directory entry should be a .
+	// If it is a directory file which we create, we have to create direct pointers to . and .. blocks in 1 data.
+	if(type == MFS_DIRECTORY){
 		
-		//dirBlockEmptyDataRegionPtr->entries[1] = 
-
-
-		// INODE IN INODE TABLE
-		newInode.direct[0] = blockNumberOfEmptyDataRegion;
-
 	// If it is a regular file
 	}else{
 
@@ -515,8 +535,8 @@ int run_cret(message_t* m){
 	// ETHAN: IF TYPE IS FILE, THIS "NEWINODE". DONT ALLOCATE BLOCK, BUT CHECK WHEN YOU ARE WRITING IF THERE IS A BLOCK THAT IS ALLOCATED.!!
 
 	// Assign new directory entry in directory
-	emptyDirEnt.inum = newlyCreatedInodeNum;
-	strcpy(emptyDirEnt.name, name);
+	// emptyDirEnt->inum = newlyCreatedInodeNum;
+	// strcpy(emptyDirEnt->name, name);
 
 
 	// Check if it is a directory
@@ -524,7 +544,7 @@ int run_cret(message_t* m){
 	// DATA REGION
 
 
-
+	fsync(fd); // Idempotency says to fsync before each successful return
 	return 0;
 }
 
@@ -535,7 +555,56 @@ about why this might be).
 Information format:
 */
 int run_unlink(message_t* m){
-	
+	int pinum = m->c_sent_inum;
+	char name[28];
+	strcpy(name, m->c_sent_name);
+
+	// INODE BITMAP
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+	unsigned int bitVal = get_bit((unsigned int*) bufBlock, pinum);
+	if(bitVal == 0)
+		return -1;
+
+	// INODE TABLE
+	// Get Inode address in table
+	int blockNumberOffsetInInodeTable = ceil((pinum * sizeof(inode_t))/ BLOCKSIZE);
+	char bufBlock2[BLOCKSIZE];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock2, BLOCKSIZE);
+
+	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock2;
+	int remainingInodeOffset = (pinum * sizeof(inode_t)) % BLOCKSIZE;
+
+	inode_t pinode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
+
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		int blockNumber = pinode.direct[i];
+
+		char bufBlockForDirBlock[BLOCKSIZE];
+		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
+		read(fd, bufBlock, BLOCKSIZE);
+		dir_block_t* dirEntBlock = (dir_block_t*) bufBlockForDirBlock;
+
+		// Iterate within the directory entry block pointed by direct pointer
+		for(int j = 0; j< 128; j++){
+			dir_ent_t dirEntry = dirEntBlock->entries[j];
+			if (pinode.type == 0) {
+				if (dirEntry.inum == -1) {
+					memcpy(dirEntry.name, "", 0);
+				} else {
+					return -1;
+				}
+			}
+			else if (pinode.type == 1) {
+				dirEntry.inum = -1;
+				memcpy(dirEntry.name, "", 0);
+			}
+		}
+
+	}
+	fsync(fd);
 	return 0;
 }
 

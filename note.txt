@@ -222,3 +222,51 @@ int _Unlink(int pinum, char *name);
 	7) Remove the specified file/directory from the inode table and set the inuse struct to -1
 	
 int _Shutdown();
+
+
+
+
+
+
+
+
+Run_cret
+
+
+		// Find an empty block in data region // HOW DO YOU FIND EMPTY DATA REGION? DO YOU ITERATE THROUGH DATA BITMAP FIRST?
+		int blockNumberOfEmptyDataRegion = 0;
+		for(int z = 0; z< SUPERBLOCKPTR->num_data; z++){
+
+			// DATA BITMAP for child
+			unsigned int bitVal = get_bit((unsigned int*)bufBlockDataBitMap, z);
+			if(bitVal == 0){
+				blockNumberOfEmptyDataRegion = z; // THIS MIGHT BE WRONG IF EACH BIT REPRESENTS 32 BYTES OF each dir_ent_t
+				bitVal = 1;
+				break;
+			}
+		}
+
+		// DATA BLOCK with directory ENTRY for child
+		char bufBlockEmptyDataRegion[BLOCKSIZE];
+		lseek(fd, blockNumberOfEmptyDataRegion * BLOCKSIZE, SEEK_SET);
+		read(fd, bufBlockEmptyDataRegion, BLOCKSIZE);
+
+		dir_block_t* dirBlockEmptyDataRegionPtr = (dir_block_t*) bufBlockEmptyDataRegion;
+
+		
+		printf("%p\n", dirBlockEmptyDataRegionPtr);
+
+		// Propogate data block for child with parent direcotry ptr and grandparent directory ptr
+		// Find current name, given current inum
+		dirBlockEmptyDataRegionPtr->entries[0].inum = newlyCreatedInodeNum;	
+		strcpy(dirBlockEmptyDataRegionPtr->entries[0].name, name);
+
+		// Find parent name, and parent inum
+		dirBlockEmptyDataRegionPtr->entries[1].inum = pinum;
+
+
+		// INODE IN INODE TABLE
+		newInode.direct[0] = blockNumberOfEmptyDataRegion;
+
+		// Checks pinode's direct[] array. If the newly found block in data region is NEW, then append the new block number
+		// into direct[].
