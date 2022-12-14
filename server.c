@@ -313,7 +313,7 @@ int run_lookup(message_t* m){
 	if(bitVal == 0)
 		return -1;
 
-	if(pinode.type != MFS_DIRECTORY)
+	if(pinode.type != 0)
 		return -1;
 
 	offsetToDirectory(pinode, 0, BLOCKSIZE, m);
@@ -346,6 +346,7 @@ int run_cret(message_t* m){
 	char name[28];
 	strcpy(name, m->c_sent_name);
 
+	// PARENT CHECKS
 	// INODE BITMAP
 	// Gets inode bitmap's location
 	char bufBlock[BLOCKSIZE];
@@ -390,7 +391,7 @@ int run_cret(message_t* m){
 
 
 
-	// Propogate the newly created inode with data
+	// Checks if name is already taken and get a free directory entry 
 	bool emptyDirEntryFound = false;
 	dir_ent_t emptyDirEnt;
 	for(int i = 0; i< DIRECT_PTRS; i++){
@@ -418,6 +419,7 @@ int run_cret(message_t* m){
 
 	}
 
+	// CHILD
 	// If program reaches this point: new file with name can be created.
 
 	// Checks for free inode number to allocate to the child
@@ -484,9 +486,9 @@ int run_cret(message_t* m){
 		
 		//dirBlockEmptyDataRegionPtr->entries[1] = 
 
-		// Second directory entry should be a ..
+		newInode.direct[0] = blockNumberOfEmptyDataRegion;
 
-	
+	// If it is a regular file
 	}else{
 
 	}
