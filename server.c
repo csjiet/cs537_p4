@@ -368,6 +368,15 @@ int run_lookup(message_t* m){
 	
 }
 
+int getBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, blockNumberAddress * BLOCKSIZE,SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	return get_bit((unsigned int*) bufBlock, inum);
+	
+}
+
 /* This function makes a file (type == MFS_REGULAR_FILE) or directory (type == MFS_DIRECTORY) in the parent directory specified 
 by pinum of name name. Returns 0 on success, -1 on failure. Failure modes: pinum does not exist, or name is too long. 
 If name already exists, return success.
@@ -384,30 +393,17 @@ int run_cret(message_t* m){
 
 	// PARENT CHECKS
 	// INODE BITMAP
-	// Checks if parent inode exists
-	char bufBlock[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-
 	// Checks if parent inode exist before allocating file as child
-	unsigned int bitVal = get_bit((unsigned int*) bufBlock, pinum);
-	if(bitVal == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
 		return -1;
 
 	// ETHAN: CHECK IF NAME IS ACTUALLY ALREAD IN THE PARENT DIRECTORY
 
 	// ETHAN: CHECKS IF THERE IS ANY UNASSIGNED INODE. IF NON, RETURN HERE.
 
-
 	// DATA BITMAP
 	// Checks if parent data block exists
-	char bufBlockDataBitMap[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlockDataBitMap, BLOCKSIZE);
-
-	// Checks if parent directory entries exist
-	unsigned int bitVal1 = get_bit((unsigned int*) bufBlock, pinum);
-	if(bitVal1 == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
 		return -1;
 
 	// INODE TABLE
