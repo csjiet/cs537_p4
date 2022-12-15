@@ -414,7 +414,7 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	// printf("----------------------\n");
 	// printf("parameters - INUM: %d, inodeType BEFORE UPDATE: %d, inodeSize BEFORE UPDATE: %d\n", inum, inode->type, inode->size);
 	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
-	// printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
+	printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
 
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
@@ -422,18 +422,22 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 
 	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock;
 
-	int remainingInodeOffset = (inum * sizeof(inode_t)) % BLOCKSIZE;
-	// printf("RemainingOffset: %d\n", remainingInodeOffset);
+	//int remainingInodeOffset = (inum * sizeof(inode_t)) % BLOCKSIZE;
+	int remainingInodeOffset = (inum * sizeof(inode_t)) - (blockNumberOffsetInInodeTable * BLOCKSIZE);
+	printf("RemainingOffset: %d\n", remainingInodeOffset);
 	
 	// Inode retrieved
-	inode_t inumInode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
+	inode_t inumInode = inodeBlockPtr->inodes[(int)(remainingInodeOffset/ sizeof(inode_t))];
+	printf("inode_block index: %d\n",(int)(remainingInodeOffset/ sizeof(inode_t)));
 	inode->type = inumInode.type;
 	inode->size = inumInode.size;
+
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		inode->direct[i] = inumInode.direct[i];
 	}
 
-	// printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
+	printf("size of inode_t: %ld\n", sizeof(inode_t));
+	printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
 
 	return 0;
 }
@@ -660,18 +664,15 @@ int run_cret(message_t* m){
 	// PARENT CHECKS
 	// INODE BITMAP
 	// Checks if parent inode exist before allocating file as child
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 1)
-		return -1;
+	// if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
+	// 	return -1;
 
-	printf("#################\n");
 	printf("%d\n", type);
 
-	// DATA BITMAP
-	// Checks if parent data block exists
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 1)
-		return -1;
-
-
+	// // DATA BITMAP
+	// // Checks if parent data block exists
+	// if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
+	// 	return -1;
 	
 
 	// INODE TABLE

@@ -18,16 +18,16 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007fff489ad000)
-	libmfs.so => ./libmfs.so (0x00007f96792f2000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f96790ad000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f96792fe000)
+	linux-vdso.so.1 (0x00007ffce905c000)
+	libmfs.so => not found
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa1e2cde000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fa1e2f2a000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffd41be9000)
-	libmfs.so => ./libmfs.so (0x00007f48ffd01000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f48ffabc000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f48ffd0d000)
+	linux-vdso.so.1 (0x00007ffe45d33000)
+	libmfs.so => not found
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3bd9674000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f3bd98c0000)
 
 
 test build PASSED
@@ -47,8 +47,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7853
-/tmp/tmpMJNRjw/p/server 7853 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6301
+/tmp/tmpf4mTS6/p/server 6301 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -75,8 +75,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5715
-/tmp/tmpMJNRjw/p/server 5715 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 5895
+/tmp/tmpf4mTS6/p/server 5895 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -98,8 +98,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9498
-/tmp/tmpMJNRjw/p/server 9498 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8570
+/tmp/tmpf4mTS6/p/server 8570 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -121,8 +121,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5397
-/tmp/tmpMJNRjw/p/server 5397 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 5015
+/tmp/tmpf4mTS6/p/server 5015 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -144,8 +144,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7332
-/tmp/tmpMJNRjw/p/server 7332 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 7399
+/tmp/tmpf4mTS6/p/server 7399 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -167,8 +167,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8495
-/tmp/tmpMJNRjw/p/server 8495 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 7490
+/tmp/tmpf4mTS6/p/server 7490 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -190,8 +190,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7941
-/tmp/tmpMJNRjw/p/server 7941 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8613
+/tmp/tmpf4mTS6/p/server 8613 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -213,8 +213,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7206
-/tmp/tmpMJNRjw/p/server 7206 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8553
+/tmp/tmpf4mTS6/p/server 8553 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -241,8 +241,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6953
-/tmp/tmpMJNRjw/p/server 6953 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6816
+/tmp/tmpf4mTS6/p/server 6816 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -264,8 +264,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5787
-/tmp/tmpMJNRjw/p/server 5787 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 5629
+/tmp/tmpf4mTS6/p/server 5629 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -287,8 +287,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9884
-/tmp/tmpMJNRjw/p/server 9884 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6345
+/tmp/tmpf4mTS6/p/server 6345 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
 
 
@@ -310,8 +310,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5767
-/tmp/tmpMJNRjw/p/server 5767 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8813
+/tmp/tmpf4mTS6/p/server 8813 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -333,8 +333,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6570
-/tmp/tmpMJNRjw/p/server 6570 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 7411
+/tmp/tmpf4mTS6/p/server 7411 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='test'
 
 
@@ -356,8 +356,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6521
-/tmp/tmpMJNRjw/p/server 6521 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 9189
+/tmp/tmpf4mTS6/p/server 9189 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -379,8 +379,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9740
-/tmp/tmpMJNRjw/p/server 9740 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6502
+/tmp/tmpf4mTS6/p/server 6502 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -407,8 +407,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7120
-/tmp/tmpMJNRjw/p/server 7120 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6607
+/tmp/tmpf4mTS6/p/server 6607 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=1 name='test'
 
 
@@ -430,8 +430,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6050
-/tmp/tmpMJNRjw/p/server 6050 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 8338
+/tmp/tmpf4mTS6/p/server 8338 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
@@ -453,8 +453,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5205
-/tmp/tmpMJNRjw/p/server 5205 /home/lull/private/CS537/p4/cs537_p4/test.img
+Starting server on port 6448
+/tmp/tmpf4mTS6/p/server 6448 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 
