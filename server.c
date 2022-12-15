@@ -414,7 +414,7 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	// printf("----------------------\n");
 	// printf("parameters - INUM: %d, inodeType BEFORE UPDATE: %d, inodeSize BEFORE UPDATE: %d\n", inum, inode->type, inode->size);
 	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
-	printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
+	// printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
 
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
@@ -422,18 +422,21 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 
 	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock;
 
-	//int remainingInodeOffset = (inum * sizeof(inode_t)) % BLOCKSIZE;
 	int remainingInodeOffset = (inum * sizeof(inode_t)) - (blockNumberOffsetInInodeTable * BLOCKSIZE);
-	printf("RemainingOffset: %d\n", remainingInodeOffset);
+	// printf("RemainingOffset: %d\n", remainingInodeOffset);
 	
 	// Inode retrieved
 	inode_t inumInode = inodeBlockPtr->inodes[(int)(remainingInodeOffset/ sizeof(inode_t))];
-	printf("inode_block index: %d\n",(int)(remainingInodeOffset/ sizeof(inode_t)));
+	// printf("inode_block index: %d\n",(int)(remainingInodeOffset/ sizeof(inode_t)));
 	inode->type = inumInode.type;
 	inode->size = inumInode.size;
 
+	// printf("inode_t AFTER retrieval: inode-> type: %d; inode->size: %d\n", inode->type, inode->size);
+	// printf("Items in inode AFTER retrieval: \n");
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		inode->direct[i] = inumInode.direct[i];
+		// printf("item %d>> %d\n", i, inode->direct[i]);
+
 	}
 
 	printf("size of inode_t: %ld\n", sizeof(inode_t));
@@ -461,19 +464,20 @@ int getDataBlockCopyFromDataRegion(int blockNumber, dir_block_t* dirEntryBlock){
 
 int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 
-	printf("______________________________________\n");
-	printf("parameters BEFORE UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
-	printf("Items in direct[]:\n");
-	for(int i = 0 ; i< DIRECT_PTRS; i++){
-		printf("item %d) %d\n", i, inode->direct[i]);
-	}
+	// printf("______________________________________\n");
+	// printf("parameters BEFORE UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
+	// printf("Items in direct[]:\n");
+	// for(int i = 0 ; i< DIRECT_PTRS; i++){
+	// 	printf("item %d) %d\n", i, inode->direct[i]);
+	// }
+	// printf("SUPERBLOCKPTR->num_inodes: %d\n", SUPERBLOCKPTR->num_inodes);
 
 	// INODE BITMAP to get unallocated inode number
 	int unallocatedInodeNumber = 0;
 
 	for(int i = 0; i< SUPERBLOCKPTR->num_inodes; i++){
 		unsigned int bitVal = getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, i);
-		printf("BitVal: %d\n", bitVal);
+		// printf("BitVal: %d\n", bitVal);
 		if(bitVal == 0){
 			unallocatedInodeNumber = i;
 			printf("unallocatedNumber: %d\n", unallocatedInodeNumber);
@@ -487,7 +491,11 @@ int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 			if (rc < 0)
 				return -1;
 			*inum = unallocatedInodeNumber;
-			printf("parameters AFTER UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
+			// printf("parameters AFTER UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
+			// printf("items in free new inode's direct[] AFTER obtaining inode_t:\n");
+			// for(int j = 0; j< DIRECT_PTRS; j++){
+			// 	printf("Items %d >>> %d\n", j, inode->direct[j]);
+			// }
 
 			return 0;
 		}
@@ -522,13 +530,25 @@ int getFreeDataBlockCopyFromDataRegion(int* blockNumber, dir_block_t* dirEntryBl
 int addInodeToInodeTable(int inum, inode_t* inode){
 
 	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
-	int remainingOffsetWithinABlock = ceil((inum * sizeof(inode_t))% BLOCKSIZE);
+	int remainingOffsetWithinABlock = (inum * sizeof(inode_t)) - (blockNumberOffsetInInodeTable * BLOCKSIZE);
+
+	// printf("blockNumber offset in inode table: %d\n", blockNumberOffsetInInodeTable);
+	// printf("remaining offset within a block: %d\n", remainingOffsetWithinABlock);
 
 	int offset = ((SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE) + remainingOffsetWithinABlock;
+
+	// printf("offset in lseek to inode_t immediately: %d\n", offset);
 	lseek(fd, offset, SEEK_SET);
+
+	// printf("inode_t passed in inode->type: %d\n", inode->type);
+	// printf("inode_t passed in inode->size: %d\n", inode->size);
+	// printf("items in free new inode's direct[] AFTER obtaining inode_t:\n");
+	// for(int j = 0; j< DIRECT_PTRS; j++){
+	// 	printf("Items %d >>>> %d\n", j, inode->direct[j]);
+	// }
+
 	write(fd, inode, sizeof(inode_t));
 
-	//SUPERBLOCKPTR->num_inodes++;
 	return 0;
 
 }
@@ -570,6 +590,12 @@ int findParentNameGivenInum(int pinum, char* name){
 
 
 int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
+
+	printf("START OF addDirEntryToDirectoryInode() param:\n");
+	printf("param 1 -- inode_t dinode.type: %d; inode_t dinode.size: %d\n", dinode.type, dinode.size);
+	printf("param 2 -- int dinum: %d\n", dinum);
+	printf("param 3 -- inode_t dinode.type: %d; inode_t dinode.size: %d\n", addedInode.type, addedInode.size);
+	printf("param 4 -- dir_ent_t name: %s; dir_ent_t inum: %d\n", copyOfDirEntryToAdd.name, copyOfDirEntryToAdd.inum);
 
 	// Ensure inode is a directory
 	assert(dinode.type == MFS_DIRECTORY);
@@ -690,21 +716,22 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
-	printf("END OF TESTSSSSSSSSSS\n");
 
-	// // Assign new inode in inode table
-	// newInode.type = type;
-	// newInode.size = 0;
+	// Assign new inode in inode table
+	newInode.type = type;
+	newInode.size = 0;
 
-	// addInodeToInodeTable(newInodeNumber, &newInode);
+	addInodeToInodeTable(newInodeNumber, &newInode);
 
-	// // DATA REGION
-	// dir_ent_t dirEntry;
+	// DATA REGION
+	dir_ent_t dirEntry;
+	dirEntry.inum = newInodeNumber;
+	strcpy(dirEntry.name, name);
 
-	// // Checks if parent directory entries has space for new directory entry
-	// addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
+	// Checks if parent directory entries has space for new directory entry
+	addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
 
-	fsync(fd); // Idempotency says to fsync before each successful return
+	//fsync(fd); // Idempotency says to fsync before each successful return
 	return 0;
 }
 

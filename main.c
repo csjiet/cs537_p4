@@ -8,10 +8,11 @@ int main(int argc, char *argv[]) {
     printf("Init: %d\n", rc);
  
 
-    rc = MFS_Creat(200, MFS_DIRECTORY, "test");
+    rc = MFS_Creat(0, MFS_DIRECTORY, "test");
     printf("Creat()'s return code: %d\n", rc);
   
     rc = MFS_Shutdown();
     printf("shut %d\n", rc);
     return 0;
 }
+ 
