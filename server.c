@@ -569,16 +569,22 @@ int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 
 int getFreeDataBlockCopyFromDataRegion(int* blockNumber, dir_block_t* dirEntryBlock){
 
+	printf("Entering getFreeDataBlockCopyFromDataRegion(): ---------------------\n");
+	printf("param -- blockNumber: %d, dir_block_t* dirEntryBlock: %p\n", *blockNumber, dirEntryBlock);
 	// DATA BITMAP
 	int unallocatedDatablockNumber = 0;
 
 	for(int i = 0; i< SUPERBLOCKPTR->num_data; i++){
 		unsigned int bitVal = getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, i);
+		
 		if(bitVal == 0){
 			unallocatedDatablockNumber = i;
-
+			printf("unallocted data block number: %d\n", unallocatedDatablockNumber);
+			printf("bitVal of found FREE data block (should be 0): %d\n", bitVal);
 			// set the found data block as allocated in data bitmap/ 1
 			setOneToBitMap(SUPERBLOCKPTR->data_bitmap_addr, i);
+
+			printf("bitVal of AFTER set to 1 (should be 1): %d\n", getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, i));
 			return 0;
 		}
 	}
@@ -669,10 +675,12 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 	// Buffer to store each block pointed by direct pointer
 	char bufBlock[BLOCKSIZE];
 
+	//int lastIndexInDirectPtrArr = 0; // This variable holds the latest unallocated block, in case new block allocation is needed if all existing blocks are full
 	for(int i = 0; i< DIRECT_PTRS && (!isThereEmptyDirEnt); i++){
 		int blockNumber = dinode.direct[i];
 		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
 		if(blockNumber == 0 || blockNumber == -1){
+			//lastIndexInDirectPtrArr = i;
 			break;
 		}
 
@@ -727,25 +735,25 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 	}
 
 	// Check if directory entry/ inode allocated is of type directory. If it is a directory, point it to a dir_block_t and assign in parent and current dir dir_ent_t
-	if(addedInode.type == MFS_DIRECTORY){
-		int newBlockNumber = 0;
-		dir_block_t newDirEntryBlock;
-		getFreeDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
+	// if(addedInode.type == MFS_DIRECTORY){
+	// 	int newBlockNumber = 0;
+	// 	dir_block_t newDirEntryBlock;
+	// 	getFreeDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
 
-		// Add . to new directory
-		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
-		strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
+	// 	// Add . to new directory
+	// 	newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
+	// 	strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
 
-		// Add .. to new directory 
-		newDirEntryBlock.entries[1].inum = dinum;
-		char name[28];
-		findParentNameGivenInum(dinum, name);
-		strcpy(newDirEntryBlock.entries[1].name, name);
+	// 	// Add .. to new directory 
+	// 	newDirEntryBlock.entries[1].inum = dinum;
+	// 	char name[28];
+	// 	findParentNameGivenInum(dinum, name);
+	// 	strcpy(newDirEntryBlock.entries[1].name, name);
 
-		// Commit the directory block to disk
-		addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
+	// 	// Commit the directory block to disk
+	// 	addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
 		
-	}
+	// }
 
 	return 0;
 }
