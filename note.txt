@@ -270,3 +270,44 @@ Run_cret
 
 		// Checks pinode's direct[] array. If the newly found block in data region is NEW, then append the new block number
 		// into direct[].
+
+
+TESTS: 8/19
+1. Test build (PASSING)
+	)build with make
+2. Test Shutdown (PASSING)
+	)init, shutdown
+3. Test create (PASSING) ???
+	)init, creat, lookup, shutdown
+4. Test write (FAILED)
+	)init, creat, lookup, write, read, shutdown
+5. Test stat (FAILED)
+	)init, creat, lookup, stat, write, stat, shutdown
+6. Test overwrite (FAILED)
+	)init, creat, lookup, write, write, shutdown
+7. Test maxfile (FAILED)
+	)init, create, lookup, write, read, shutdown
+8. Test maxfile2 (FAILED)
+	)init, create, lookup, write, readm shutdown
+9. Test dir1 (PASSING)
+	)init, lookup, shutdown
+10. Test dir2 (PASSING)
+	)init, creat, lookup x 3, shutdown
+11. Test baddir (FAILED)
+	)init, creat, lookup, creat, shutdown
+12. Test baddir2 (FAILED)
+	)init, creat, lookup, lookup, shutdown
+13. Test Unlink (FAILED)
+	)init, creat, lookup, unlink, lookup, shutdown
+14. Test unlink2 (FAILED)
+	)init, creat, lookup, unlink, lookup, shutdown
+15. Test empty	(FAILED)
+	)init, creat, lookup, unlink, shutdown
+16. Test name	(PASSING)
+	)init, creat, shutdown
+17. Test Persist (FAILED)
+	)init, creat, write, lookup, shutdown
+18. Test bigdir (PASSING)
+	)init, create, look, creat, lookup, shutdown
+19. Test Deep (PASSING)
+	)init, creat, lookup, creat, lookup x 2, shutdown
