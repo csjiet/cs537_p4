@@ -482,12 +482,22 @@ int addInodeToInodeTable(int inum, inode_t* inode){
 	lseek(fd, offset, SEEK_SET);
 	write(fd, inode, sizeof(inode_t));
 
-	SUPERBLOCKPTR->num_inodes++;
-	return -1;
+	//SUPERBLOCKPTR->num_inodes++;
+	return 0;
 
 }
 
-int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t copyOfDirEntryToAdd){
+int addDirectoryEntryBlockToDataRegion(int blockNumber, dir_block_t* dirEntryBlock){
+
+	lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
+	write(fd, dirEntryBlock, sizeof(dir_block_t));
+
+	return 0;
+
+}
+
+
+int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t dDirectoryEntry, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
 
 	// Ensure inode is a directory
 	assert(dinode.type == MFS_DIRECTORY);
@@ -518,11 +528,10 @@ int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t copyOfDirEntryToAdd){
 
 				lseek(fd, (blockNumber * BLOCKSIZE) + (j * sizeof(dir_ent_t)), SEEK_SET);
 				write(fd, &dirEntry, sizeof(dir_ent_t));
-				SUPERBLOCKPTR->num_data ++; // SUPER IMPORTANT DO IT FOR ADDINODE!!
+				//SUPERBLOCKPTR->num_data ++; // SUPER IMPORTANT DO IT FOR ADDINODE!!
 				break;
 			}
 		}
-
 	}
 
 	// Check if dir_ent_t is allocated in the above blocks, if not, create a new block and add dir_ent_t
@@ -541,6 +550,20 @@ int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t copyOfDirEntryToAdd){
 		lseek(fd, newDataBlockNumber * BLOCKSIZE, SEEK_SET);
 		write(fd, &newDirEntryBlock, sizeof(dir_block_t));
 	}
+
+	// Check if directory entry/ inode allocated is of type directory. If it is a directory, point it to a dir_block_t and assign in parent and current dir dir_ent_t
+	if(addedInode.type == MFS_DIRECTORY){
+		int newBlockNumber = 0;
+		dir_block_t newDirEntryBlock;
+		getFreeDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
+
+		newDirEntryBlock.entries[0].inum = 
+		newDirEntryBlock.entries[0].name = 
+
+		addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
+		
+	}
+
 
 	return 0;
 }
@@ -591,68 +614,18 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
-	// CREATE ANOTHER FUNCTION CALL ADDinode
 
 	// Assign new inode in inode table
 	newInode.type = type;
 	newInode.size = 0;
 
+	addInodeToInodeTable(newInodeNumber, &newInode);
 
 	// DATA REGION
+	dir_ent_t dirEntry;
+
 	// Checks if parent directory entries has space for new directory entry
-
-	// bool isThereEmptyDirEnt = false;
-	// for(int i = 0; (i< DIRECT_PTRS )&& (!isThereEmptyDirEnt); i++){
-	// 	int blockNumberToParentBlocks = pinode.direct[i];
-
-	// 	char bufBlockParentDirectoryEntry[BLOCKSIZE];
-	// 	lseek(fd, blockNumberToParentBlocks * BLOCKSIZE, SEEK_SET);
-	// 	read(fd, bufBlockParentDirectoryEntry, BLOCKSIZE);
-
-	// 	dir_block_t* dirEntBlock = (dir_block_t*) bufBlockParentDirectoryEntry;
-	// 	for(int j = 0; j< 128; j++){
-	// 		dir_ent_t* dirEntry = &dirEntBlock->entries[j];
-	// 		// There is an empty directory entry
-	// 		if(dirEntry->inum == -1){
-	// 			isThereEmptyDirEnt = true;
-	// 			dirEntry->inum = newlyCreatedInodeNum;
-	// 			strcpy(dirEntry->name, name);
-	// 			break;
-	// 		}
-			
-	// 	}
-	// }
-
-	// // If there is no space, find a new block to be allocated to direct[]
-	// int newBlockDirNum = 0;
-	// bool isFoundNewBlock = false;
-	// if(!isThereEmptyDirEnt){
-		
-	// 	// Search for empty data blocks in data bitmap
-	// 	for(int i = 0; i< SUPERBLOCKPTR->num_data; i++){
-			
-	// 		unsigned int bitVal = get_bit((unsigned int*) bufBlockDataBitMap, i);
-	// 		if(bitVal == 0){
-	// 			newBlockDirNum = i;
-	// 			isFoundNewBlock = true;
-	// 			set_bit((unsigned int*) bufBlockDataBitMap, i);
-	// 		}
-	// 	}
-
-	// 	// Allocate new entry into new block number
-	// 	dir_block_t newBufBlockForDirPtrArr;
-
-	// 	newBufBlockForDirPtrArr.entries[0].inum = newlyCreatedInodeNum;
-	// 	strcpy(newBufBlockForDirPtrArr.entries[0].name, name);
-	// 	// newBufBlockForDirPtrArr.entries[0].name = name;
-		
-
-	// 	lseek(fd, newBlockDirNum * BLOCKSIZE, SEEK_SET);
-	// 	write(fd, (void*)&newBufBlockForDirPtrArr, BLOCKSIZE);
-	// }
-	// if (isFoundNewBlock) {
-	// 	printf("??");
-	// }
+	addDirEntryToDirectoryInode(pinode, newInode, dirEntry);
 
 	
 
