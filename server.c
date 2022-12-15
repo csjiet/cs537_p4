@@ -164,24 +164,24 @@ int run_write(message_t* m){
 	} else {
 		// Find if we need 1 or two blocks to write. Minimum 1, max 2. 
 		if ((SUPERBLOCKPTR->inode_region_addr + offset + nbytes) < 4096) {
-			//Write to one block
-			lseek(fd, (SUPERBLOCKPTR->data_bitmap_addr) * BLOCKSIZE, SEEK_SET);
+			// //Write to one block
+			// lseek(fd, (SUPERBLOCKPTR->data_bitmap_addr) * BLOCKSIZE, SEEK_SET);
 			
-			//Write data block
-			write(fd, buffer, 4096);
+			// //Write data block
+			// write(fd, buffer, 4096);
 			
-			//Update Inode region?
-			lseek(fd, (SUPERBLOCKPTR->inode_bitmap_addr) * BLOCKSIZE, SEEK_SET);
-			write(fd, &inode, sizeof(inode_t));
+			// //Update Inode region?
+			// lseek(fd, (SUPERBLOCKPTR->inode_bitmap_addr) * BLOCKSIZE, SEEK_SET);
+			// write(fd, &inode, sizeof(inode_t));
 		}	
 		else {
 			//Write to two blocks
 			//Split data to write
-			int split = BLOCKSIZE - (offset % BLOCKSIZE + nbytes);
-			int block1 = SUPERBLOCKPTR->data_bitmap_addr;
-			int block2 = SUPERBLOCKPTR->data_bitmap_addr + 1;
-			lseek(fd, block1 * BLOCKSIZE, SEEK_SET);
-			printf("%d, %d\n", split, block2);
+			// int split = BLOCKSIZE - (offset % BLOCKSIZE + nbytes);
+			// int block1 = SUPERBLOCKPTR->data_bitmap_addr;
+			// int block2 = SUPERBLOCKPTR->data_bitmap_addr + 1;
+			// lseek(fd, block1 * BLOCKSIZE, SEEK_SET);
+			// printf("%d, %d\n", split, block2);
 			//write(fd, buffer)
 		}
 	}
@@ -382,17 +382,26 @@ int run_lookup(message_t* m){
 }
 
 int getBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
+	// printf("___________________________\n");
+	// printf("GetBitmapVal\n");
+	// printf("blockNumAddr: %d\n", blockNumberAddress);
+	// printf("inum: %d\n", inum);
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, blockNumberAddress * BLOCKSIZE,SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
+
+	// printf("bit: %d\n", get_bit((unsigned int*) bufBlock, inum));	
 
 	return get_bit((unsigned int*) bufBlock, inum);
 	
 }
 
 int setBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
+	// printf("setBitmapValGivenBlockNumAndInum\n");
+	// printf("blockNumAddr: %d\n", blockNumberAddress);
+	// printf("inum: %d\n", inum);
 	char bufBlock[BLOCKSIZE];
-	lseek(fd, blockNumberAddress * BLOCKSIZE,SEEK_SET);
+	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
 	set_bit((unsigned int*) bufBlock, inum);
@@ -402,7 +411,11 @@ int setBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
 }
 
 int getInodeCopyFromInodeTable(int inum, inode_t* inode){
+	// printf("----------------------\n");
+	// printf("parameters - INUM: %d, inodeType BEFORE UPDATE: %d, inodeSize BEFORE UPDATE: %d\n", inum, inode->type, inode->size);
 	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	// printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
+
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
@@ -410,7 +423,8 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock;
 
 	int remainingInodeOffset = (inum * sizeof(inode_t)) % BLOCKSIZE;
-
+	// printf("RemainingOffset: %d\n", remainingInodeOffset);
+	
 	// Inode retrieved
 	inode_t inumInode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
 	inode->type = inumInode.type;
@@ -418,6 +432,8 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		inode->direct[i] = inumInode.direct[i];
 	}
+
+	// printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
 
 	return 0;
 }
@@ -441,26 +457,39 @@ int getDataBlockCopyFromDataRegion(int blockNumber, dir_block_t* dirEntryBlock){
 
 int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 
+	printf("______________________________________\n");
+	printf("parameters BEFORE UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
+	printf("Items in direct[]:\n");
+	for(int i = 0 ; i< DIRECT_PTRS; i++){
+		printf("item %d) %d\n", i, inode->direct[i]);
+	}
+
 	// INODE BITMAP to get unallocated inode number
 	int unallocatedInodeNumber = 0;
 
 	for(int i = 0; i< SUPERBLOCKPTR->num_inodes; i++){
 		unsigned int bitVal = getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, i);
+		printf("BitVal: %d\n", bitVal);
 		if(bitVal == 0){
 			unallocatedInodeNumber = i;
-
+			printf("unallocatedNumber: %d\n", unallocatedInodeNumber);
 			// Set newly found unallocated inode bit as allocated
 			setBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, i);
+
+			// INODE TABLE
+			// Find newly created inode using indexing of inode 
+			// Progagate into inode passed in as argument
+			int rc = getInodeCopyFromInodeTable(unallocatedInodeNumber, inode);
+			if (rc < 0)
+				return -1;
+			*inum = unallocatedInodeNumber;
+			printf("parameters AFTER UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
+
 			return 0;
 		}
 	}
 	
-	// INODE TABLE
-	// Find newly created inode using indexing of inode 
-	// Progagate into inode passed in as argument
-	getInodeCopyFromInodeTable(unallocatedInodeNumber, inode);
-	*inum = unallocatedInodeNumber;
-
+	
 	return -1;
 }
 
@@ -621,23 +650,29 @@ If name already exists, return success.
 Information format:
 */
 int run_cret(message_t* m){
-	
+	printf("START OF CREATE\n");
 	int pinum = m->c_sent_inum;
 	int type = m->c_sent_ftype;
-	printf("TYPE line 375: %d\n", type);
+	
 	char name[28];
 	strcpy(name, m->c_sent_name);
 
 	// PARENT CHECKS
 	// INODE BITMAP
 	// Checks if parent inode exist before allocating file as child
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 1)
 		return -1;
+
+	printf("#################\n");
+	printf("%d\n", type);
 
 	// DATA BITMAP
 	// Checks if parent data block exists
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 1)
 		return -1;
+
+
+	
 
 	// INODE TABLE
 	// Retrieves parent inode from inode table using inode number indexing, since it exists
@@ -654,17 +689,19 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
-	// Assign new inode in inode table
-	newInode.type = type;
-	newInode.size = 0;
+	printf("END OF TESTSSSSSSSSSS\n");
 
-	addInodeToInodeTable(newInodeNumber, &newInode);
+	// // Assign new inode in inode table
+	// newInode.type = type;
+	// newInode.size = 0;
 
-	// DATA REGION
-	dir_ent_t dirEntry;
+	// addInodeToInodeTable(newInodeNumber, &newInode);
 
-	// Checks if parent directory entries has space for new directory entry
-	addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
+	// // DATA REGION
+	// dir_ent_t dirEntry;
+
+	// // Checks if parent directory entries has space for new directory entry
+	// addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
 
 	fsync(fd); // Idempotency says to fsync before each successful return
 	return 0;
