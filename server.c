@@ -49,12 +49,29 @@ unsigned int get_bit(unsigned int *bitmap, int position) {
    int index = position / 32;
    int offset = 31 - (position % 32);
    return (bitmap[index] >> offset) & 0x1;
+   
 }
 
-void set_bit(unsigned int *bitmap, int position) {
+// Takes in a bitmap, offsets starting from the right, offset by "position" and the pointed next bit will change to 1
+// E.g., 100000 -(bitmap, 2)-> 100100
+// E.g., 100100 -(bitmap, 2)-> 100100
+// E.g., 100100 -(bitmap, 3)-> 110100
+void set_bit_to_one(unsigned int *bitmap, int position) {
    int index = position / 32;
    int offset = 31 - (position % 32);
    bitmap[index] |= 0x1 << offset;
+   //bitmap[index] &= ~(0x1 << offset);
+   
+}
+// Takes in a bitmap, offsets starting from the right, offset by "position" and the pointer next bit will change to 0
+// E.g., 100000 -(bitmap, 2)-> 100000
+// E.g., 100100 -(bitmap, 2)-> 100000
+void set_bit_to_zero(unsigned int *bitmap, int position) {
+   int index = position / 32;
+   int offset = 31 - (position % 32);
+   // bitmap[index] |= 0x1 << offset;
+   bitmap[index] &= ~(0x1 << offset);
+   
 }
 
 /*This function returns some information about the file specified by inum. Upon success, return 0, 
@@ -382,29 +399,60 @@ int run_lookup(message_t* m){
 }
 
 int getBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
-	// printf("___________________________\n");
-	// printf("GetBitmapVal\n");
-	// printf("blockNumAddr: %d\n", blockNumberAddress);
-	// printf("inum: %d\n", inum);
-	char bufBlock[BLOCKSIZE];
-	lseek(fd, blockNumberAddress * BLOCKSIZE,SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-
-	// printf("bit: %d\n", get_bit((unsigned int*) bufBlock, inum));	
-
-	return get_bit((unsigned int*) bufBlock, inum);
-	
-}
-
-int setBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
-	// printf("setBitmapValGivenBlockNumAndInum\n");
+	printf("___________________________\n");
+	printf("GetBitmapVal\n");
 	// printf("blockNumAddr: %d\n", blockNumberAddress);
 	// printf("inum: %d\n", inum);
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
-	set_bit((unsigned int*) bufBlock, inum);
+	//inode_block_t* inodeBlock = (inode_block_t*) bufBlock;
+
+	printf("bit: %d\n", get_bit((unsigned int*) bufBlock, inum));	
+
+	return get_bit((unsigned int*) bufBlock, inum);
+	
+}
+
+int setOneToBitMap(int blockNumberAddress, int inum){
+	// printf("setBitmapValGivenBlockNumAndInum\n");
+	// printf("blockNumAddr: %d\n", blockNumberAddress);
+	// printf("inum: %d\n", inum);
+	
+	char bufBlock[BLOCKSIZE];
+	//int bufBlock[BLOCKSIZE/sizeof(int)];
+
+	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
+	
+	read(fd, bufBlock, BLOCKSIZE);
+
+	
+	set_bit_to_one((unsigned int*) bufBlock, inum);
+
+	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
+	write(fd, bufBlock, BLOCKSIZE);
+
+	return 0;
+	
+}
+
+int setZeroToBitMap(int blockNumberAddress, int inum){
+	// printf("setBitmapValGivenBlockNumAndInum\n");
+	// printf("blockNumAddr: %d\n", blockNumberAddress);
+	// printf("inum: %d\n", inum);
+	
+	char bufBlock[BLOCKSIZE];
+	//int bufBlock[BLOCKSIZE/sizeof(int)];
+
+	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	
+	set_bit_to_zero((unsigned int*) bufBlock, inum);
+
+	lseek(fd, blockNumberAddress * BLOCKSIZE, SEEK_SET);
+	write(fd, bufBlock, BLOCKSIZE);
 
 	return 0;
 	
@@ -435,12 +483,23 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	// printf("Items in inode AFTER retrieval: \n");
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		inode->direct[i] = inumInode.direct[i];
-		// printf("item %d>> %d\n", i, inode->direct[i]);
 
 	}
 
-	printf("size of inode_t: %ld\n", sizeof(inode_t));
-	printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
+	// printf("size of inode_t: %ld\n", sizeof(inode_t));
+	// printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
+	// printf("direct[] in inode_t:\n");
+	// for(int i = 0; i< DIRECT_PTRS; i++){
+	// 	// Prints out bitval: not alloced if direct[i] points to -1
+	// 	if(inode->direct[i] == -1){
+	// 		printf("item %d>> %d : bitval: not alloced\n", i, inode->direct[i]);
+
+	// 	}else{
+	// 		printf("item %d>> %d : bitval: %d\n", i, inode->direct[i], getBitmapValGivenBlockNumAndInum(inode->direct[i], inum));
+	// 	}
+		
+
+	// }
 
 	return 0;
 }
@@ -480,9 +539,12 @@ int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 		// printf("BitVal: %d\n", bitVal);
 		if(bitVal == 0){
 			unallocatedInodeNumber = i;
-			printf("unallocatedNumber: %d\n", unallocatedInodeNumber);
-			// Set newly found unallocated inode bit as allocated
-			setBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, i);
+			//printf("unallocatedNumber: %d\n", unallocatedInodeNumber);
+
+			// Set newly found unallocated inode bit as allocated/ 1
+			setOneToBitMap(SUPERBLOCKPTR->inode_bitmap_addr, i);
+
+			//printf("Setting bit val at inode bitmap to 1 after obtained free inode_t - bitval (Should be 1): %d\n", getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, i));
 
 			// INODE TABLE
 			// Find newly created inode using indexing of inode 
@@ -515,7 +577,8 @@ int getFreeDataBlockCopyFromDataRegion(int* blockNumber, dir_block_t* dirEntryBl
 		if(bitVal == 0){
 			unallocatedDatablockNumber = i;
 
-			setBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, i);
+			// set the found data block as allocated in data bitmap/ 1
+			setOneToBitMap(SUPERBLOCKPTR->data_bitmap_addr, i);
 			return 0;
 		}
 	}
@@ -615,6 +678,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		for(int j = 0; j< 128; j++){
 			dir_ent_t dirEntry = dirEntBlock->entries[j];
 
+			// printf("Name of directory entries: %s\n", dirEntry.name);
 			// Check if there are any unallocated directory entry dir_ent_t
 			if(dirEntry.inum == -1){
 				isThereEmptyDirEnt = true;
@@ -624,9 +688,18 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 				dirEntry.inum = copyOfDirEntryToAdd.inum;
 				strcpy(dirEntry.name, copyOfDirEntryToAdd.name);
 
-				lseek(fd, (blockNumber * BLOCKSIZE) + (j * sizeof(dir_ent_t)), SEEK_SET);
+				int offsetToDirEntry = (blockNumber * BLOCKSIZE) + (j * sizeof(dir_ent_t));
+				lseek(fd, offsetToDirEntry, SEEK_SET);
 				write(fd, &dirEntry, sizeof(dir_ent_t));
-				//SUPERBLOCKPTR->num_data ++; // SUPER IMPORTANT DO IT FOR ADDINODE!!
+				
+				
+				// printf("----- Found unallocated directory entry in existing blocks ------\n");
+				// printf("dinode direct[]'s block number where the free dirEntry is found: %d\n", blockNumber);
+				// printf("Entry number in the dir_block_t's blockNumber (Must be larger than 1 to account . & .. ): %d\n", j);
+				// printf("dirEntry.inum: %d\n", dirEntry.inum);
+				// printf("dirEntry.name: %s\n", dirEntry.name);
+				// printf("offset to directory entry using lseek: %d\n", offsetToDirEntry);
+
 				break;
 			}
 		}
@@ -690,15 +763,15 @@ int run_cret(message_t* m){
 	// PARENT CHECKS
 	// INODE BITMAP
 	// Checks if parent inode exist before allocating file as child
-	// if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
-	// 	return -1;
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
+		return -1;
 
-	printf("%d\n", type);
+	printf("type: %d\n", type);
 
 	// // DATA BITMAP
 	// // Checks if parent data block exists
-	// if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
-	// 	return -1;
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
+		return -1;
 	
 
 	// INODE TABLE

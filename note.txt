@@ -39,6 +39,7 @@ Client startup:
         Runs the client that communicates with the server.
 
 ROOT DIRECTORY - BY DEFAULT HAS TYPE: 0 (MFS_DIRECTORY); SIZE: 64
+				- Its direct[] holds {7, -1, -1 , -1, ....}
 ---------------------------------------------------------------------------------------
 Structs:
 
