@@ -399,8 +399,8 @@ int run_lookup(message_t* m){
 }
 
 int getBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
-	printf("___________________________\n");
-	printf("GetBitmapVal\n");
+	// printf("___________________________\n");
+	// printf("GetBitmapVal\n");
 	// printf("blockNumAddr: %d\n", blockNumberAddress);
 	// printf("inum: %d\n", inum);
 	char bufBlock[BLOCKSIZE];
@@ -409,7 +409,7 @@ int getBitmapValGivenBlockNumAndInum(int blockNumberAddress, int inum){
 
 	//inode_block_t* inodeBlock = (inode_block_t*) bufBlock;
 
-	printf("bit: %d\n", get_bit((unsigned int*) bufBlock, inum));	
+	//printf("bit: %d\n", get_bit((unsigned int*) bufBlock, inum));	
 
 	return get_bit((unsigned int*) bufBlock, inum);
 	
@@ -671,6 +671,10 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 	for(int i = 0; i< DIRECT_PTRS && (!isThereEmptyDirEnt); i++){
 		int blockNumber = dinode.direct[i];
+		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
+		if(blockNumber == 0 || blockNumber == -1){
+			break;
+		}
 
 		lseek(fd, blockNumber * BLOCKSIZE, SEEK_SET);
 		read(fd, bufBlock, BLOCKSIZE);
@@ -707,7 +711,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 	// Check if dir_ent_t is allocated in the above blocks, if not, create a new block and add dir_ent_t
 	if(!isThereEmptyDirEnt){
-		
+		printf("REACH HERE KE??????????????????????????\n");
 		// Find new data block
 		int newDataBlockNumber;
 		dir_block_t newDirEntryBlock;
@@ -781,6 +785,7 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
+	
 	// CHILD
 	// Retrieves an unallocated inode number, to be allocated to the NEW directory entry
 	int newInodeNumber;
@@ -788,7 +793,6 @@ int run_cret(message_t* m){
 	rc = getFreeInodeCopyFromInodeTable(&newInodeNumber, &newInode);
 	if(rc < 0)
 		return -1;
-
 
 	// Assign new inode in inode table
 	newInode.type = type;

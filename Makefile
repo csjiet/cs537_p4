@@ -18,7 +18,7 @@ ${PROGS} : % : %.o Makefile.net
 
 compile: libmfs.so
 	gcc -o mkfs mkfs.c -Wall
-	./mkfs -f real_disk_image.img -d 1000 -i 100
+	./mkfs -f real_disk_image.img -d 1000 -i 200
 	gcc -o main main.c -Wall -L. -lmfs -g
 	ldd main
 	export LD_LIBRARY_PATH=.
