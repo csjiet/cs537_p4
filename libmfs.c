@@ -232,16 +232,7 @@ int MFS_Creat(int pinum, int type, char *name) {
 
     if(strlen(name) > 28) {
         return -1;
-    }
-
-    // // MFS_Lookup: Check if pinum exists and check if entry to be propagated exists in the parent dir exists
-    // int rcForLookup = 0;
-    // // Loops till lookup for parent inode is done
-    // while(rcForLookup >= 0){
-    //     rcForLookup = MFS_Lookup(pinum, name);
-    // }
-
-    
+    } 
 
     message_t msg;
     msg.c_sent_inum = pinum;

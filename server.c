@@ -130,8 +130,8 @@ int run_write(message_t* m){
 	int inum = m->c_sent_inum;
 	int offset = m->c_sent_offset;
 	int nbytes = m->c_sent_nbytes;
-	// char* buffer = strdup(m->c_sent_buffer);
-	// printf("%s\n", &buffer);
+	char *buffer = strdup(m->c_sent_buffer);
+	
 	if (inum < 0) 
 		return -1;
 	if (offset < 0)
@@ -163,18 +163,31 @@ int run_write(message_t* m){
 		return -1;
 	} else {
 		// Find if we need 1 or two blocks to write. Minimum 1, max 2. 
-		if ((SUPERBLOCKPTR->inode_region_addr + offset + nbytes) > 4096) {
-			//Write to two blocks
+		if ((SUPERBLOCKPTR->inode_region_addr + offset + nbytes) < 4096) {
+			//Write to one block
+			lseek(fd, (SUPERBLOCKPTR->data_bitmap_addr) * BLOCKSIZE, SEEK_SET);
 			
-		}
+			//Write data block
+			write(fd, buffer, 4096);
+			
+			//Update Inode region?
+			lseek(fd, (SUPERBLOCKPTR->inode_bitmap_addr) * BLOCKSIZE, SEEK_SET);
+			write(fd, &inode, sizeof(inode_t));
+		}	
 		else {
-			//Write to a single block
-			
+			//Write to two blocks
+			//Split data to write
+			int split = BLOCKSIZE - (offset % BLOCKSIZE + nbytes);
+			int block1 = SUPERBLOCKPTR->data_bitmap_addr;
+			int block2 = SUPERBLOCKPTR->data_bitmap_addr + 1;
+			lseek(fd, block1 * BLOCKSIZE, SEEK_SET);
+			printf("%d, %d\n", split, block2);
+			//write(fd, buffer)
 		}
 	}
-
-
+	
 	fsync(fd); // Idempotency from writeup
+	free(buffer);
 	return 0;
 }
 
@@ -496,8 +509,34 @@ int addDirectoryEntryBlockToDataRegion(int blockNumber, dir_block_t* dirEntryBlo
 
 }
 
+int findParentNameGivenInum(int pinum, char* name){
 
-int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t dDirectoryEntry, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
+	int blockNumberOffsetInInodeTable = ceil((pinum * sizeof(inode_t))/ BLOCKSIZE);
+	int remainingOffsetWithinABlock = ceil((pinum * sizeof(inode_t))% BLOCKSIZE);
+
+	char bufBlock[sizeof(inode_t)];
+	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE + remainingOffsetWithinABlock, SEEK_SET);
+	read(fd, bufBlock, sizeof(inode_t));
+
+	inode_t* inodeBlockPtr = (inode_t*) bufBlock;
+
+	int firstBlockOfDirectBlockPtr = inodeBlockPtr->direct[0];
+
+	char dirBlockBuf[sizeof(dir_block_t)];
+	lseek(fd, firstBlockOfDirectBlockPtr * BLOCKSIZE, SEEK_SET);
+	read(fd, dirBlockBuf, sizeof(dir_block_t));
+
+	dir_block_t* dirBlock = (dir_block_t*) dirBlockBuf;
+	dir_ent_t parentDirEntry = dirBlock->entries[0];
+
+	strcpy(name, parentDirEntry.name);
+
+	return 0;
+
+}
+
+
+int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
 
 	// Ensure inode is a directory
 	assert(dinode.type == MFS_DIRECTORY);
@@ -557,13 +596,20 @@ int addDirEntryToDirectoryInode(inode_t dinode, dir_ent_t dDirectoryEntry, inode
 		dir_block_t newDirEntryBlock;
 		getFreeDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
 
-		newDirEntryBlock.entries[0].inum = 
-		newDirEntryBlock.entries[0].name = 
+		// Add . to new directory
+		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
+		strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
 
+		// Add .. to new directory 
+		newDirEntryBlock.entries[1].inum = dinum;
+		char name[28];
+		findParentNameGivenInum(dinum, name);
+		strcpy(newDirEntryBlock.entries[1].name, name);
+
+		// Commit the directory block to disk
 		addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
 		
 	}
-
 
 	return 0;
 }
@@ -588,10 +634,6 @@ int run_cret(message_t* m){
 	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
 		return -1;
 
-	// ETHAN: CHECK IF NAME IS ACTUALLY ALREAD IN THE PARENT DIRECTORY
-
-	// ETHAN: CHECKS IF THERE IS ANY UNASSIGNED INODE. IF NON, RETURN HERE.
-
 	// DATA BITMAP
 	// Checks if parent data block exists
 	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
@@ -604,16 +646,13 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
-
 	// CHILD
-	//// If program reaches this point: new file with name can be created.
 	// Retrieves an unallocated inode number, to be allocated to the NEW directory entry
 	int newInodeNumber;
 	inode_t newInode;
 	rc = getFreeInodeCopyFromInodeTable(&newInodeNumber, &newInode);
 	if(rc < 0)
 		return -1;
-
 
 	// Assign new inode in inode table
 	newInode.type = type;
@@ -625,34 +664,7 @@ int run_cret(message_t* m){
 	dir_ent_t dirEntry;
 
 	// Checks if parent directory entries has space for new directory entry
-	addDirEntryToDirectoryInode(pinode, newInode, dirEntry);
-
-	
-
-
-	// If it is a directory file which we create, we have to create direct pointers to . and .. blocks in 1 data.
-	if(type == MFS_DIRECTORY){
-		
-	// If it is a regular file
-	}else{
-
-	}
-
-	printf("%p\n", &newInode);
-
-	// ETHAN: IF TYPE IS DIRECTORY, THIS "NEWINODE" SHOULD HAVE DIRECT POINTERS TO ONE DATA BLOCK 4KB, WITH . ..
-
-	// ETHAN: IF TYPE IS FILE, THIS "NEWINODE". DONT ALLOCATE BLOCK, BUT CHECK WHEN YOU ARE WRITING IF THERE IS A BLOCK THAT IS ALLOCATED.!!
-
-	// Assign new directory entry in directory
-	// emptyDirEnt->inum = newlyCreatedInodeNum;
-	// strcpy(emptyDirEnt->name, name);
-
-
-	// Check if it is a directory
-
-	// DATA REGION
-
+	addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
 
 	fsync(fd); // Idempotency says to fsync before each successful return
 	return 0;

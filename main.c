@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
 
     rc = MFS_Stat(0, m);
     printf("SIZE: %d, TYPE: %d\n", m->size, m->type);
+    // rc = MFS_Creat(0, MFS_REGULAR_FILE, "test");
+    // printf("Create: %d\n", rc);
     rc = MFS_Shutdown();
     printf("shut %d\n", rc);
     return 0;
