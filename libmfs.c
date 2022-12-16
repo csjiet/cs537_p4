@@ -67,6 +67,7 @@ int MFS_Lookup(int pinum, char *name) {
     //strcpy(name, m.c_received_data);
     //printf("client: Received data from server: %s\n", name);
 
+    printf("C_RECEIVED_INUM!!!!!: %d\n", msg.c_received_inum);
     return msg.c_received_inum;
     
 }

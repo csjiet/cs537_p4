@@ -134,6 +134,18 @@ int setZeroToBitMap(int blockNumberAddress, int inum){
 	
 }
 
+void visualizeInode(inode_t* inode){
+
+	printf("~~~~~~Inode_t inode visualization!!!~~~~~~~~~\n");
+	printf("inode.type (0 is directory): %d\n",inode->type);
+	printf("----\n");
+	printf("inode.size: %d\n",inode->size);
+	printf("----\n");
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		printf("direct[%d]: %d\n", i,inode->direct[i]);
+	}
+}
+
 int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	// printf("----------------------\n");
 	// printf("parameters - INUM: %d, inodeType BEFORE UPDATE: %d, inodeSize BEFORE UPDATE: %d\n", inum, inode->type, inode->size);
@@ -161,6 +173,8 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 		inode->direct[i] = inumInode.direct[i];
 
 	}
+
+	visualizeInode(&inumInode);
 
 	// printf("size of inode_t: %ld\n", sizeof(inode_t));
 	// printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
@@ -395,7 +409,7 @@ void visualizeDirBlock(dir_block_t* dirBlock){
 }
 
 
-int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
+int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode, dir_ent_t* copyOfDirEntryToAdd){
 
 	// printf("START OF addDirEntryToDirectoryInode() param:\n");
 	// printf("param 1 -- inode_t dinode.type: %d; inode_t dinode.size: %d\n", dinode.type, dinode.size);
@@ -404,7 +418,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 	// printf("param 4 -- dir_ent_t name: %s; dir_ent_t inum: %d\n", copyOfDirEntryToAdd.name, copyOfDirEntryToAdd.inum);
 
 	// Ensure inode is a directory
-	assert(dinode.type == MFS_DIRECTORY);
+	assert(dinode->type == MFS_DIRECTORY);
 
 	// Check if directory entry dir_ent_t can be add in the current blocks we have in direct[]
 	bool isThereEmptyDirEnt = false;
@@ -414,7 +428,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 	int lastIndexInDirectPtrArr = 0; // This variable holds the latest unallocated block, in case new block allocation is needed if all existing blocks are full
 	for(int i = 0; i< DIRECT_PTRS && (!isThereEmptyDirEnt); i++){
-		int blockNumber = dinode.direct[i];
+		int blockNumber = dinode->direct[i];
 		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
 		if(blockNumber == 0 || blockNumber == -1){
 			// printf("blockNumber: %d\n", blockNumber);
@@ -439,8 +453,8 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 				// Write the dir_ent_t to disk
 				// Prepare the dir_ent_t we want to write
-				dirEntry.inum = copyOfDirEntryToAdd.inum;
-				strcpy(dirEntry.name, copyOfDirEntryToAdd.name);
+				dirEntry.inum = copyOfDirEntryToAdd->inum;
+				strcpy(dirEntry.name, copyOfDirEntryToAdd->name);
 
 				int offsetToDirEntry = (blockNumber * BLOCKSIZE) + (j * sizeof(dir_ent_t));
 				lseek(fd, offsetToDirEntry, SEEK_SET);
@@ -475,8 +489,8 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		//printf("Found free data block for dir_block_. Block number: %d\n", newDataBlockNumber);
 
 		// Write the new dir_ent_t to the first entry in new data block
-		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
-		strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
+		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd->inum;
+		strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd->name);
 		
 		// Write the newly found data block into disk
 		lseek(fd, newDataBlockNumber * BLOCKSIZE, SEEK_SET);
@@ -488,13 +502,13 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 		// Write newly allocated block number to direct[] for parent inode
 		// printf("Direct[] index for new block: %d\n", lastIndexInDirectPtrArr + 1);
-		dinode.direct[lastIndexInDirectPtrArr + 1] = newDataBlockNumber;
+		dinode->direct[lastIndexInDirectPtrArr + 1] = newDataBlockNumber;
 
 	}
 
 	// printf("new added child inode_t type (where 0=(MFS_DIRECTORY)): %d\n", addedInode.type);
 
-	if(addedInode.type == MFS_DIRECTORY){
+	if(addedInode->type == MFS_DIRECTORY){
 
 		int newBlockNumberForDirectory = 0;
 		dir_block_t newDirEntryBlock;
@@ -503,10 +517,13 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		newDirEntryBlock.entries[1].inum = dinum;
 		strcpy(newDirEntryBlock.entries[1].name, "..");
 
-		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
+		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd->inum;
 		strcpy(newDirEntryBlock.entries[0].name, ".");
 
 		addDirectoryEntryBlockToDataRegion(newBlockNumberForDirectory, &newDirEntryBlock);
+
+		addedInode->direct[0] = newBlockNumberForDirectory;
+		addInodeToInodeTable(copyOfDirEntryToAdd->inum, addedInode);
 		//visualizeDirBlock(&newDirEntryBlock);
 
 	}
@@ -735,6 +752,8 @@ int run_read(message_t* m){
 	return 0;
 }
 
+
+
 /*This function takes the parent inode number (which should be the inode number of a directory) and 
 looks up the entry name in it. The inode number of name is returned. Success: return inode number of 
 name; failure: return -1. Failure modes: invalid pinum, name does not exist in pinum.*/ 
@@ -758,9 +777,19 @@ int run_lookup(message_t* m){
 	if(rc < 0)
 		return -1;
 
+	//visualizeInode(&pinode);
+
+	// printf("pinum: %d\n", pinum);
+	// printf("pinode.type: %d\n", pinode.type);
+	if(pinode.type == MFS_REGULAR_FILE){
+		m->c_received_inum = -1;
+		return -1;
+	}
+
 	char bufBlock[BLOCKSIZE];
 	for(int i = 0; i< DIRECT_PTRS; i++){
 		int blockNumber = pinode.direct[i];
+
 		if(blockNumber == 0 || blockNumber == -1){
 			break;
 		}
@@ -778,7 +807,7 @@ int run_lookup(message_t* m){
 		}
 	}
 	
-	return -1;
+	return 0;
 	
 }
 
@@ -842,7 +871,7 @@ int run_cret(message_t* m){
 	// printf("THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: %d, dirEntry.name: %s\n", dirEntry.inum, dirEntry.name);
 
 	// Checks if parent directory entries has space for new directory entry
-	addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
+	addDirEntryToDirectoryInode(&pinode, pinum, &newInode, &dirEntry);
 
 	fsync(fd); // Idempotency says to fsync before each successful return
 	return 0;
