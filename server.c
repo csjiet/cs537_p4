@@ -212,6 +212,24 @@ int getDataForDirectoryEntryBlockCopyFromDataRegion(int blockNumberOffset, dir_b
 
 }
 
+int getDataForDirectoryEntryBlockCopyFromDataRegionWithAbsoluteOffset(int absoluteOffset, dir_block_t* dirEntryBlock){
+
+	char bufBlock[BLOCKSIZE];
+	lseek(fd, (absoluteOffset) * BLOCKSIZE, SEEK_SET);
+	read(fd, bufBlock, BLOCKSIZE);
+
+	dir_block_t* foundDirEntryBlock = (dir_block_t*) bufBlock;
+
+	for(int i = 0; i< 128; i++){
+		// printf("dirEntryBlock->entries[%d]: entries[]-> inum: (%d); entries[]-> name: (%s) \n",i, dirEntryBlock->entries[i].inum, dirEntryBlock->entries[i].name);
+
+		dirEntryBlock->entries[i] = foundDirEntryBlock->entries[i];
+	}
+
+	return 0;
+
+}
+
 int getDataForNormalBlockCopyFromDataRegion(int blockNumberOffset, char* dirEntryBlock){
 
 	char bufBlock[BLOCKSIZE];
@@ -731,19 +749,43 @@ int run_read(message_t* m){
 	if(rc < 0)
 		return -1;
 
+	// Check if the total of offset + nbytes exceeds block size allowed
+	int totalOffset = offset + nbytes;
+	if(totalOffset > (DIRECT_PTRS * BLOCKSIZE))
+		return -1;
+
+	//NOTE: We have not checked the case where if nbytes exceeds the file/ directory size
+
 	int blockIndex = floor(offset/ BLOCKSIZE);
 	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
 
-	printf("%d %d %d\n", nbytes, blockIndex, remainingOffsetWithinABlock);
-	for(int i = 0; i< DIRECT_PTRS; i++){
-		int absoluteBlockNumber = inode.direct[i];
-		if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0){
-			break;
-		}
+	int absoluteBlockNumber = inode.direct[blockIndex];
+	if(absoluteBlockNumber == -1 || absoluteBlockNumber == -1)
+		return -1;
+	
+	// Read and parse the directory
+	if(inode.type == MFS_DIRECTORY){
+		dir_block_t dirEntryBlockCopy;
+		getDataForDirectoryEntryBlockCopyFromDataRegionWithAbsoluteOffset(absoluteBlockNumber, &dirEntryBlockCopy);	
+		
+		int offsetToDirEnt = floor(offset/ sizeof(dir_ent_t));
+		char dirEntBuf[sizeof(dir_ent_t)];
+		lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + offsetToDirEnt, SEEK_SET);
+		read(fd, dirEntBuf, sizeof(dir_ent_t));
+		dir_ent_t* dirEntry = (dir_ent_t*) dirEntBuf;
 
-
-
+		m->c_received_mfs_dirent.inum = dirEntry->inum;
+		strcpy(m->c_received_mfs_dirent.name, dirEntry->name);
+	
 	}
+
+	// Read the data into buffer
+	lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+	char bufBlock[nbytes];
+	read(fd, bufBlock, nbytes);
+	strcpy(m->c_received_buffer, bufBlock);
+	m->c_received_buffer_size = nbytes;
+
 	
 	return 0;
 }
@@ -844,7 +886,11 @@ int run_cret(message_t* m){
 	if(rc < 0)
 		return -1;
 
-	
+	if(pinode.type == MFS_REGULAR_FILE){
+		m->c_received_rc = -1;
+		return -1;
+	}
+
 	// CHILD
 	// Retrieves an unallocated inode number, to be allocated to the NEW directory entry
 	int newInodeNumber;
