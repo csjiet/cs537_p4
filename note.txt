@@ -6,8 +6,8 @@ Running & Testing
 
 Running Tests:
 make clean
-make (make sure libmfs.so is filled (export LD_LIBRARY_PATH=.))
-sh /home/cs537-1/tests/p4/p4-test/runtests.sh
+make (make sure libmfs.so is filled ----> export LD_LIBRARY_PATH=.
+sh /home/cs537-1/tests/p4/p4-test-12.11/runtests.sh -c
 To run all tests add -c at the end of the command
 
 ---------------------------------------------------------------------------------------
@@ -40,6 +40,8 @@ Client startup:
 
 ROOT DIRECTORY - BY DEFAULT HAS TYPE: 0 (MFS_DIRECTORY); SIZE: 64
 				- Its direct[] holds {7, -1, -1 , -1, ....}
+
+sh /home/cs537-1/tests/p4/p4-test-12.11/runtests.sh -c
 ---------------------------------------------------------------------------------------
 Structs:
 

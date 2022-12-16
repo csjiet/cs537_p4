@@ -272,7 +272,7 @@ int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 	return -1;
 }
 
-int getFreeDirectoryEntryAbsoluteDataBlockCopyFromDataRegion(int* absoluteBlockNumber, dir_block_t* bufferBlock){
+int getFreeDirectoryEntryDataBlockCopyFromDataRegion(int* blockNumber, dir_block_t* bufferBlock){
 
 
 	// printf("Entering getFreeDataBlockCopyFromDataRegion(): ---------------------\n");
@@ -295,9 +295,7 @@ int getFreeDirectoryEntryAbsoluteDataBlockCopyFromDataRegion(int* absoluteBlockN
 			//getDataForDirectoryEntryBlockCopyFromDataRegion(unallocatedDatablockNumber + SUPERBLOCKPTR->data_region_addr, (dir_block_t*) bufferBlock);
 			getDataForDirectoryEntryBlockCopyFromDataRegion(unallocatedDatablockNumber, (dir_block_t*) bufferBlock);
 
-			//*blockNumber = unallocatedDatablockNumber;
-			*absoluteBlockNumber = unallocatedDatablockNumber + SUPERBLOCKPTR->data_region_addr;
-
+			*blockNumber = unallocatedDatablockNumber;
 
 			return 0;
 		}
@@ -306,11 +304,11 @@ int getFreeDirectoryEntryAbsoluteDataBlockCopyFromDataRegion(int* absoluteBlockN
 	return -1;
 }
 
-int getFreeNormalDataBlockCopyFromDataRegion(int* absoluteDataBlockNumber, char* bufferBlock){
+int getFreeNormalDataBlockCopyFromDataRegion(int* blockNumber, char* bufferBlock){
 
 
 	//printf("Entering getFreeNormalDataBlockCopyFromDataRegion(): ---------------------\n");
-	//printf("param BEFORE UPDATE -- blockNumber: %d, dir_block_t* dirEntryBlock: %p\n", *absoluteDataBlockNumber, bufferBlock);
+	//printf("param BEFORE UPDATE -- blockNumber: %d, dir_block_t* dirEntryBlock: %p\n", *blockNumber, bufferBlock);
 	// DATA BITMAP
 	int unallocatedDatablockNumber = 0;
 
@@ -327,9 +325,9 @@ int getFreeNormalDataBlockCopyFromDataRegion(int* absoluteDataBlockNumber, char*
 			//printf("bitVal of AFTER set to 1 (should be 1): %d\n", getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, i));
 
 			
-			getDataForNormalBlockCopyFromDataRegion(unallocatedDatablockNumber , bufferBlock);
+			getDataForNormalBlockCopyFromDataRegion(unallocatedDatablockNumber + SUPERBLOCKPTR->data_region_addr, bufferBlock);
 
-			*absoluteDataBlockNumber = unallocatedDatablockNumber + SUPERBLOCKPTR->data_region_addr;
+			*blockNumber = unallocatedDatablockNumber;
 
 			return 0;
 		}
@@ -366,8 +364,7 @@ int addInodeToInodeTable(int inum, inode_t* inode){
 
 int addDirectoryEntryBlockToDataRegion(int blockNumber, dir_block_t* dirEntryBlock){
 
-	//lseek(fd, (SUPERBLOCKPTR->data_region_addr + blockNumber) * BLOCKSIZE, SEEK_SET);
-	lseek(fd, (blockNumber) * BLOCKSIZE, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->data_region_addr + blockNumber) * BLOCKSIZE, SEEK_SET);
 	write(fd, dirEntryBlock, sizeof(dir_block_t));
 
 	return 0;
@@ -376,8 +373,7 @@ int addDirectoryEntryBlockToDataRegion(int blockNumber, dir_block_t* dirEntryBlo
 
 int addNormalBlockToDataRegion(int blockNumber, char* dirEntryBlock){
 
-	//lseek(fd, (SUPERBLOCKPTR->data_region_addr + blockNumber) * BLOCKSIZE, SEEK_SET);
-	lseek(fd, (blockNumber) * BLOCKSIZE, SEEK_SET);
+	lseek(fd, (SUPERBLOCKPTR->data_region_addr + blockNumber) * BLOCKSIZE, SEEK_SET);
 	write(fd, dirEntryBlock, BLOCKSIZE);
 
 	return 0;
@@ -431,7 +427,8 @@ int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode,
 	// printf("param 4 -- dir_ent_t name: %s; dir_ent_t inum: %d\n", copyOfDirEntryToAdd.name, copyOfDirEntryToAdd.inum);
 
 	// Ensure inode is a directory
-	if(dinode->type == MFS_DIRECTORY)
+	// assert(dinode->type == MFS_DIRECTORY);
+	if(dinode->type != MFS_DIRECTORY)
 		return -1;
 
 	// Check if directory entry dir_ent_t can be add in the current blocks we have in direct[]
@@ -498,7 +495,7 @@ int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode,
 		// Find new data block
 		int newDataBlockNumber;
 		dir_block_t newDirEntryBlock;
-		getFreeDirectoryEntryAbsoluteDataBlockCopyFromDataRegion(&newDataBlockNumber, &newDirEntryBlock);
+		getFreeDirectoryEntryDataBlockCopyFromDataRegion(&newDataBlockNumber, &newDirEntryBlock);
 
 		//printf("Found free data block for dir_block_. Block number: %d\n", newDataBlockNumber);
 
@@ -507,7 +504,7 @@ int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode,
 		strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd->name);
 		
 		// Write the newly found data block into disk
-		lseek(fd, (newDataBlockNumber) * BLOCKSIZE, SEEK_SET);
+		lseek(fd, (newDataBlockNumber + SUPERBLOCKPTR->data_region_addr) * BLOCKSIZE, SEEK_SET);
 		write(fd, &newDirEntryBlock, sizeof(dir_block_t));
 
 
@@ -526,7 +523,7 @@ int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode,
 
 		int newBlockNumberForDirectory = 0;
 		dir_block_t newDirEntryBlock;
-		getFreeDirectoryEntryAbsoluteDataBlockCopyFromDataRegion(&newBlockNumberForDirectory, &newDirEntryBlock);
+		getFreeDirectoryEntryDataBlockCopyFromDataRegion(&newBlockNumberForDirectory, &newDirEntryBlock);
 
 		newDirEntryBlock.entries[1].inum = dinum;
 		strcpy(newDirEntryBlock.entries[1].name, "..");
@@ -536,19 +533,18 @@ int addDirEntryToDirectoryInode(inode_t* dinode, int dinum, inode_t* addedInode,
 
 		addDirectoryEntryBlockToDataRegion(newBlockNumberForDirectory, &newDirEntryBlock);
 
-		addedInode->direct[0] = newBlockNumberForDirectory;
+		addedInode->direct[0] = newBlockNumberForDirectory + SUPERBLOCKPTR->data_region_addr;
 		addInodeToInodeTable(copyOfDirEntryToAdd->inum, addedInode);
 		//visualizeDirBlock(&newDirEntryBlock);
 
-	// Handle regular file creation
 	}else{
 		int newBlockNumberForRegularFile = 0;
-		char bufBlock[BLOCKSIZE];
-		getFreeNormalDataBlockCopyFromDataRegion(&newBlockNumberForRegularFile, bufBlock);
+		char newDirEntryBlock[BLOCKSIZE];
+		getFreeNormalDataBlockCopyFromDataRegion(&newBlockNumberForRegularFile, newDirEntryBlock);
 
-		addNormalBlockToDataRegion(newBlockNumberForRegularFile, bufBlock);
+		addNormalBlockToDataRegion(newBlockNumberForRegularFile, newDirEntryBlock);
 
-		addedInode->direct[0] = newBlockNumberForRegularFile;
+		addedInode->direct[0] = newBlockNumberForRegularFile + SUPERBLOCKPTR->data_region_addr;
 		addInodeToInodeTable(copyOfDirEntryToAdd->inum, addedInode);
 
 	}
@@ -1018,8 +1014,7 @@ int message_parser(message_t* m){
 int readImage(){
 
 	fd = open(IMGFILENAME, O_RDWR);
-	if(fd > -1)
-		return -1;
+	assert(fd > -1);
 
 	char* bufBlockPtr = (char*)malloc(sizeof(char) * BLOCKSIZE);
 	read(fd, bufBlockPtr, BLOCKSIZE); //reads the first block in the image to the buffer block
@@ -1066,8 +1061,7 @@ int main(int argc, char *argv[]) {
 
 	// Maps the image file to local memory
 	int rc = readImage();
-	if(rc > -1)
-		return -1;
+	assert(rc > -1);
 
     sd = UDP_Open(PORTNUM); // Opens server socket with port 10000
     assert(sd > -1);
