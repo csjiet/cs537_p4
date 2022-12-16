@@ -313,3 +313,12 @@ TESTS: 8/19
 	)init, create, look, creat, lookup, shutdown
 19. Test Deep (PASSING)
 	)init, creat, lookup, creat, lookup x 2, shutdown
+
+NEW Test Location:
+sh /home/cs537-1/tests/p4/p4-test-12.11/runtests.sh -c
+
+
+PIAZZA POSTS for Persist Tests:
+1978
+1970
+1949
