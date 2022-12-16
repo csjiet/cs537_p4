@@ -149,7 +149,7 @@ void visualizeInode(inode_t* inode){
 int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 	// printf("----------------------\n");
 	// printf("parameters - INUM: %d, inodeType BEFORE UPDATE: %d, inodeSize BEFORE UPDATE: %d\n", inum, inode->type, inode->size);
-	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = floor((inum * sizeof(inode_t))/ BLOCKSIZE);
 	// printf("BlockNumberOffset: %d\n", blockNumberOffsetInInodeTable);
 
 	char bufBlock[BLOCKSIZE];
@@ -338,7 +338,7 @@ int getFreeNormalDataBlockCopyFromDataRegion(int* blockNumber, char* bufferBlock
 
 int addInodeToInodeTable(int inum, inode_t* inode){
 
-	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = floor((inum * sizeof(inode_t))/ BLOCKSIZE);
 	int remainingOffsetWithinABlock = (inum * sizeof(inode_t)) - (blockNumberOffsetInInodeTable * BLOCKSIZE);
 
 	// printf("blockNumber offset in inode table: %d\n", blockNumberOffsetInInodeTable);
@@ -382,8 +382,8 @@ int addNormalBlockToDataRegion(int blockNumber, char* dirEntryBlock){
 
 int findParentNameGivenInum(int pinum, char* name){
 
-	int blockNumberOffsetInInodeTable = ceil((pinum * sizeof(inode_t))/ BLOCKSIZE);
-	int remainingOffsetWithinABlock = ceil((pinum * sizeof(inode_t))% BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = floor((pinum * sizeof(inode_t))/ BLOCKSIZE);
+	int remainingOffsetWithinABlock = floor((pinum * sizeof(inode_t))% BLOCKSIZE);
 
 	char bufBlock[sizeof(inode_t)];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE + remainingOffsetWithinABlock, SEEK_SET);
@@ -609,7 +609,7 @@ int run_write(message_t* m){
 
 	// INODE TABLE
 	// Get Inode address in table
-	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = floor((inum * sizeof(inode_t))/ BLOCKSIZE);
 	char bufBlock2[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock2, BLOCKSIZE);
@@ -717,58 +717,33 @@ int run_read(message_t* m){
 	
 	// INODE BITMAP
 	// Gets inode bitmap's location
-	char bufBlock[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock, BLOCKSIZE);
-
-	// Read inode bitmap AND get bit of inode
-	unsigned int bitVal = get_bit((unsigned int*) bufBlock, inum);
-
-	// Check if inode is not found
-	if(bitVal == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0)
 		return -1;
 
+	// DATA BITMAP
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, inum) == 0)
+		return -1;
 
 	// INODE TABLE
 	// Gets inode table's location
-	int blockNumberOffsetInInodeTable = ceil((inum * sizeof(inode_t))/ BLOCKSIZE);
-	char bufBlock1[BLOCKSIZE];
-	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock1, BLOCKSIZE);
-
-	inode_block_t* inodeBlockPtr = (inode_block_t*) bufBlock1;
-
-	int remainingInodeOffset = inum - (blockNumberOffsetInInodeTable * 128); // CHANGE THIS TO MODULUS
-
-	inode_t inode = inodeBlockPtr->inodes[remainingInodeOffset/ sizeof(inode_t)];
-
-
-
-	// DATA BITMAP
-	// Check whether the data region exists a data allocation for inode
-	char bufBlock2[BLOCKSIZE];
-	lseek(fd, SUPERBLOCKPTR->data_bitmap_addr * BLOCKSIZE, SEEK_SET);
-	read(fd, bufBlock2, BLOCKSIZE);
-
-	bitVal = get_bit((unsigned int*) bufBlock2, inum);
-
-	// Check if inode data is allocated 
-	if(bitVal == 0)
+	inode_t inode;
+	int rc = getInodeCopyFromInodeTable(inum, &inode);
+	if(rc < 0)
 		return -1;
 
-	// Check if file is regular file or directory
-	int fileType = inode.type;
+	int blockIndex = floor(offset/ BLOCKSIZE);
+	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
 
-	// DATA REGION
-	int rcDirPtr;
-	if(fileType == MFS_DIRECTORY){
-		rcDirPtr = offsetToDirectory(inode, offset, nbytes, m);
-	}else{
-		rcDirPtr = offsetToFile(inode, offset, nbytes, m);
+	printf("%d %d %d\n", nbytes, blockIndex, remainingOffsetWithinABlock);
+	for(int i = 0; i< DIRECT_PTRS; i++){
+		int absoluteBlockNumber = inode.direct[i];
+		if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0){
+			break;
+		}
+
+
+
 	}
-	
-	if(rcDirPtr < 0)
-		return -1;
 	
 	return 0;
 }
@@ -919,7 +894,7 @@ int run_unlink(message_t* m){
 
 	// INODE TABLE
 	// Get Inode address in table
-	int blockNumberOffsetInInodeTable = ceil((pinum * sizeof(inode_t))/ BLOCKSIZE);
+	int blockNumberOffsetInInodeTable = floor((pinum * sizeof(inode_t))/ BLOCKSIZE);
 	char bufBlock2[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->inode_region_addr + blockNumberOffsetInInodeTable) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock2, BLOCKSIZE);
