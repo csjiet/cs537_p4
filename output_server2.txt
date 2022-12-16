@@ -1,0 +1,271 @@
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 7]
+ data region address 10 [len 1000]
+ num inodes: 200 ;num data: [len 1000]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: test0
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 10
+PRINTS MULTIPLE TIME!!!!!!!!!!!!!!!!!!!!!!!!!!!
+. - newDirEntryBlock.entries[0].inum: (1); . - newDirEntryBlock.entries[0].name: (.)
+.. - newDirEntryBlock.entries[1].inum: (0); .. - newDirEntryBlock.entries[1].name: (..)
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE
+START OF CREATE

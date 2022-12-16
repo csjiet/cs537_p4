@@ -816,33 +816,44 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 	}
 
-	// Check if directory entry/ inode allocated is of type directory. If it is a directory, point it to a dir_block_t and assign in parent and current dir dir_ent_t
+	printf("new added child inode_t type (where 0=(MFS_DIRECTORY)): %d\n", addedInode.type);
+
 	if(addedInode.type == MFS_DIRECTORY){
-		int newBlockNumber = 0;
-		dir_block_t newDirEntryBlock;
-		getFreeDirectoryEntryDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
 
-		// Add . to new directory
-		newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
-		//strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
-		strcpy(newDirEntryBlock.entries[0].name, ".");
-
-		printf(". - newDirEntryBlock.entries[0].inum: (%d);", newDirEntryBlock.entries[0].inum);
-		printf(" . - newDirEntryBlock.entries[0].name: (%s)\n", newDirEntryBlock.entries[0].name);
-
-		// Add .. to new directory 
-		newDirEntryBlock.entries[1].inum = dinum;
-		//char name[28];
-		//findParentNameGivenInum(dinum, name);
-		strcpy(newDirEntryBlock.entries[1].name, "..");
-
-		printf(".. - newDirEntryBlock.entries[1].inum: (%d);", newDirEntryBlock.entries[1].inum);
-		printf(" .. - newDirEntryBlock.entries[1].name: (%s)\n", newDirEntryBlock.entries[1].name);
-
-		// Commit the directory block to disk
-		addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
-		
+		int newBlockNumberForDirectory = 0;
 	}
+
+	// printf("PRINTS MULTIPLE TIME!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+	// // Check if directory entry/ inode allocated is of type directory. If it is a directory, point it to a dir_block_t and assign in parent and current dir dir_ent_t
+	// if(addedInode.type == MFS_DIRECTORY){
+	// 	int newBlockNumber = 0;
+	// 	dir_block_t newDirEntryBlock;
+	// 	getFreeDirectoryEntryDataBlockCopyFromDataRegion(&newBlockNumber, &newDirEntryBlock);
+
+	// 	// Add . to new directory
+	// 	newDirEntryBlock.entries[0].inum = copyOfDirEntryToAdd.inum;
+	// 	//strcpy(newDirEntryBlock.entries[0].name, copyOfDirEntryToAdd.name);
+	// 	strcpy(newDirEntryBlock.entries[0].name, ".");
+
+	// 	printf(". - newDirEntryBlock.entries[0].inum: (%d);", newDirEntryBlock.entries[0].inum);
+	// 	printf(" . - newDirEntryBlock.entries[0].name: (%s)\n", newDirEntryBlock.entries[0].name);
+
+	// 	// Add .. to new directory 
+	// 	newDirEntryBlock.entries[1].inum = dinum;
+	// 	//char name[28];
+	// 	//findParentNameGivenInum(dinum, name);
+	// 	strcpy(newDirEntryBlock.entries[1].name, "..");
+
+	// 	printf(".. - newDirEntryBlock.entries[1].inum: (%d);", newDirEntryBlock.entries[1].inum);
+	// 	printf(" .. - newDirEntryBlock.entries[1].name: (%s)\n", newDirEntryBlock.entries[1].name);
+
+	// 	// Commit the directory block to disk
+	// 	addDirectoryEntryBlockToDataRegion(newBlockNumber, &newDirEntryBlock);
+		
+	// 	// PRINT To check if new directory's data region is correct
+	// 	visualizeDirBlock(&newDirEntryBlock);
+		
+	// }
 
 	return 0;
 }
