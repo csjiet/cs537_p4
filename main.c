@@ -6,7 +6,7 @@
 #include <assert.h>
 
 int main(int argc, char *argv[]) {
-    int rc = MFS_Init("localhost", 10100);
+    int rc = MFS_Init("localhost", 10000);
     printf("Init: %d\n", rc);
  
     /**

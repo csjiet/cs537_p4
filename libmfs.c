@@ -67,7 +67,6 @@ int MFS_Lookup(int pinum, char *name) {
     //strcpy(name, m.c_received_data);
     //printf("client: Received data from server: %s\n", name);
 
-    printf("C_RECEIVED_INUM!!!!!: %d\n", msg.c_received_inum);
     return msg.c_received_inum;
     
 }
@@ -301,17 +300,34 @@ Information format:
 */
 int MFS_Shutdown() {
     //printf("MFS Shutdown\n");
-  
+    // struct timeval tv;
+    // tv.tv_sec = 10;
     message_t msg;
     msg.c_sent_mtype = MFS_SHUTDOWN;
+    // Write a request to server to retrieve data 
+    // fd_set set;
+    // FD_ZERO(&set);
+    // FD_SET(rc, &set);
+
+    // rc = select(rc, &set, NULL, NULL, &tv);
+    //assert(rc == 0);
 
     rc = UDP_Write(sd, &addrSnd, (char*) &msg, sizeof(message_t));
     if(rc < 0){
         printf("client:: MFS_Shutdown failed; libmfs.c\n");
         return -1;
-    }    
+    }
+
+    // // Reads data sent back from server in message_t and returns a return code to check if server 
+    // // processsing was successful
+    // rc = UDP_Read(sd, &addrRcv, (char*) &msg, sizeof(message_t));
+    // if(rc < 0){
+    //     printf("client:: MFS_Stat READ failed; libmfs.c\n");
+    //     return -1;
+    // }
+    
    
+    // exit(0);
     // UDP_Close(20000);
-    UDP_Close(sd);
     return 0;
 }

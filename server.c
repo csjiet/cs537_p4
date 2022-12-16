@@ -174,7 +174,7 @@ int getInodeCopyFromInodeTable(int inum, inode_t* inode){
 
 	}
 
-	visualizeInode(&inumInode);
+	//visualizeInode(&inumInode);
 
 	// printf("size of inode_t: %ld\n", sizeof(inode_t));
 	// printf("Retrieved inode: inode_t -> type: %d, ->size: %d\n", inode->type, inode->size);
