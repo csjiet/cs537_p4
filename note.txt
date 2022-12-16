@@ -68,6 +68,10 @@ typedef struct {
 } bitmap_t;
 
 ---------------------------------------------------------------------------------------
+Dec 16
+- getFreeDirectoryEntryDataBlockCopyFromDataRegion
+was returning offset of the block, but I thought it was an absolute blockNumber
+
 // Dec 12 - notes for me 5.12pm
 Once we found inode_t, check if its a file or directory
 If its a file - just traverse throught he direct pointer, and get the data literally according to offset and nbytes

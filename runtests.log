@@ -18,16 +18,10 @@ layout details
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffde1f57000)
-	libmfs.so => ./libmfs.so (0x00007fd0c4364000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd0c411f000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007fd0c4370000)
-export LD_LIBRARY_PATH=.
-ldd main
-	linux-vdso.so.1 (0x00007ffe25795000)
-	libmfs.so => ./libmfs.so (0x00007fbc1852d000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbc182e8000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007fbc18539000)
+	linux-vdso.so.1 (0x00007ffddd9e7000)
+	libmfs.so => not found
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f65f7d49000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f65f7f95000)
 
 
 test build PASSED
@@ -47,15 +41,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9605
-/tmp/tmpkZRtIA/p/server 9605 /home/sui/Documents/cs537/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
+Starting server on port 6170
+/tmp/tmpIGpXJ2/p/server 6170 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test shutdown PASSED
@@ -75,19 +62,13 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7225
-/tmp/tmpkZRtIA/p/server 7225 /home/sui/Documents/cs537/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
+Starting server on port 9918
+/tmp/tmpIGpXJ2/p/server 9918 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
-test creat PASSED
+test creat FAILED
  (creat a file and check with lookup)
+ Timelimit (10.0s) exceeded
 
 ('starting', 'write')
 
@@ -97,22 +78,20 @@ Test write
 write then read one block
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9004
-/tmp/tmpkZRtIA/p/server 9004 /home/sui/Documents/cs537/cs537_p4/test.img
-('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00END BLOCK 1')
-('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-Failure: Corrupt data returned by read
+Starting server on port 6829
+/tmp/tmpIGpXJ2/p/server 6829 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test write FAILED
  (write then read one block)
- Corrupt data returned by read
+ Timelimit (10.0s) exceeded
 
 ('starting', 'stat')
 
@@ -122,20 +101,20 @@ Test stat
 stat a regular file
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7320
-/tmp/tmpkZRtIA/p/server 7320 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: Stat gave wrong size
+Starting server on port 5925
+/tmp/tmpIGpXJ2/p/server 5925 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test stat FAILED
  (stat a regular file)
- Stat gave wrong size
+ Timelimit (10.0s) exceeded
 
 ('starting', 'overwrite')
 
@@ -145,20 +124,20 @@ Test overwrite
 overwrite a block
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9649
-/tmp/tmpkZRtIA/p/server 9649 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: Corrupt data returned by read
+Starting server on port 8721
+/tmp/tmpIGpXJ2/p/server 8721 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test overwrite FAILED
  (overwrite a block)
- Corrupt data returned by read
+ Timelimit (10.0s) exceeded
 
 ('starting', 'maxfile')
 
@@ -168,20 +147,20 @@ Test maxfile
 write largest possible file
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        39
   inodes            128 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9149
-/tmp/tmpkZRtIA/p/server 9149 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: Corrupt data returned by read
+Starting server on port 6164
+/tmp/tmpIGpXJ2/p/server 6164 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test maxfile FAILED
  (write largest possible file)
- Corrupt data returned by read
+ Timelimit (10.0s) exceeded
 
 ('starting', 'maxfile2')
 
@@ -191,22 +170,20 @@ Test maxfile2
 write more blocks than possible
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8740
-/tmp/tmpkZRtIA/p/server 8740 /home/sui/Documents/cs537/cs537_p4/test.img
-31
-write more than need
-Failure: MFS_Write should fail on inalid block number
+Starting server on port 8384
+/tmp/tmpIGpXJ2/p/server 8384 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test maxfile2 FAILED
  (write more blocks than possible)
- MFS_Write should fail on inalid block number
+ Timelimit (10.0s) exceeded
 
 ('starting', 'dir1')
 
@@ -216,25 +193,20 @@ Test dir1
 check root for dot entries
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9376
-/tmp/tmpkZRtIA/p/server 9376 /home/sui/Documents/cs537/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
+Starting server on port 8501
+/tmp/tmpIGpXJ2/p/server 8501 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
-test dir1 PASSED
+test dir1 FAILED
  (check root for dot entries)
+ Timelimit (10.0s) exceeded
 
 ('starting', 'dir2')
 
@@ -244,20 +216,20 @@ Test dir2
 create a new directory and check it
 
 **********************************************************************
+client:: MFS_Lookup READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9830
-/tmp/tmpkZRtIA/p/server 9830 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: '..' in directory should point to parent
+Starting server on port 8164
+/tmp/tmpIGpXJ2/p/server 8164 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test dir2 FAILED
  (create a new directory and check it)
- '..' in directory should point to parent
+ Timelimit (10.0s) exceeded
 
 ('starting', 'baddir')
 
@@ -267,25 +239,20 @@ Test baddir
 try to create a file with a file parent inode
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5842
-/tmp/tmpkZRtIA/p/server 5842 /home/sui/Documents/cs537/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
+Starting server on port 7342
+/tmp/tmpIGpXJ2/p/server 7342 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
-test baddir PASSED
+test baddir FAILED
  (try to create a file with a file parent inode)
+ Timelimit (15.0s) exceeded
 
 ('starting', 'baddir2')
 
@@ -295,20 +262,20 @@ Test baddir2
 try to lookup a file with a file parent inode
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8310
-/tmp/tmpkZRtIA/p/server 8310 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Lookup should fail if pinum is not a directory
+Starting server on port 5825
+/tmp/tmpIGpXJ2/p/server 5825 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test baddir2 FAILED
  (try to lookup a file with a file parent inode)
- MFS_Lookup should fail if pinum is not a directory
+ Timelimit (15.0s) exceeded
 
 ('starting', 'unlink')
 
@@ -318,20 +285,20 @@ Test unlink
 unlink a file
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9279
-/tmp/tmpkZRtIA/p/server 9279 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Unlink returned failure pinum=0 name='test'
+Starting server on port 7355
+/tmp/tmpIGpXJ2/p/server 7355 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test unlink FAILED
  (unlink a file)
- MFS_Unlink returned failure pinum=0 name='test'
+ Timelimit (10.0s) exceeded
 
 ('starting', 'unlink2')
 
@@ -341,20 +308,20 @@ Test unlink2
 unlink a directory
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9005
-/tmp/tmpkZRtIA/p/server 9005 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Unlink returned failure pinum=0 name='test'
+Starting server on port 7301
+/tmp/tmpIGpXJ2/p/server 7301 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test unlink2 FAILED
  (unlink a directory)
- MFS_Unlink returned failure pinum=0 name='test'
+ Timelimit (10.0s) exceeded
 
 ('starting', 'empty')
 
@@ -364,20 +331,20 @@ Test empty
 unlink a non-empty directory
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6245
-/tmp/tmpkZRtIA/p/server 6245 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Unlink returned failure pinum=1 name='testfile'
+Starting server on port 8291
+/tmp/tmpIGpXJ2/p/server 8291 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test empty FAILED
  (unlink a non-empty directory)
- MFS_Unlink returned failure pinum=1 name='testfile'
+ Timelimit (10.0s) exceeded
 
 ('starting', 'name')
 
@@ -387,21 +354,15 @@ Test name
 name too long
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        36
   inodes            32 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5952
-/tmp/tmpkZRtIA/p/server 5952 /home/sui/Documents/cs537/cs537_p4/test.img
--------Describes IMG + super block-----------
-SUPERBLOCK
- inode bitmap address 1 [len 1]
- data bitmap address 2 [len 1]
- inode region address 3 [len 1]
- data region address 4 [len 32]
- num inodes: 32 ;num data: [len 32]
+Starting server on port 9329
+/tmp/tmpIGpXJ2/p/server 9329 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test name PASSED
@@ -421,14 +382,13 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9996
-/tmp/tmpkZRtIA/p/server 9996 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: Corrupt data returned by read
+Starting server on port 6436
+/tmp/tmpIGpXJ2/p/server 6436 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test persist FAILED
  (restart server after creating a file)
- Corrupt data returned by read
+ Timelimit (30.0s) exceeded
 
 ('starting', 'bigdir')
 
@@ -438,115 +398,21 @@ Test bigdir
 create a directory with 126 files
 
 **********************************************************************
+client:: MFS_Stat READ failed; libmfs.c
 total blocks        39
   inodes            128 [size of each: 128]
   data blocks       32
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5901
-/tmp/tmpkZRtIA/p/server 5901 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=1 type=1 name='1'
+Starting server on port 9820
+/tmp/tmpIGpXJ2/p/server 9820 /home/sui/Documents/cs537/cs537_p4/test.img
 
 
 test bigdir FAILED
  (create a directory with 126 files)
- MFS_Creat returned failure inum=1 type=1 name='1'
+ User interrupted test
 
-('starting', 'deep')
-
-**********************************************************************
-
-Test deep
-create many deeply nested directories
-
-**********************************************************************
-total blocks        39
-  inodes            128 [size of each: 128]
-  data blocks       32
-layout details
-  inode bitmap address/len 1 [1]
-  data bitmap address/len  2 [1]
-Starting server on port 5760
-/tmp/tmpkZRtIA/p/server 5760 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=1 type=0 name='1'
-
-
-test deep FAILED
- (create many deeply nested directories)
- MFS_Creat returned failure inum=1 type=0 name='1'
-
-**********************************************************************
-Summary:
-test build PASSED
- (build project using make)
-
-test shutdown PASSED
- (init server and client then call shutdown)
-
-test creat PASSED
- (creat a file and check with lookup)
-
-test write FAILED
- (write then read one block)
- Corrupt data returned by read
-
-test stat FAILED
- (stat a regular file)
- Stat gave wrong size
-
-test overwrite FAILED
- (overwrite a block)
- Corrupt data returned by read
-
-test maxfile FAILED
- (write largest possible file)
- Corrupt data returned by read
-
-test maxfile2 FAILED
- (write more blocks than possible)
- MFS_Write should fail on inalid block number
-
-test dir1 PASSED
- (check root for dot entries)
-
-test dir2 FAILED
- (create a new directory and check it)
- '..' in directory should point to parent
-
-test baddir PASSED
- (try to create a file with a file parent inode)
-
-test baddir2 FAILED
- (try to lookup a file with a file parent inode)
- MFS_Lookup should fail if pinum is not a directory
-
-test unlink FAILED
- (unlink a file)
- MFS_Unlink returned failure pinum=0 name='test'
-
-test unlink2 FAILED
- (unlink a directory)
- MFS_Unlink returned failure pinum=0 name='test'
-
-test empty FAILED
- (unlink a non-empty directory)
- MFS_Unlink returned failure pinum=1 name='testfile'
-
-test name PASSED
- (name too long)
-
-test persist FAILED
- (restart server after creating a file)
- Corrupt data returned by read
-
-test bigdir FAILED
- (create a directory with 126 files)
- MFS_Creat returned failure inum=1 type=1 name='1'
-
-test deep FAILED
- (create many deeply nested directories)
- MFS_Creat returned failure inum=1 type=0 name='1'
-
-Passed 6 of 19 tests.
-Overall 6 of 19
+Skipped 1 tests.
+To keep testing after failing a test, use flag '-c' or '--continue'
+client:: MFS_Stat READ failed; libmfs.c
