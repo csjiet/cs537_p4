@@ -731,6 +731,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
 		if(blockNumber == 0 || blockNumber == -1){
 			lastIndexInDirectPtrArr = i;
+
 			break;
 		}
 
@@ -744,6 +745,8 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 			// Check if there are any unallocated directory entry dir_ent_t
 			if(dirEntry.inum == -1){
 				isThereEmptyDirEnt = true;
+
+				printf("Filled up dir_ent_t in this block: %d, and this direct[] index: %d\n", blockNumber, j);
 
 				// Write the dir_ent_t to disk
 				// Prepare the dir_ent_t we want to write
