@@ -9,25 +9,25 @@ build project using make
 Trying to build project using make
 make
 gcc -o mkfs mkfs.c -Wall
-./mkfs -f real_disk_image.img -d 1000 -i 100
-total blocks        1007
-  inodes            100 [size of each: 128]
+./mkfs -f real_disk_image.img -d 1000 -i 200
+total blocks        1010
+  inodes            200 [size of each: 128]
   data blocks       1000
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
 gcc -o main main.c -Wall -L. -lmfs -g
 ldd main
-	linux-vdso.so.1 (0x00007ffce905c000)
-	libmfs.so => not found
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa1e2cde000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007fa1e2f2a000)
+	linux-vdso.so.1 (0x00007fff3dae8000)
+	libmfs.so => ./libmfs.so (0x00007fd50b6e0000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd50b49b000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fd50b6ec000)
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffe45d33000)
-	libmfs.so => not found
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3bd9674000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f3bd98c0000)
+	linux-vdso.so.1 (0x00007ffe2fdda000)
+	libmfs.so => ./libmfs.so (0x00007f7a08903000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f7a086be000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f7a0890f000)
 
 
 test build PASSED
@@ -47,8 +47,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6301
-/tmp/tmpf4mTS6/p/server 6301 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7469
+/tmp/tmpB4QUAo/p/server 7469 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -75,14 +75,26 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5895
-/tmp/tmpf4mTS6/p/server 5895 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 5944
+/tmp/tmpB4QUAo/p/server 5944 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: test
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 4
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
 
 
-test creat FAILED
+test creat PASSED
  (creat a file and check with lookup)
- MFS_Creat returned failure inum=0 type=1 name='test'
 
 ('starting', 'write')
 
@@ -98,14 +110,16 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8570
-/tmp/tmpf4mTS6/p/server 8570 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 6896
+/tmp/tmpB4QUAo/p/server 6896 /home/sui/Documents/cs537/cs537_p4/test.img
+('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00END BLOCK 1')
+('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+Failure: Corrupt data returned by read
 
 
 test write FAILED
  (write then read one block)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 ('starting', 'stat')
 
@@ -121,14 +135,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5015
-/tmp/tmpf4mTS6/p/server 5015 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 9702
+/tmp/tmpB4QUAo/p/server 9702 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: Stat gave wrong size
 
 
 test stat FAILED
  (stat a regular file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Stat gave wrong size
 
 ('starting', 'overwrite')
 
@@ -144,14 +158,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7399
-/tmp/tmpf4mTS6/p/server 7399 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 5437
+/tmp/tmpB4QUAo/p/server 5437 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: Corrupt data returned by read
 
 
 test overwrite FAILED
  (overwrite a block)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 ('starting', 'maxfile')
 
@@ -167,14 +181,14 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7490
-/tmp/tmpf4mTS6/p/server 7490 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 8811
+/tmp/tmpB4QUAo/p/server 8811 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: Corrupt data returned by read
 
 
 test maxfile FAILED
  (write largest possible file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 ('starting', 'maxfile2')
 
@@ -190,14 +204,16 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8613
-/tmp/tmpf4mTS6/p/server 8613 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 6236
+/tmp/tmpB4QUAo/p/server 6236 /home/sui/Documents/cs537/cs537_p4/test.img
+31
+write more than need
+Failure: MFS_Write should fail on inalid block number
 
 
 test maxfile2 FAILED
  (write more blocks than possible)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ MFS_Write should fail on inalid block number
 
 ('starting', 'dir1')
 
@@ -213,8 +229,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8553
-/tmp/tmpf4mTS6/p/server 8553 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 8610
+/tmp/tmpB4QUAo/p/server 8610 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -241,14 +257,155 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6816
-/tmp/tmpf4mTS6/p/server 6816 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
+Starting server on port 6127
+/tmp/tmpB4QUAo/p/server 6127 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: testdir
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 4
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
 
 
-test dir2 FAILED
+test dir2 PASSED
  (create a new directory and check it)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 ('starting', 'baddir')
 
@@ -264,14 +421,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5629
-/tmp/tmpf4mTS6/p/server 5629 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
+Starting server on port 7907
+/tmp/tmpB4QUAo/p/server 7907 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: MFS_Creat should fail if pinum is not a directory
 
 
 test baddir FAILED
  (try to create a file with a file parent inode)
- MFS_Creat returned failure inum=0 type=1 name='testdir'
+ MFS_Creat should fail if pinum is not a directory
 
 ('starting', 'baddir2')
 
@@ -287,14 +444,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6345
-/tmp/tmpf4mTS6/p/server 6345 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='testdir'
+Starting server on port 6852
+/tmp/tmpB4QUAo/p/server 6852 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: MFS_Lookup should fail if pinum is not a directory
 
 
 test baddir2 FAILED
  (try to lookup a file with a file parent inode)
- MFS_Creat returned failure inum=0 type=1 name='testdir'
+ MFS_Lookup should fail if pinum is not a directory
 
 ('starting', 'unlink')
 
@@ -310,14 +467,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8813
-/tmp/tmpf4mTS6/p/server 8813 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 7904
+/tmp/tmpB4QUAo/p/server 7904 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: MFS_Unlink returned failure pinum=0 name='test'
 
 
 test unlink FAILED
  (unlink a file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ MFS_Unlink returned failure pinum=0 name='test'
 
 ('starting', 'unlink2')
 
@@ -333,14 +490,150 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7411
-/tmp/tmpf4mTS6/p/server 7411 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=0 name='test'
+Starting server on port 9558
+/tmp/tmpB4QUAo/p/server 9558 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: test
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 4
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].naFailure: MFS_Unlink returned failure pinum=0 name='test'
 
 
 test unlink2 FAILED
  (unlink a directory)
- MFS_Creat returned failure inum=0 type=0 name='test'
+ MFS_Unlink returned failure pinum=0 name='test'
 
 ('starting', 'empty')
 
@@ -356,14 +649,150 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9189
-/tmp/tmpf4mTS6/p/server 9189 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
+Starting server on port 5557
+/tmp/tmpB4QUAo/p/server 5557 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: testdir
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 4
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121]Failure: MFS_Unlink returned failure pinum=0 name='testfile'
 
 
 test empty FAILED
  (unlink a non-empty directory)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
+ MFS_Unlink returned failure pinum=0 name='testfile'
 
 ('starting', 'name')
 
@@ -379,8 +808,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6502
-/tmp/tmpf4mTS6/p/server 6502 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7100
+/tmp/tmpB4QUAo/p/server 7100 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -407,14 +836,14 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6607
-/tmp/tmpf4mTS6/p/server 6607 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=1 name='test'
+Starting server on port 9488
+/tmp/tmpB4QUAo/p/server 9488 /home/sui/Documents/cs537/cs537_p4/test.img
+Failure: Corrupt data returned by read
 
 
 test persist FAILED
  (restart server after creating a file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 ('starting', 'bigdir')
 
@@ -430,14 +859,1037 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8338
-/tmp/tmpf4mTS6/p/server 8338 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
+Starting server on port 9429
+/tmp/tmpB4QUAo/p/server 9429 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 4]
+ data region address 7 [len 32]
+ num inodes: 128 ;num data: [len 32]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: testdir
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 2, dirEntry.name: 0
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 3
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 3, dirEntry.name: 1
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 4
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 4, dirEntry.name: 2
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 5
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 5, dirEntry.name: 3
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 6
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 6, dirEntry.name: 4
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 7
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 7, dirEntry.name: 5
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 8
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 8, dirEntry.name: 6
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 9
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 9, dirEntry.name: 7
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 10
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 10, dirEntry.name: 8
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 11
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 11, dirEntry.name: 9
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 12
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 12, dirEntry.name: 10
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 13
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 13, dirEntry.name: 11
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 14
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 14, dirEntry.name: 12
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 15
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 15, dirEntry.name: 13
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 16
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 16, dirEntry.name: 14
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 17
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 17, dirEntry.name: 15
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 18
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 18, dirEntry.name: 16
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 19
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 19, dirEntry.name: 17
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 20
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 20, dirEntry.name: 18
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 21
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 21, dirEntry.name: 19
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 22
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 22, dirEntry.name: 20
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 23
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 23, dirEntry.name: 21
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 24
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 24, dirEntry.name: 22
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 25
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 25, dirEntry.name: 23
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 26
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 26, dirEntry.name: 24
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 27
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 27, dirEntry.name: 25
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 28
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 28, dirEntry.name: 26
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 29
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 29, dirEntry.name: 27
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 30
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 30, dirEntry.name: 28
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 31
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 31, dirEntry.name: 29
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 32
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 32, dirEntry.name: 30
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 33
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 33, dirEntry.name: 31
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 34
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 34, dirEntry.name: 32
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 35
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 35, dirEntry.name: 33
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 36
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 36, dirEntry.name: 34
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 37
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 37, dirEntry.name: 35
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 38
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 38, dirEntry.name: 36
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 39
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 39, dirEntry.name: 37
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 40
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 40, dirEntry.name: 38
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 41
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 41, dirEntry.name: 39
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 42
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 42, dirEntry.name: 40
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 43
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 43, dirEntry.name: 41
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 44
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 44, dirEntry.name: 42
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 45
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 45, dirEntry.name: 43
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 46
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 46, dirEntry.name: 44
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 47
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 47, dirEntry.name: 45
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 48
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 48, dirEntry.name: 46
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 49
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 49, dirEntry.name: 47
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 50
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 50, dirEntry.name: 48
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 51
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 51, dirEntry.name: 49
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 52
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 52, dirEntry.name: 50
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 53
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 53, dirEntry.name: 51
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 54
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 54, dirEntry.name: 52
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 55
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 55, dirEntry.name: 53
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 56
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 56, dirEntry.name: 54
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 57
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 57, dirEntry.name: 55
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 58
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 58, dirEntry.name: 56
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 59
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 59, dirEntry.name: 57
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 60
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 60, dirEntry.name: 58
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 61
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 61, dirEntry.name: 59
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 62
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 62, dirEntry.name: 60
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 63
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 63, dirEntry.name: 61
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 64
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 64, dirEntry.name: 62
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 65
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 65, dirEntry.name: 63
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 66
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 66, dirEntry.name: 64
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 67
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 67, dirEntry.name: 65
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 68
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 68, dirEntry.name: 66
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 69
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 69, dirEntry.name: 67
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 70
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 70, dirEntry.name: 68
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 71
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 71, dirEntry.name: 69
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 72
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 72, dirEntry.name: 70
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 73
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 73, dirEntry.name: 71
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 74
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 74, dirEntry.name: 72
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 75
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 75, dirEntry.name: 73
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 76
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 76, dirEntry.name: 74
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 77
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 77, dirEntry.name: 75
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 78
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 78, dirEntry.name: 76
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 79
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 79, dirEntry.name: 77
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 80
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 80, dirEntry.name: 78
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 81
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 81, dirEntry.name: 79
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 82
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 82, dirEntry.name: 80
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 83
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 83, dirEntry.name: 81
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 84
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 84, dirEntry.name: 82
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 85
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 85, dirEntry.name: 83
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 86
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 86, dirEntry.name: 84
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 87
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 87, dirEntry.name: 85
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 88
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 88, dirEntry.name: 86
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 89
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 89, dirEntry.name: 87
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 90
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 90, dirEntry.name: 88
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 91
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 91, dirEntry.name: 89
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 92
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 92, dirEntry.name: 90
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 93
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 93, dirEntry.name: 91
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 94
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 94, dirEntry.name: 92
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 95
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 95, dirEntry.name: 93
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 96
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 96, dirEntry.name: 94
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 97
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 97, dirEntry.name: 95
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 98
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 98, dirEntry.name: 96
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 99
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 99, dirEntry.name: 97
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 100
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 100, dirEntry.name: 98
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 101
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 101, dirEntry.name: 99
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 102
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 102, dirEntry.name: 100
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 103
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 103, dirEntry.name: 101
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 104
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 104, dirEntry.name: 102
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 105
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 105, dirEntry.name: 103
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 106
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 106, dirEntry.name: 104
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 107
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 107, dirEntry.name: 105
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 108
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 108, dirEntry.name: 106
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 109
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 109, dirEntry.name: 107
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 110
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 110, dirEntry.name: 108
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 111
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 111, dirEntry.name: 109
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 112
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 112, dirEntry.name: 110
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 113
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 113, dirEntry.name: 111
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 114
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 114, dirEntry.name: 112
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 115
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 115, dirEntry.name: 113
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 116
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 116, dirEntry.name: 114
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 117
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 117, dirEntry.name: 115
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 118
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 118, dirEntry.name: 116
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 119
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 119, dirEntry.name: 117
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 120
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 120, dirEntry.name: 118
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 121
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 121, dirEntry.name: 119
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 122
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 122, dirEntry.name: 120
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 123
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 123, dirEntry.name: 121
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 124
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 124, dirEntry.name: 122
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 125
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 125, dirEntry.name: 123
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 126
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 126, dirEntry.name: 124
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 127
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
+START OF CREATE
+type: 1
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 127, dirEntry.name: 125
+START OF addDirEntryToDirectoryInode() param:
+blockNumber: -1
+WUTTWUTWTUWTUWTUWUTWUTWUTUWTUWTUWUTWUTUWTUWUTUWUTWUTUWTUWEUWUTUWTUWTUWTUWUTWUT
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 1
 
 
-test bigdir FAILED
+test bigdir PASSED
  (create a directory with 126 files)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 ('starting', 'deep')
 
@@ -453,14 +1905,699 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6448
-/tmp/tmpf4mTS6/p/server 6448 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: MFS_Creat returned failure inum=0 type=0 name='testdir'
+Starting server on port 7877
+/tmp/tmpB4QUAo/p/server 7877 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 4]
+ data region address 7 [len 32]
+ num inodes: 128 ;num data: [len 32]
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 1, dirEntry.name: testdir
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 2
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 1   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 2, dirEntry.name: 0
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 3
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 2   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 3, dirEntry.name: 1
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 4
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 3   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 4, dirEntry.name: 2
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 5
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 4   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
+START OF CREATE
+type: 0
+THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: 5, dirEntry.name: 3
+START OF addDirEntryToDirectoryInode() param:
+Things that are stored - Item at direct[i] i - index: 6
+Filled up dir_ent_t in this block: 7
+new added child inode_t type (where 0=(MFS_DIRECTORY)): 0
+~~~~~~~~~~~~~~~~dir_block_t VISUALIZER~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dir_ent_t entries[0].inum: 5   ;dir_ent_t entries[0].name: .
+dir_ent_t entries[1].inum: 0   ;dir_ent_t entries[1].name: ..
+dir_ent_t entries[2].inum: 0   ;dir_ent_t entries[2].name: 
+dir_ent_t entries[3].inum: 0   ;dir_ent_t entries[3].name: 
+dir_ent_t entries[4].inum: 0   ;dir_ent_t entries[4].name: 
+dir_ent_t entries[5].inum: 0   ;dir_ent_t entries[5].name: 
+dir_ent_t entries[6].inum: 0   ;dir_ent_t entries[6].name: 
+dir_ent_t entries[7].inum: 0   ;dir_ent_t entries[7].name: 
+dir_ent_t entries[8].inum: 0   ;dir_ent_t entries[8].name: 
+dir_ent_t entries[9].inum: 0   ;dir_ent_t entries[9].name: 
+dir_ent_t entries[10].inum: 0   ;dir_ent_t entries[10].name: 
+dir_ent_t entries[11].inum: 0   ;dir_ent_t entries[11].name: 
+dir_ent_t entries[12].inum: 0   ;dir_ent_t entries[12].name: 
+dir_ent_t entries[13].inum: 0   ;dir_ent_t entries[13].name: 
+dir_ent_t entries[14].inum: 0   ;dir_ent_t entries[14].name: 
+dir_ent_t entries[15].inum: 0   ;dir_ent_t entries[15].name: 
+dir_ent_t entries[16].inum: 0   ;dir_ent_t entries[16].name: 
+dir_ent_t entries[17].inum: 0   ;dir_ent_t entries[17].name: 
+dir_ent_t entries[18].inum: 0   ;dir_ent_t entries[18].name: 
+dir_ent_t entries[19].inum: 0   ;dir_ent_t entries[19].name: 
+dir_ent_t entries[20].inum: 0   ;dir_ent_t entries[20].name: 
+dir_ent_t entries[21].inum: 0   ;dir_ent_t entries[21].name: 
+dir_ent_t entries[22].inum: 0   ;dir_ent_t entries[22].name: 
+dir_ent_t entries[23].inum: 0   ;dir_ent_t entries[23].name: 
+dir_ent_t entries[24].inum: 0   ;dir_ent_t entries[24].name: 
+dir_ent_t entries[25].inum: 0   ;dir_ent_t entries[25].name: 
+dir_ent_t entries[26].inum: 0   ;dir_ent_t entries[26].name: 
+dir_ent_t entries[27].inum: 0   ;dir_ent_t entries[27].name: 
+dir_ent_t entries[28].inum: 0   ;dir_ent_t entries[28].name: 
+dir_ent_t entries[29].inum: 0   ;dir_ent_t entries[29].name: 
+dir_ent_t entries[30].inum: 0   ;dir_ent_t entries[30].name: 
+dir_ent_t entries[31].inum: 0   ;dir_ent_t entries[31].name: 
+dir_ent_t entries[32].inum: 0   ;dir_ent_t entries[32].name: 
+dir_ent_t entries[33].inum: 0   ;dir_ent_t entries[33].name: 
+dir_ent_t entries[34].inum: 0   ;dir_ent_t entries[34].name: 
+dir_ent_t entries[35].inum: 0   ;dir_ent_t entries[35].name: 
+dir_ent_t entries[36].inum: 0   ;dir_ent_t entries[36].name: 
+dir_ent_t entries[37].inum: 0   ;dir_ent_t entries[37].name: 
+dir_ent_t entries[38].inum: 0   ;dir_ent_t entries[38].name: 
+dir_ent_t entries[39].inum: 0   ;dir_ent_t entries[39].name: 
+dir_ent_t entries[40].inum: 0   ;dir_ent_t entries[40].name: 
+dir_ent_t entries[41].inum: 0   ;dir_ent_t entries[41].name: 
+dir_ent_t entries[42].inum: 0   ;dir_ent_t entries[42].name: 
+dir_ent_t entries[43].inum: 0   ;dir_ent_t entries[43].name: 
+dir_ent_t entries[44].inum: 0   ;dir_ent_t entries[44].name: 
+dir_ent_t entries[45].inum: 0   ;dir_ent_t entries[45].name: 
+dir_ent_t entries[46].inum: 0   ;dir_ent_t entries[46].name: 
+dir_ent_t entries[47].inum: 0   ;dir_ent_t entries[47].name: 
+dir_ent_t entries[48].inum: 0   ;dir_ent_t entries[48].name: 
+dir_ent_t entries[49].inum: 0   ;dir_ent_t entries[49].name: 
+dir_ent_t entries[50].inum: 0   ;dir_ent_t entries[50].name: 
+dir_ent_t entries[51].inum: 0   ;dir_ent_t entries[51].name: 
+dir_ent_t entries[52].inum: 0   ;dir_ent_t entries[52].name: 
+dir_ent_t entries[53].inum: 0   ;dir_ent_t entries[53].name: 
+dir_ent_t entries[54].inum: 0   ;dir_ent_t entries[54].name: 
+dir_ent_t entries[55].inum: 0   ;dir_ent_t entries[55].name: 
+dir_ent_t entries[56].inum: 0   ;dir_ent_t entries[56].name: 
+dir_ent_t entries[57].inum: 0   ;dir_ent_t entries[57].name: 
+dir_ent_t entries[58].inum: 0   ;dir_ent_t entries[58].name: 
+dir_ent_t entries[59].inum: 0   ;dir_ent_t entries[59].name: 
+dir_ent_t entries[60].inum: 0   ;dir_ent_t entries[60].name: 
+dir_ent_t entries[61].inum: 0   ;dir_ent_t entries[61].name: 
+dir_ent_t entries[62].inum: 0   ;dir_ent_t entries[62].name: 
+dir_ent_t entries[63].inum: 0   ;dir_ent_t entries[63].name: 
+dir_ent_t entries[64].inum: 0   ;dir_ent_t entries[64].name: 
+dir_ent_t entries[65].inum: 0   ;dir_ent_t entries[65].name: 
+dir_ent_t entries[66].inum: 0   ;dir_ent_t entries[66].name: 
+dir_ent_t entries[67].inum: 0   ;dir_ent_t entries[67].name: 
+dir_ent_t entries[68].inum: 0   ;dir_ent_t entries[68].name: 
+dir_ent_t entries[69].inum: 0   ;dir_ent_t entries[69].name: 
+dir_ent_t entries[70].inum: 0   ;dir_ent_t entries[70].name: 
+dir_ent_t entries[71].inum: 0   ;dir_ent_t entries[71].name: 
+dir_ent_t entries[72].inum: 0   ;dir_ent_t entries[72].name: 
+dir_ent_t entries[73].inum: 0   ;dir_ent_t entries[73].name: 
+dir_ent_t entries[74].inum: 0   ;dir_ent_t entries[74].name: 
+dir_ent_t entries[75].inum: 0   ;dir_ent_t entries[75].name: 
+dir_ent_t entries[76].inum: 0   ;dir_ent_t entries[76].name: 
+dir_ent_t entries[77].inum: 0   ;dir_ent_t entries[77].name: 
+dir_ent_t entries[78].inum: 0   ;dir_ent_t entries[78].name: 
+dir_ent_t entries[79].inum: 0   ;dir_ent_t entries[79].name: 
+dir_ent_t entries[80].inum: 0   ;dir_ent_t entries[80].name: 
+dir_ent_t entries[81].inum: 0   ;dir_ent_t entries[81].name: 
+dir_ent_t entries[82].inum: 0   ;dir_ent_t entries[82].name: 
+dir_ent_t entries[83].inum: 0   ;dir_ent_t entries[83].name: 
+dir_ent_t entries[84].inum: 0   ;dir_ent_t entries[84].name: 
+dir_ent_t entries[85].inum: 0   ;dir_ent_t entries[85].name: 
+dir_ent_t entries[86].inum: 0   ;dir_ent_t entries[86].name: 
+dir_ent_t entries[87].inum: 0   ;dir_ent_t entries[87].name: 
+dir_ent_t entries[88].inum: 0   ;dir_ent_t entries[88].name: 
+dir_ent_t entries[89].inum: 0   ;dir_ent_t entries[89].name: 
+dir_ent_t entries[90].inum: 0   ;dir_ent_t entries[90].name: 
+dir_ent_t entries[91].inum: 0   ;dir_ent_t entries[91].name: 
+dir_ent_t entries[92].inum: 0   ;dir_ent_t entries[92].name: 
+dir_ent_t entries[93].inum: 0   ;dir_ent_t entries[93].name: 
+dir_ent_t entries[94].inum: 0   ;dir_ent_t entries[94].name: 
+dir_ent_t entries[95].inum: 0   ;dir_ent_t entries[95].name: 
+dir_ent_t entries[96].inum: 0   ;dir_ent_t entries[96].name: 
+dir_ent_t entries[97].inum: 0   ;dir_ent_t entries[97].name: 
+dir_ent_t entries[98].inum: 0   ;dir_ent_t entries[98].name: 
+dir_ent_t entries[99].inum: 0   ;dir_ent_t entries[99].name: 
+dir_ent_t entries[100].inum: 0   ;dir_ent_t entries[100].name: 
+dir_ent_t entries[101].inum: 0   ;dir_ent_t entries[101].name: 
+dir_ent_t entries[102].inum: 0   ;dir_ent_t entries[102].name: 
+dir_ent_t entries[103].inum: 0   ;dir_ent_t entries[103].name: 
+dir_ent_t entries[104].inum: 0   ;dir_ent_t entries[104].name: 
+dir_ent_t entries[105].inum: 0   ;dir_ent_t entries[105].name: 
+dir_ent_t entries[106].inum: 0   ;dir_ent_t entries[106].name: 
+dir_ent_t entries[107].inum: 0   ;dir_ent_t entries[107].name: 
+dir_ent_t entries[108].inum: 0   ;dir_ent_t entries[108].name: 
+dir_ent_t entries[109].inum: 0   ;dir_ent_t entries[109].name: 
+dir_ent_t entries[110].inum: 0   ;dir_ent_t entries[110].name: 
+dir_ent_t entries[111].inum: 0   ;dir_ent_t entries[111].name: 
+dir_ent_t entries[112].inum: 0   ;dir_ent_t entries[112].name: 
+dir_ent_t entries[113].inum: 0   ;dir_ent_t entries[113].name: 
+dir_ent_t entries[114].inum: 0   ;dir_ent_t entries[114].name: 
+dir_ent_t entries[115].inum: 0   ;dir_ent_t entries[115].name: 
+dir_ent_t entries[116].inum: 0   ;dir_ent_t entries[116].name: 
+dir_ent_t entries[117].inum: 0   ;dir_ent_t entries[117].name: 
+dir_ent_t entries[118].inum: 0   ;dir_ent_t entries[118].name: 
+dir_ent_t entries[119].inum: 0   ;dir_ent_t entries[119].name: 
+dir_ent_t entries[120].inum: 0   ;dir_ent_t entries[120].name: 
+dir_ent_t entries[121].inum: 0   ;dir_ent_t entries[121].name: 
+dir_ent_t entries[122].inum: 0   ;dir_ent_t entries[122].name: 
+dir_ent_t entries[123].inum: 0   ;dir_ent_t entries[123].name: 
+dir_ent_t entries[124].inum: 0   ;dir_ent_t entries[124].name: 
+dir_ent_t entries[125].inum: 0   ;dir_ent_t entries[125].name: 
+dir_ent_t entries[126].inum: 0   ;dir_ent_t entries[126].name: 
+dir_ent_t entries[127].inum: 0   ;dir_ent_t entries[127].name: 
 
 
-test deep FAILED
+test deep PASSED
  (create many deeply nested directories)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 **********************************************************************
 Summary:
@@ -470,71 +2607,67 @@ test build PASSED
 test shutdown PASSED
  (init server and client then call shutdown)
 
-test creat FAILED
+test creat PASSED
  (creat a file and check with lookup)
- MFS_Creat returned failure inum=0 type=1 name='test'
 
 test write FAILED
  (write then read one block)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 test stat FAILED
  (stat a regular file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Stat gave wrong size
 
 test overwrite FAILED
  (overwrite a block)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 test maxfile FAILED
  (write largest possible file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
 test maxfile2 FAILED
  (write more blocks than possible)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ MFS_Write should fail on inalid block number
 
 test dir1 PASSED
  (check root for dot entries)
 
-test dir2 FAILED
+test dir2 PASSED
  (create a new directory and check it)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
 test baddir FAILED
  (try to create a file with a file parent inode)
- MFS_Creat returned failure inum=0 type=1 name='testdir'
+ MFS_Creat should fail if pinum is not a directory
 
 test baddir2 FAILED
  (try to lookup a file with a file parent inode)
- MFS_Creat returned failure inum=0 type=1 name='testdir'
+ MFS_Lookup should fail if pinum is not a directory
 
 test unlink FAILED
  (unlink a file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ MFS_Unlink returned failure pinum=0 name='test'
 
 test unlink2 FAILED
  (unlink a directory)
- MFS_Creat returned failure inum=0 type=0 name='test'
+ MFS_Unlink returned failure pinum=0 name='test'
 
 test empty FAILED
  (unlink a non-empty directory)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
+ MFS_Unlink returned failure pinum=0 name='testfile'
 
 test name PASSED
  (name too long)
 
 test persist FAILED
  (restart server after creating a file)
- MFS_Creat returned failure inum=0 type=1 name='test'
+ Corrupt data returned by read
 
-test bigdir FAILED
+test bigdir PASSED
  (create a directory with 126 files)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
-test deep FAILED
+test deep PASSED
  (create many deeply nested directories)
- MFS_Creat returned failure inum=0 type=0 name='testdir'
 
-Passed 4 of 19 tests.
-Overall 4 of 19
+Passed 8 of 19 tests.
+Overall 8 of 19

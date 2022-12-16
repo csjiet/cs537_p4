@@ -721,7 +721,7 @@ void visualizeDirBlock(dir_block_t* dirBlock){
 
 int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, dir_ent_t copyOfDirEntryToAdd){
 
-	printf("START OF addDirEntryToDirectoryInode() param:\n");
+	// printf("START OF addDirEntryToDirectoryInode() param:\n");
 	// printf("param 1 -- inode_t dinode.type: %d; inode_t dinode.size: %d\n", dinode.type, dinode.size);
 	// printf("param 2 -- int dinum: %d\n", dinum);
 	// printf("param 3 -- inode_t dinode.type: %d; inode_t dinode.size: %d\n", addedInode.type, addedInode.size);
@@ -741,8 +741,8 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		int blockNumber = dinode.direct[i];
 		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
 		if(blockNumber == 0 || blockNumber == -1){
-			printf("blockNumber: %d\n", blockNumber);
-			printf("WUTTWUTWTUWTUWTUWUTWUTWUTUWTUWTUWUTWUTUWTUWUTUWUTWUTUWTUWEUWUTUWTUWTUWTUWUTWUT\n");
+			// printf("blockNumber: %d\n", blockNumber);
+			// printf("WUTTWUTWTUWTUWTUWUTWUTWUTUWTUWTUWUTWUTUWTUWUTUWUTWUTUWTUWEUWUTUWTUWTUWTUWUTWUT\n");
 			break;
 		}
 
@@ -758,8 +758,8 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 			// Check if there are any unallocated directory entry dir_ent_t
 			if(dirEntry.inum == -1){
 				isThereEmptyDirEnt = true;
-				printf("Things that are stored - Item at direct[i] i - index: %d\n", j);
-				printf("Filled up dir_ent_t in this block: %d\n", blockNumber);
+				// printf("Things that are stored - Item at direct[i] i - index: %d\n", j);
+				// printf("Filled up dir_ent_t in this block: %d\n", blockNumber);
 
 				// Write the dir_ent_t to disk
 				// Prepare the dir_ent_t we want to write
@@ -816,7 +816,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 
 	}
 
-	printf("new added child inode_t type (where 0=(MFS_DIRECTORY)): %d\n", addedInode.type);
+	// printf("new added child inode_t type (where 0=(MFS_DIRECTORY)): %d\n", addedInode.type);
 
 	if(addedInode.type == MFS_DIRECTORY){
 
@@ -831,7 +831,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		strcpy(newDirEntryBlock.entries[0].name, ".");
 
 		addDirectoryEntryBlockToDataRegion(newBlockNumberForDirectory, &newDirEntryBlock);
-		visualizeDirBlock(&newDirEntryBlock);
+		//visualizeDirBlock(&newDirEntryBlock);
 
 	}
 
@@ -845,7 +845,7 @@ If name already exists, return success.
 Information format:
 */
 int run_cret(message_t* m){
-	printf("START OF CREATE\n");
+	// printf("START OF CREATE\n");
 	int pinum = m->c_sent_inum;
 	int type = m->c_sent_ftype;
 	
@@ -893,7 +893,7 @@ int run_cret(message_t* m){
 	dirEntry.inum = newInodeNumber;
 	strcpy(dirEntry.name, name);
 
-	printf("THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: %d, dirEntry.name: %s\n", dirEntry.inum, dirEntry.name);
+	// printf("THIS IS AT RUN_CRET()- dir_ent_t that is added as dirEntry - dirEntry.inum: %d, dirEntry.name: %s\n", dirEntry.inum, dirEntry.name);
 
 	// Checks if parent directory entries has space for new directory entry
 	addDirEntryToDirectoryInode(pinode, pinum, newInode, dirEntry);
