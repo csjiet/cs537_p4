@@ -730,7 +730,6 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		int blockNumber = dinode.direct[i];
 		// Check if blockNumber is zero, if it is that means you ran out of blocks in your inode_t directory
 		if(blockNumber == 0 || blockNumber == -1){
-			lastIndexInDirectPtrArr = i;
 
 			break;
 		}
@@ -740,6 +739,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		dir_block_t* dirEntBlock = (dir_block_t*) bufBlock;
 		for(int j = 0; j< 128; j++){
 			dir_ent_t dirEntry = dirEntBlock->entries[j];
+			lastIndexInDirectPtrArr = i;
 
 			// printf("Name of directory entries: %s\n", dirEntry.name);
 			// Check if there are any unallocated directory entry dir_ent_t
@@ -787,7 +787,7 @@ int addDirEntryToDirectoryInode(inode_t dinode, int dinum, inode_t addedInode, d
 		write(fd, &newDirEntryBlock, sizeof(dir_block_t));
 
 		// Write newly allocated block number to direct[] for parent inode
-		dinode.direct[lastIndexInDirectPtrArr] = newDataBlockNumber;
+		dinode.direct[lastIndexInDirectPtrArr + 1] = newDataBlockNumber;
 
 	}
 

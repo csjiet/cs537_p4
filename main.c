@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     */
    char des[] = "test";
    char buf[6];
+   // 128 -1 so that is just exceeds the first block slightly
     for(int i = 0; i< 128 - 1; i++){
         sprintf(buf, "%d", i);
         strcat(des, buf);
