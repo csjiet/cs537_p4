@@ -44,13 +44,27 @@ int main(int argc, char *argv[]) {
     /**
      * Tests 4: Test lookup
     */
-   rc = MFS_Creat(0, MFS_DIRECTORY, "testdir");
-   rc = MFS_Lookup(0, "testdir");
-   printf("SEARCHING FOR . !!!!!!!!!!!!!!!\n");
-   rc = MFS_Lookup(1, ".");
-   printf("SEARCHING FOR .. !!!!!!!!!!!!!!!\n");
-   rc = MFS_Lookup(1, "..");
-   assert(rc > -1);
+//    rc = MFS_Creat(0, MFS_DIRECTORY, "testdir");
+//    rc = MFS_Lookup(0, "testdir");
+//    printf("SEARCHING FOR . !!!!!!!!!!!!!!!\n");
+//    rc = MFS_Lookup(1, ".");
+//    printf("SEARCHING FOR .. !!!!!!!!!!!!!!!\n");
+//    rc = MFS_Lookup(1, "..");
+//    assert(rc > -1);
+
+    /**
+     * Tests 5: Test write and read
+     * 
+    */
+
+
+   rc = MFS_Creat(0, MFS_REGULAR_FILE, "TEST");
+   char buf[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'};
+   char ans[9];
+   rc = MFS_Write(1, buf, 1, 5);
+   rc = MFS_Read(1, ans, 3, 5);
+   printf("buffer passed in: %s\n", buf);
+   printf("buffer received: %s\n", ans);
 
 
     rc = MFS_Shutdown();

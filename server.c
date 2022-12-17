@@ -230,14 +230,16 @@ int getDataForDirectoryEntryBlockCopyFromDataRegionWithAbsoluteOffset(int absolu
 
 }
 
-int getDataForNormalBlockCopyFromDataRegion(int blockNumberOffset, char* dirEntryBlock){
+int getDataForNormalBlockCopyFromDataRegion(int blockNumberOffset, char* normalBlock){
 
 	char bufBlock[BLOCKSIZE];
 	lseek(fd, (SUPERBLOCKPTR->data_region_addr + blockNumberOffset) * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 
+	char* foundBufBlock = (char*) bufBlock;
+
 	for(int i = 0; i< BLOCKSIZE; i++){
-		dirEntryBlock[i] = bufBlock[i];
+		normalBlock[i] = foundBufBlock[i];
 	}
 
 	return 0;
@@ -273,8 +275,9 @@ int getFreeInodeCopyFromInodeTable(int* inum, inode_t* inode){
 			// Find newly created inode using indexing of inode 
 			// Progagate into inode passed in as argument
 			int rc = getInodeCopyFromInodeTable(unallocatedInodeNumber, inode);
-			if (rc < 0)
+			if (rc < 0){
 				return -1;
+			}
 			*inum = unallocatedInodeNumber;
 			// printf("parameters AFTER UPDATE: inum: %d; inode->type: %d; inode->size: %d\n", *inum, inode->type, inode->size);
 			// printf("items in free new inode's direct[] AFTER obtaining inode_t:\n");
@@ -343,7 +346,7 @@ int getFreeNormalDataBlockCopyFromDataRegion(int* blockNumber, char* bufferBlock
 			//printf("bitVal of AFTER set to 1 (should be 1): %d\n", getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, i));
 
 			
-			getDataForNormalBlockCopyFromDataRegion(unallocatedDatablockNumber + SUPERBLOCKPTR->data_region_addr, bufferBlock);
+			getDataForNormalBlockCopyFromDataRegion(unallocatedDatablockNumber, bufferBlock);
 
 			*blockNumber = unallocatedDatablockNumber;
 
@@ -585,14 +588,18 @@ int run_stat(message_t* m){
 
 	// INODE BITMAP
 	// Check if inum exists in inode table
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// INODE TABLE
 	inode_t inode;
 	int rc = getInodeCopyFromInodeTable(inum, &inode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	m->c_received_mfs_stat.size = inode.size;
 	m->c_received_mfs_stat.type = inode.type;
@@ -613,30 +620,46 @@ int run_write(message_t* m){
 	int inum = m->c_sent_inum;
 	int offset = m->c_sent_offset;
 	int nbytes = m->c_sent_nbytes;
-	//char *buffer = strdup(m->c_sent_buffer);
-	char bufferToWrite[BLOCKSIZE];
-	strcpy(bufferToWrite, m->c_sent_buffer);
+	char *bufferToWrite = strdup(m->c_sent_buffer);
+	//char bufferToWrite[BLOCKSIZE];
+	//strcpy(bufferToWrite, m->c_sent_buffer);
 	
-	if (inum < 0) 
+	if (inum < 0){ 
+		m->c_received_rc = -1;
 		return -1;
-	if (offset < 0)
+	}
+	if (offset < 0){
+		m->c_received_rc = -1;
 		return -1;
-	if (nbytes > 4096)
+	}
+	if (nbytes > 4096){
+		m->c_received_rc = -1;
 		return -1;
+	}
+	if(offset + nbytes > DIRECT_PTRS * BLOCKSIZE){
+		m->c_received_rc = -1;
+		return -1;
+	}
 
 	// INODE BITMAP
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// DATA BITMAP
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, inum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, inum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// INODE TABLE
 	inode_t inode;
 	int rc = getInodeCopyFromInodeTable(inum, &inode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	if(inode.type == MFS_DIRECTORY){
 		m->c_received_rc = -1;
@@ -645,15 +668,29 @@ int run_write(message_t* m){
 
 	// Check if total of offset + nbytes exceeds allowed block size
 	int totalOffset = offset + nbytes;
-	if(totalOffset > (DIRECT_PTRS * BLOCKSIZE))
+	if(totalOffset > (DIRECT_PTRS * BLOCKSIZE)){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	int blockIndex = floor(offset/ BLOCKSIZE);
-	//int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
+
+	if(blockIndex >= DIRECT_PTRS){
+		m->c_received_rc = -1;
+		return -1;
+	}
+
+	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
+
+	printf("WRITE - Block index (i) for direct[i]: %d\n", blockIndex);
+	// printf("Remaining offset within a block: %d\n", remainingOffsetWithinABlock);
 
 	int absoluteBlockNumber = inode.direct[blockIndex];
 	int crossedBlockIndex = 0;
+	crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
+
 	if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0){
+		//printf("SHOULD NOT RUN!!!\n");
 		// Create a new data block to write stuff, and update direct[] with new created block
 		int relativeBlockNumber = 0;
 		char bufBlockRegfile[BLOCKSIZE];
@@ -663,36 +700,57 @@ int run_write(message_t* m){
 
 		// Append new block number
 		inode.direct[blockIndex] = relativeBlockNumber + SUPERBLOCKPTR->data_region_addr;
-
-		// Another allocation of block if write crosses two blocks
-		crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
-		if(crossedBlockIndex != blockIndex){
-			// Create a new data block to write stuff, and update direct[] with new created block
-			int relativeBlockNumber2 = 0;
-			char bufBlockRegfile2[BLOCKSIZE];
-			getFreeNormalDataBlockCopyFromDataRegion(&relativeBlockNumber2, bufBlockRegfile2);
-
-			addNormalBlockToDataRegion(relativeBlockNumber2, bufBlockRegfile2);
-
-			// Append new block number
-			inode.direct[crossedBlockIndex] = relativeBlockNumber2 + SUPERBLOCKPTR->data_region_addr;
-		}
-
-		addInodeToInodeTable(inum, &inode);
-
+		inode.size += BLOCKSIZE;
 	}
 
+	// Another allocation of block if write crosses two blocks
+	// crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
+	if(crossedBlockIndex != blockIndex && (inode.direct[crossedBlockIndex] == -1 || inode.direct[crossedBlockIndex] == 0)){
+		//printf("SHOULD NOT RUN!!!\n");
+		// Create a new data block to write stuff, and update direct[] with new created block
+		int relativeBlockNumber2 = 0;
+		char bufBlockRegfile2[BLOCKSIZE];
+		getFreeNormalDataBlockCopyFromDataRegion(&relativeBlockNumber2, bufBlockRegfile2);
+
+		addNormalBlockToDataRegion(relativeBlockNumber2, bufBlockRegfile2);
+
+		// Append new block number
+		inode.direct[crossedBlockIndex] = relativeBlockNumber2 + SUPERBLOCKPTR->data_region_addr;
+		inode.size += BLOCKSIZE;
+	}
+
+	addInodeToInodeTable(inum, &inode);
+
+	//visualizeInode(&inode);
+
 	// Actually writing to nbyte
-	int remainingBytesTillEndOfFirstBlock = ((blockIndex + 1) * BLOCKSIZE) - offset;
-	
+	// Check if nbytes crosses boundary
+	if(blockIndex != crossedBlockIndex){
 
-	lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + offset, SEEK_SET);
-	write(fd, bufferToWrite, remainingBytesTillEndOfFirstBlock);
+		// Cross writes
+		int remainingBytesToWriteBeforeCross = ((blockIndex + 1) * BLOCKSIZE)  - offset;
+		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		write(fd, bufferToWrite, remainingBytesToWriteBeforeCross);
 
-	if(remainingBytesTillEndOfFirstBlock >= nbytes){
-		int remainingBytesTillEndOfSecondBlock = nbytes - remainingBytesTillEndOfFirstBlock;
+		int remainingBytesToWriteAfterCross = nbytes - remainingBytesToWriteBeforeCross;
 		lseek(fd, (inode.direct[crossedBlockIndex] * BLOCKSIZE), SEEK_SET);
-		write(fd, (bufferToWrite + remainingBytesTillEndOfFirstBlock), remainingBytesTillEndOfSecondBlock);
+		write(fd, (bufferToWrite + remainingBytesToWriteBeforeCross), remainingBytesToWriteAfterCross);
+
+	}else{
+
+		// Normal writes
+		// lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		// write(fd, bufferToWrite, nbytes);
+
+		lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		write(fd, bufferToWrite, nbytes);
+
+		printf("WRITE - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
+		printf("WRITE - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
+		printf("WRITE - buffer!!!: %s\n", bufferToWrite);
+		
+		// printf("Buffer being written to disk: %s\n", bufferToWrite);
+
 	}
 	
 	fsync(fd); // Idempotency from writeup
@@ -765,33 +823,59 @@ int run_read(message_t* m){
 	
 	// INODE BITMAP
 	// Gets inode bitmap's location
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, inum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// DATA BITMAP
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, inum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, inum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// INODE TABLE
 	// Gets inode table's location
 	inode_t inode;
 	int rc = getInodeCopyFromInodeTable(inum, &inode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// Check if the total of offset + nbytes exceeds block size allowed
 	int totalOffset = offset + nbytes;
-	if(totalOffset > (DIRECT_PTRS * BLOCKSIZE))
+	if(totalOffset > (DIRECT_PTRS * BLOCKSIZE)){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	//NOTE: We have not checked the case where if nbytes exceeds the file/ directory size
 
 	int blockIndex = floor(offset/ BLOCKSIZE);
+
+	if(blockIndex >= DIRECT_PTRS){
+		m->c_received_rc = -1;
+		return -1;
+	}
+
 	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
 
+	printf("WRITE - Block index (i) for direct[i]: %d\n", blockIndex);
+
 	int absoluteBlockNumber = inode.direct[blockIndex];
-	if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0)
+	int crossedBlockIndex = 0;
+	crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
+
+	if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
+
+	if(inode.direct[crossedBlockIndex] == -1 || inode.direct[crossedBlockIndex] == 0){
+		m->c_received_rc = -1;
+		return -1;
+	}
 	
 	// Read and parse the directory
 	if(inode.type == MFS_DIRECTORY){
@@ -810,13 +894,32 @@ int run_read(message_t* m){
 	}
 
 	// Read the data into buffer
-	lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
-	char bufBlock[nbytes];
-	read(fd, bufBlock, nbytes);
-	strcpy(m->c_received_buffer, bufBlock);
+	char readBuffer[BLOCKSIZE];
+	if(blockIndex != crossedBlockIndex){
+
+		// Cross writes
+		int remainingBytesToWriteBeforeCross = ((blockIndex + 1) * BLOCKSIZE)  - offset;
+		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		read(fd, readBuffer, remainingBytesToWriteBeforeCross);
+
+		int remainingBytesToWriteAfterCross = nbytes - remainingBytesToWriteBeforeCross;
+		lseek(fd, (inode.direct[crossedBlockIndex] * BLOCKSIZE), SEEK_SET);
+		read(fd, (readBuffer + remainingBytesToWriteBeforeCross), remainingBytesToWriteAfterCross);
+
+	}else{
+		// Normal writes
+		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		read(fd, readBuffer, nbytes);
+
+		printf("READ - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
+		printf("READ - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
+		printf("READ - buffer!!!: %s\n", readBuffer);
+
+	}
+
+	strcpy(m->c_received_buffer, readBuffer);
 	m->c_received_buffer_size = nbytes;
 
-	
 	return 0;
 }
 
@@ -832,18 +935,24 @@ int run_lookup(message_t* m){
 	strcpy(name, m->c_sent_name);
 
 	// INODE BITMAP
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// DATA BITMAP
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// INODE TABLE
 	inode_t pinode;
 	int rc = getInodeCopyFromInodeTable(pinum, &pinode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	//visualizeInode(&pinode);
 
@@ -898,23 +1007,29 @@ int run_cret(message_t* m){
 	// PARENT CHECKS
 	// INODE BITMAP
 	// Checks if parent inode exist before allocating file as child
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->inode_bitmap_addr, pinum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	//printf("type: %d\n", type);
 
 	// // DATA BITMAP
 	// // Checks if parent data block exists
-	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0)
+	if(getBitmapValGivenBlockNumAndInum(SUPERBLOCKPTR->data_bitmap_addr, pinum) == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 	
 
 	// INODE TABLE
 	// Retrieves parent inode from inode table using inode number indexing, since it exists
 	inode_t pinode;
 	int rc = getInodeCopyFromInodeTable(pinum, &pinode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	if(pinode.type == MFS_REGULAR_FILE){
 		m->c_received_rc = -1;
@@ -926,8 +1041,10 @@ int run_cret(message_t* m){
 	int newInodeNumber;
 	inode_t newInode;
 	rc = getFreeInodeCopyFromInodeTable(&newInodeNumber, &newInode);
-	if(rc < 0)
+	if(rc < 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// Assign new inode in inode table
 	newInode.type = type;
@@ -965,8 +1082,10 @@ int run_unlink(message_t* m){
 	lseek(fd, SUPERBLOCKPTR->inode_bitmap_addr * BLOCKSIZE, SEEK_SET);
 	read(fd, bufBlock, BLOCKSIZE);
 	unsigned int bitVal = get_bit((unsigned int*) bufBlock, pinum);
-	if(bitVal == 0)
+	if(bitVal == 0){
+		m->c_received_rc = -1;
 		return -1;
+	}
 
 	// INODE TABLE
 	// Get Inode address in table
@@ -995,6 +1114,7 @@ int run_unlink(message_t* m){
 				if (dirEntry.inum == -1) {
 					memcpy(dirEntry.name, "", 0);
 				} else {
+					m->c_received_rc = -1;
 					return -1;
 				}
 			}

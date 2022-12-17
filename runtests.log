@@ -19,10 +19,10 @@ layout details
 gcc -o main main.c -Wall -L. -lmfs -g
 export LD_LIBRARY_PATH=.
 ldd main
-	linux-vdso.so.1 (0x00007ffeacde1000)
-	libmfs.so => ./libmfs.so (0x00007f3c21b4f000)
-	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f3c2190a000)
-	/lib64/ld-linux-x86-64.so.2 (0x00007f3c21b5b000)
+	linux-vdso.so.1 (0x00007ffcdfbbe000)
+	libmfs.so => ./libmfs.so (0x00007f593d85d000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f593d618000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f593d869000)
 
 
 test build PASSED
@@ -42,8 +42,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6026
-/tmp/tmpzkHB7I/p/server 6026 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7789
+/tmp/tmpJF02y5/p/server 7789 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -70,8 +70,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8406
-/tmp/tmpzkHB7I/p/server 8406 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5184
+/tmp/tmpJF02y5/p/server 5184 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -98,10 +98,10 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 6376
-/tmp/tmpzkHB7I/p/server 6376 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5568
+/tmp/tmpJF02y5/p/server 5568 /home/sui/Documents/cs537/cs537_p4/test.img
 ('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00END BLOCK 1')
-('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+('START BLOCK 1\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00', '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
 Failure: Corrupt data returned by read
 
 
@@ -123,14 +123,20 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5879
-/tmp/tmpzkHB7I/p/server 5879 /home/sui/Documents/cs537/cs537_p4/test.img
-Failure: Stat gave wrong size
+Starting server on port 6897
+/tmp/tmpJF02y5/p/server 6897 /home/sui/Documents/cs537/cs537_p4/test.img
+-------Describes IMG + super block-----------
+SUPERBLOCK
+ inode bitmap address 1 [len 1]
+ data bitmap address 2 [len 1]
+ inode region address 3 [len 1]
+ data region address 4 [len 32]
+ num inodes: 32 ;num data: [len 32]
+WRITE - Block index (i) for direct[i]: 0
 
 
-test stat FAILED
+test stat PASSED
  (stat a regular file)
- Stat gave wrong size
 
 ('starting', 'overwrite')
 
@@ -146,8 +152,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5380
-/tmp/tmpzkHB7I/p/server 5380 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 8468
+/tmp/tmpJF02y5/p/server 8468 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -169,8 +175,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8440
-/tmp/tmpzkHB7I/p/server 8440 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5726
+/tmp/tmpJF02y5/p/server 5726 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -192,16 +198,16 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8887
-/tmp/tmpzkHB7I/p/server 8887 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5966
+/tmp/tmpJF02y5/p/server 5966 /home/sui/Documents/cs537/cs537_p4/test.img
 31
 write more than need
-Failure: MFS_Write should fail on inalid block number
+Failure: Corrupt data returned by read
 
 
 test maxfile2 FAILED
  (write more blocks than possible)
- MFS_Write should fail on inalid block number
+ Corrupt data returned by read
 
 ('starting', 'dir1')
 
@@ -217,8 +223,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5639
-/tmp/tmpzkHB7I/p/server 5639 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5688
+/tmp/tmpJF02y5/p/server 5688 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -245,8 +251,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7029
-/tmp/tmpzkHB7I/p/server 7029 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 5005
+/tmp/tmpJF02y5/p/server 5005 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -273,8 +279,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9611
-/tmp/tmpzkHB7I/p/server 9611 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 8162
+/tmp/tmpJF02y5/p/server 8162 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -301,8 +307,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9146
-/tmp/tmpzkHB7I/p/server 9146 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7906
+/tmp/tmpJF02y5/p/server 7906 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -329,8 +335,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5240
-/tmp/tmpzkHB7I/p/server 5240 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7322
+/tmp/tmpJF02y5/p/server 7322 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Unlink returned failure pinum=0 name='test'
 
 
@@ -352,8 +358,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8631
-/tmp/tmpzkHB7I/p/server 8631 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 6946
+/tmp/tmpJF02y5/p/server 6946 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Unlink returned failure pinum=0 name='test'
 
 
@@ -375,8 +381,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 8741
-/tmp/tmpzkHB7I/p/server 8741 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 9033
+/tmp/tmpJF02y5/p/server 9033 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: MFS_Unlink returned failure pinum=1 name='testfile'
 
 
@@ -398,8 +404,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7777
-/tmp/tmpzkHB7I/p/server 7777 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 7069
+/tmp/tmpJF02y5/p/server 7069 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -426,8 +432,8 @@ total blocks        36
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 9503
-/tmp/tmpzkHB7I/p/server 9503 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 6186
+/tmp/tmpJF02y5/p/server 6186 /home/sui/Documents/cs537/cs537_p4/test.img
 Failure: Corrupt data returned by read
 
 
@@ -449,8 +455,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 5637
-/tmp/tmpzkHB7I/p/server 5637 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 6069
+/tmp/tmpJF02y5/p/server 6069 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -477,8 +483,8 @@ total blocks        39
 layout details
   inode bitmap address/len 1 [1]
   data bitmap address/len  2 [1]
-Starting server on port 7346
-/tmp/tmpzkHB7I/p/server 7346 /home/sui/Documents/cs537/cs537_p4/test.img
+Starting server on port 9968
+/tmp/tmpJF02y5/p/server 9968 /home/sui/Documents/cs537/cs537_p4/test.img
 -------Describes IMG + super block-----------
 SUPERBLOCK
  inode bitmap address 1 [len 1]
@@ -506,9 +512,8 @@ test write FAILED
  (write then read one block)
  Corrupt data returned by read
 
-test stat FAILED
+test stat PASSED
  (stat a regular file)
- Stat gave wrong size
 
 test overwrite FAILED
  (overwrite a block)
@@ -520,7 +525,7 @@ test maxfile FAILED
 
 test maxfile2 FAILED
  (write more blocks than possible)
- MFS_Write should fail on inalid block number
+ Corrupt data returned by read
 
 test dir1 PASSED
  (check root for dot entries)
@@ -559,5 +564,5 @@ test bigdir PASSED
 test deep PASSED
  (create many deeply nested directories)
 
-Passed 10 of 19 tests.
-Overall 10 of 19
+Passed 11 of 19 tests.
+Overall 11 of 19

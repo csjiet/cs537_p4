@@ -109,7 +109,7 @@ int MFS_Stat(int inum, MFS_Stat_t *m) {
     m->type = msg.c_received_mfs_stat.type;
     m->size = msg.c_received_mfs_stat.size;
 
-    return 0;
+    return msg.c_received_rc;
 }
 
 /* This function writes a buffer of size nbytes (max size: 4096 bytes) at the byte offset specified by offset. Returns 
@@ -158,7 +158,7 @@ int MFS_Write(int inum, char *buffer, int offset, int nbytes) {
         printf("client:: MFS_Stat READ failed; libmfs.c\n");
         return -1;
     }
-    return 0;
+    return msg.c_received_rc;
 }
 
 /*This function reads nbytes of data (max size 4096 bytes) specified by the byte offset offset into the 
@@ -211,8 +211,9 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
         return -1;
     }
     //msg.c_received_mfs_dirent;
+    strcpy(buffer, msg.c_received_buffer);
 
-    return 0;
+    return msg.c_received_rc;
 }
 
 /* This function makes a file (type == MFS_REGULAR_FILE) or directory (type == MFS_DIRECTORY) in the parent directory specified 
