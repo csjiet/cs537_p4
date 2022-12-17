@@ -182,6 +182,9 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
     
     if(nbytes > 4096)
         return -1;
+
+    // if(offset + nbytes >= 30 * 4096)
+    //     return -1;
     
     if (nbytes < 0)
         return -1;
@@ -211,7 +214,11 @@ int MFS_Read(int inum, char *buffer, int offset, int nbytes) {
         return -1;
     }
     //msg.c_received_mfs_dirent;
-    strcpy(buffer, msg.c_received_buffer);
+    // strcpy(buffer, msg.c_received_buffer);
+    for(int z = 0; z< nbytes; z++){
+        buffer[z] = msg.c_received_buffer[z];
+    }
+
 
     return msg.c_received_rc;
 }

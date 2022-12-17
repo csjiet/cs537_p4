@@ -623,6 +623,8 @@ int run_write(message_t* m){
 	char *bufferToWrite = strdup(m->c_sent_buffer);
 	//char bufferToWrite[BLOCKSIZE];
 	//strcpy(bufferToWrite, m->c_sent_buffer);
+
+	// printf("Param: buffer to Write RECEIVED IN RUN_WRITE: %s\n", bufferToWrite);
 	
 	if (inum < 0){ 
 		m->c_received_rc = -1;
@@ -682,7 +684,7 @@ int run_write(message_t* m){
 
 	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
 
-	printf("WRITE - Block index (i) for direct[i]: %d\n", blockIndex);
+	//printf("WRITE - Block index (i) for direct[i]: %d\n", blockIndex);
 	// printf("Remaining offset within a block: %d\n", remainingOffsetWithinABlock);
 
 	int absoluteBlockNumber = inode.direct[blockIndex];
@@ -690,7 +692,7 @@ int run_write(message_t* m){
 	crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
 
 	if(absoluteBlockNumber == -1 || absoluteBlockNumber == 0){
-		//printf("SHOULD NOT RUN!!!\n");
+		//printf("SHOULD NOT RUN 222222!!!\n");
 		// Create a new data block to write stuff, and update direct[] with new created block
 		int relativeBlockNumber = 0;
 		char bufBlockRegfile[BLOCKSIZE];
@@ -723,6 +725,11 @@ int run_write(message_t* m){
 
 	//visualizeInode(&inode);
 
+	char writtenBuf[nbytes];
+	for(int z = 0; z < nbytes; z++){
+		writtenBuf[z] = bufferToWrite[z];
+	}
+
 	// Actually writing to nbyte
 	// Check if nbytes crosses boundary
 	if(blockIndex != crossedBlockIndex){
@@ -730,11 +737,11 @@ int run_write(message_t* m){
 		// Cross writes
 		int remainingBytesToWriteBeforeCross = ((blockIndex + 1) * BLOCKSIZE)  - offset;
 		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
-		write(fd, bufferToWrite, remainingBytesToWriteBeforeCross);
+		write(fd, writtenBuf, remainingBytesToWriteBeforeCross);
 
 		int remainingBytesToWriteAfterCross = nbytes - remainingBytesToWriteBeforeCross;
 		lseek(fd, (inode.direct[crossedBlockIndex] * BLOCKSIZE), SEEK_SET);
-		write(fd, (bufferToWrite + remainingBytesToWriteBeforeCross), remainingBytesToWriteAfterCross);
+		write(fd, (writtenBuf + remainingBytesToWriteBeforeCross), remainingBytesToWriteAfterCross);
 
 	}else{
 
@@ -743,16 +750,18 @@ int run_write(message_t* m){
 		// write(fd, bufferToWrite, nbytes);
 
 		lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
-		write(fd, bufferToWrite, nbytes);
+		//lseek(fd, (absoluteBlockNumber * BLOCKSIZE) + remainingOffsetWithinABlock + 1, SEEK_SET);
+		write(fd, writtenBuf, nbytes);
 
-		printf("WRITE - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
-		printf("WRITE - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
-		printf("WRITE - buffer!!!: %s\n", bufferToWrite);
+		// printf("WRITE - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
+		// printf("WRITE - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
+		// printf("WRITE - buffer!!!: %s\n", writtenBuf);
 		
 		// printf("Buffer being written to disk: %s\n", bufferToWrite);
 
 	}
 	
+	free(bufferToWrite);
 	fsync(fd); // Idempotency from writeup
 	return 0;
 }
@@ -861,8 +870,6 @@ int run_read(message_t* m){
 
 	int remainingOffsetWithinABlock = (offset) - (blockIndex * BLOCKSIZE);
 
-	printf("WRITE - Block index (i) for direct[i]: %d\n", blockIndex);
-
 	int absoluteBlockNumber = inode.direct[blockIndex];
 	int crossedBlockIndex = 0;
 	crossedBlockIndex = floor(totalOffset/ BLOCKSIZE);
@@ -894,7 +901,8 @@ int run_read(message_t* m){
 	}
 
 	// Read the data into buffer
-	char readBuffer[BLOCKSIZE];
+	char* readBuffer = (char*) malloc(nbytes);
+	//char* readBuffer = (char*) malloc(nbytes);
 	if(blockIndex != crossedBlockIndex){
 
 		// Cross writes
@@ -908,16 +916,21 @@ int run_read(message_t* m){
 
 	}else{
 		// Normal writes
-		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + remainingOffsetWithinABlock, SEEK_SET);
+		lseek(fd, (inode.direct[blockIndex] * BLOCKSIZE) + (remainingOffsetWithinABlock), SEEK_SET);
 		read(fd, readBuffer, nbytes);
 
-		printf("READ - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
-		printf("READ - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
-		printf("READ - buffer!!!: %s\n", readBuffer);
+		// printf("READ - reading ? bytes: %d\n", nbytes);
+		// printf("READ - real size of buffer when buffer is created: %ld\n", strlen(readBuffer));
+		// printf("READ - inode.direct[blockIndex]: %d\n", inode.direct[blockIndex]);
+		// printf("READ - remainingOffsetWithinABlock: %d\n", remainingOffsetWithinABlock);
+		// printf("READ - buffer!!!: %s\n", readBuffer);
 
 	}
 
-	strcpy(m->c_received_buffer, readBuffer);
+	for(int z = 0; z< nbytes; z++){
+		m->c_received_buffer[z] = readBuffer[z];
+	}
+	
 	m->c_received_buffer_size = nbytes;
 
 	return 0;

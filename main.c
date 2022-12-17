@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
    char buf[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'};
    char ans[9];
    rc = MFS_Write(1, buf, 1, 5);
-   rc = MFS_Read(1, ans, 3, 5);
+   rc = MFS_Read(1, ans, 3, 4);
    printf("buffer passed in: %s\n", buf);
    printf("buffer received: %s\n", ans);
 
