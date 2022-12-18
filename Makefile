@@ -8,7 +8,7 @@ PROGS  := ${SRCS:.c=}
 
 .PHONY: all
 all: ${PROGS} compile
-
+export LD_LIBRARY_PATH=.
 ${PROGS} : % : %.o Makefile.net
 	${CC} $< -o $@ udp.c
 
@@ -20,11 +20,11 @@ compile: libmfs.so
 	gcc -o mkfs mkfs.c -Wall
 	./mkfs -f real_disk_image.img -d 1000 -i 200
 	gcc -o main main.c -Wall -L. -lmfs -g
-	export LD_LIBRARY_PATH=.
+
 	ldd main
 
 export:
-	export LD_LIBRARY_PATH=.
+	LD_LIBRARY_PATH=.
 
 libmfs.so: libmfs.o udp.c
 	${CC} ${CFLAGS} -fpic -c udp.c
