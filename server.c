@@ -604,6 +604,8 @@ int run_stat(message_t* m){
 	m->c_received_mfs_stat.size = inode.size;
 	m->c_received_mfs_stat.type = inode.type;
 
+	fsync(fd);
+
 	return 0;
 }
 
@@ -933,6 +935,8 @@ int run_read(message_t* m){
 	
 	m->c_received_buffer_size = nbytes;
 
+	fsync(fd);
+
 	return 0;
 }
 
@@ -997,6 +1001,7 @@ int run_lookup(message_t* m){
 		}
 	}
 	
+	fsync(fd);
 	return 0;
 	
 }
